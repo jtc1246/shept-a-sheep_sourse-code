@@ -428,7 +428,7 @@ window.__require = function t(e, o, n) {
         cc._RF.push(e, "3f1d9y5Ey5CfqFDLJVTW6yo", "CcJsFunc"), Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var n = t("../effect/player-head-atlas"), i = t("../tools/random/xorshift"), a = t("./native/audio"), r = t("./sdk"), c = function() {
+        var n = t("../effect/player-head-atlas"), i = t("../tools/random/xorshift"), a = t("./native/audio"), r = t("./platform-utils"), c = t("./sdk"), s = function() {
             function t() {}
             return t.shuffle = function(t) {
                 for (var e = t.length - 1; e >= 0; e--) {
@@ -437,7 +437,7 @@ window.__require = function t(e, o, n) {
                 }
                 return t;
             }, t.addClickAudio = function() {
-                a.default.playAudioMusic("audio/sound/clickBlock.mp3", !1), r.default.vibrateShort();
+                a.default.playAudioMusic("audio/sound/clickBlock.mp3", !1), c.default.vibrateShort();
             }, t.addbtnTouchStartScale = function(t, e) {
                 t.on("touchstart", function() {
                     this.addClickAudio(), cc.tween(t).to(.1, {
@@ -640,11 +640,12 @@ window.__require = function t(e, o, n) {
                 } else console.log("setAvatar node 为空");
             }, t;
         }();
-        o.default = c, cc._RF.pop();
+        o.default = s, cc._RF.pop();
     }, {
         "../effect/player-head-atlas": "player-head-atlas",
         "../tools/random/xorshift": "xorshift",
         "./native/audio": "audio",
+        "./platform-utils": "platform-utils",
         "./sdk": "sdk"
     } ],
     ChooseAddressPop: [ function(t, e, o) {
@@ -1204,8 +1205,8 @@ window.__require = function t(e, o, n) {
                     scale: 1
                 }).start(), r.default.getPersonalInfo(function(t) {
                     if (t && t.data) {
-                        var e = t.data.daily_count;
-                        s.default.updateFirendCount(e);
+                        var e = t.data.win_count;
+                        s.default.updateFirendCount(e || 0);
                     }
                 });
             }, a([ p(cc.Node) ], e.prototype, "popNode", void 0), a([ p(cc.Node) ], e.prototype, "closeBtn", void 0), 
@@ -1348,7 +1349,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var s = t("../common/enumConfig"), l = t("../common/sdk"), u = cc._decorator, p = u.ccclass, d = u.property, h = (u.menu, 
+        var s = t("../common/enumConfig"), l = t("../common/platform-utils"), u = cc._decorator, p = u.ccclass, d = u.property, h = (u.menu, 
         function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
@@ -1375,7 +1376,7 @@ window.__require = function t(e, o, n) {
         o.default = h, cc._RF.pop();
     }, {
         "../common/enumConfig": "enumConfig",
-        "../common/sdk": "sdk"
+        "../common/platform-utils": "platform-utils"
     } ],
     GameManager: [ function(t, e, o) {
         "use strict";
@@ -1492,7 +1493,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../api/api-sheep"), c = t("../common/CcJsFunc"), s = t("../common/dataTs"), l = t("../common/sdk"), u = t("../common/spine"), p = t("../common/util"), d = t("../manager/data-manager"), h = t("../manager/DateManager"), f = cc._decorator, m = f.ccclass, g = f.property, y = function(t) {
+        var r = t("../api/api-sheep"), c = t("../common/CcJsFunc"), s = t("../common/dataTs"), l = t("../common/platform-utils"), u = t("../common/spine"), p = t("../common/util"), d = t("../manager/data-manager"), h = t("../manager/DateManager"), f = cc._decorator, m = f.ccclass, g = f.property, y = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.popNode = null, e.nickName = null, e.registerLabel = null, e.dailyName = null, 
@@ -1502,7 +1503,7 @@ window.__require = function t(e, o, n) {
             }
             return i(e, t), e.prototype.start = function() {
                 c.default.addTargetTouchUpInside(this.closeBtn, this.closeBtnFunc.bind(this)), c.default.addTargetTouchUpInside(this.saveBtn, this.saveBtnFunc.bind(this)), 
-                l.default.isPlatform(l.Platform.wx) || l.default.isPlatform(l.Platform.tt) || l.default.isPlatform(l.Platform.qq) ? this.saveBtn.active = !0 : this.saveBtn.active = !1, 
+                l.default.isPlatform(l.Platform.wx) || l.default.isPlatform(l.Platform.tt) || l.default.isPlatform(l.Platform.qq) || l.default.isPlatform(l.Platform.ks) ? this.saveBtn.active = !0 : this.saveBtn.active = !1, 
                 this.saveBtn.active = !1;
             }, e.prototype.closeBtnFunc = function() {
                 this.node.active = !1;
@@ -1523,12 +1524,11 @@ window.__require = function t(e, o, n) {
                     e && e.data && t.setupSubviews(e.data);
                 });
             }, e.prototype.setupSubviews = function(t) {
-                if (this.nickName.string = t.nick_name || "", this.idLabel.string = "ID:" + t.uid, 
-                t.register_time) {
+                if (this.nickName.string = t.nick_name || "", this.idLabel.string = "", t.register_time) {
                     var e = (f = h.default.getInstance().formatTs(t.register_time))[0] + "年" + f[1] + "月" + f[2] + "日";
                     this.registerLabel.string = "于" + e + "诞生";
                 } else this.registerLabel.string = "";
-                this.dailyCount.string = t.daily_count, this.topicCount.string = t.topic_count;
+                this.dailyCount.string = t.win_count || 0, this.topicCount.string = t.topic_count || 0;
                 var o = "", n = "", i = "";
                 if (1 == t.today_state) {
                     o = "sheep/Sheeps", n = "skin_00", i = "Jump2";
@@ -1569,7 +1569,7 @@ window.__require = function t(e, o, n) {
         "../api/api-sheep": "api-sheep",
         "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
-        "../common/sdk": "sdk",
+        "../common/platform-utils": "platform-utils",
         "../common/spine": "spine",
         "../common/util": "util",
         "../manager/DateManager": "DateManager",
@@ -2100,7 +2100,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var s = t("../common/enumConfig"), l = t("../common/sdk"), u = cc._decorator, p = u.ccclass, d = u.property, h = (u.menu, 
+        var s = t("../common/enumConfig"), l = t("../common/platform-utils"), u = cc._decorator, p = u.ccclass, d = u.property, h = (u.menu, 
         function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
@@ -2127,55 +2127,60 @@ window.__require = function t(e, o, n) {
         o.default = h, cc._RF.pop();
     }, {
         "../common/enumConfig": "enumConfig",
-        "../common/sdk": "sdk"
+        "../common/platform-utils": "platform-utils"
     } ],
     ad: [ function(t, e, o) {
         "use strict";
         cc._RF.push(e, "a30241BP59D1qFtYJSnt/BB", "ad");
-        var n, i, a = this && this.__assign || function() {
-            return (a = Object.assign || function(t) {
+        var n, i = this && this.__assign || function() {
+            return (i = Object.assign || function(t) {
                 for (var e, o = 1, n = arguments.length; o < n; o++) for (var i in e = arguments[o]) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
                 return t;
             }).apply(this, arguments);
         };
         Object.defineProperty(o, "__esModule", {
             value: !0
-        }), o.AdType = o.AdTag = void 0, function(t) {
+        }), o.AdType = o.AdTag = void 0;
+        var a, r = t("./platform-utils");
+        (function(t) {
             t[t.NONE = 0] = "NONE", t[t.RewardVideo = 1] = "RewardVideo";
-        }(i = o.AdTag || (o.AdTag = {})), function(t) {
+        })(a = o.AdTag || (o.AdTag = {})), function(t) {
             t[t.RewardVideo = 0] = "RewardVideo", t[t.FullScreenVideo = 1] = "FullScreenVideo", 
             t[t.Interstitial = 2] = "Interstitial", t[t.BigImage = 3] = "BigImage";
         }(o.AdType || (o.AdType = {}));
-        var r = function() {
+        var c = function() {
             function t() {}
             return t.getAdByTag = function(t) {
-                console.log("[sdk] get ad by tag", t, typeof t, c[t]);
-                var e = c[t], o = "";
+                console.log("[sdk] get ad by tag", t, typeof t, s[t]);
+                var e = s[t], o = "";
                 switch (cc.sys.platform) {
                   case cc.sys.WECHAT_GAME:
-                    o = window.qq ? e.qqAdID : e.wxAdID;
+                    o = r.default.isPlatform(r.Platform.qq) ? e.qqAdID : r.default.isPlatform(r.Platform.ks) ? e.ksAdID : e.wxAdID;
                     break;
 
                   case cc.sys.BYTEDANCE_GAME:
                     o = e.ttAdID;
                 }
-                return a(a({}, c[t]), {
+                return i(i({}, s[t]), {
                     adID: o
                 });
             }, t.getRandomShareImgUrl = function() {
                 return "https://www.52shenbian.com/jigsawRes/resources/sharingGraph/chigua" + (Math.floor(5 * Math.random()) + 1) + ".jpg";
             }, t;
         }();
-        o.default = r;
-        var c = ((n = {})[i.RewardVideo] = {
+        o.default = c;
+        var s = ((n = {})[a.RewardVideo] = {
             title: "欢迎来到月之村",
-            url: r.getRandomShareImgUrl(),
+            url: c.getRandomShareImgUrl(),
             wxAdID: "adunit-51694ea44cfcc656",
             ttAdID: "",
-            qqAdID: "1de3ab25d5d6112a602465ea00c191f9"
+            qqAdID: "1de3ab25d5d6112a602465ea00c191f9",
+            ksAdID: "2300003267_01"
         }, n);
         cc._RF.pop();
-    }, {} ],
+    }, {
+        "./platform-utils": "platform-utils"
+    } ],
     "android-sdk": [ function(t, e, o) {
         "use strict";
         cc._RF.push(e, "edf737yBMxG3b6BBsVJzu1A", "android-sdk"), Object.defineProperty(o, "__esModule", {
@@ -2350,37 +2355,48 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/sdk"), u = t("../../script/manager/data-manager"), p = t("../common/CcJsFunc"), d = t("../net/protobuf/proto"), h = t("../manager/GameManager"), f = function(t) {
+        var c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/sdk"), u = t("../../script/manager/data-manager"), p = t("../net/protobuf/proto"), d = t("../manager/GameManager"), h = t("../common/platform-utils"), f = function(t) {
             function e() {
                 return null !== t && t.apply(this, arguments) || this;
             }
             return i(e, t), e.ttLogin = function() {
-                if (console.log("[api] tt login"), l.default.isPlatform(l.Platform.tt)) return new Promise(function(t) {
-                    tt.login({
-                        success: function(e) {
-                            l.default.post({
-                                url: "/sheep/v1/user/login_tt",
-                                data: {
-                                    code: e.code,
-                                    anonymous_code: e.anonymousCode
-                                },
-                                success: function(e) {
-                                    if (t(), 0 == e.err_code && e.data) {
-                                        var o = c.default.getUserData();
-                                        o.userID = e.data.uid + "", o.openid = e.data.openid, o.token = e.data.token, c.default.saveUserData(o), 
-                                        u.default.user.uid = Number(o.userID), c.default.getUserData();
+                if (console.log("[api] tt login"), h.default.isPlatform(h.Platform.tt)) {
+                    var t = this;
+                    return new Promise(function(e) {
+                        tt.login({
+                            success: function(o) {
+                                l.default.post({
+                                    url: "/sheep/v1/user/login_tt",
+                                    data: {
+                                        code: o.code,
+                                        anonymous_code: o.anonymousCode
+                                    },
+                                    success: function(o) {
+                                        e(), 0 == o.err_code && o.data && t.setUserData(o);
+                                    },
+                                    fail: function() {
+                                        e();
                                     }
-                                },
-                                fail: function() {
-                                    t();
-                                }
-                            });
-                        },
-                        fail: function(e) {
-                            console.log("登录失败: ", e), t();
-                        }
+                                });
+                            },
+                            fail: function(t) {
+                                console.log("登录失败: ", t), e();
+                            }
+                        });
                     });
-                });
+                }
+            }, e.setUserData = function(t) {
+                if (t && t.data) {
+                    var e = c.default.getUserData();
+                    if (e.userID = t.data.uid + "", e.openid = t.data.openid, e.token = t.data.token, 
+                    c.default.saveUserData(e), u.default.user.uid = Number(e.userID), t.data.time) if ((n = Number(t.data.time)) > 0) c.default.setItem("LoginExpirationTime", Number(t.data.time)); else {
+                        var o = Date.now() + 72e5;
+                        c.default.setItem("LoginExpirationTime", o);
+                    } else {
+                        var n = Date.now() + 72e5;
+                        c.default.setItem("LoginExpirationTime", n);
+                    }
+                }
             }, e.getUserInfo = function() {
                 return a(this, void 0, Promise, function() {
                     return r(this, function() {
@@ -2413,31 +2429,30 @@ window.__require = function t(e, o, n) {
                     });
                 });
             }, e.wxLogin = function() {
-                if (console.log("[api] wx login"), l.default.isPlatform(l.Platform.wx)) return new Promise(function(t) {
-                    wx.login({
-                        success: function(e) {
-                            l.default.post({
-                                url: "/sheep/v1/user/login_wx",
-                                data: {
-                                    code: e.code
-                                },
-                                success: function(e) {
-                                    if (t(), 0 == e.err_code && e.data) {
-                                        var o = c.default.getUserData();
-                                        o.userID = e.data.uid + "", o.openid = e.data.openid, o.token = e.data.token, c.default.saveUserData(o), 
-                                        u.default.user.uid = Number(o.userID), c.default.getUserData();
+                if (console.log("[api] wx login"), h.default.isPlatform(h.Platform.wx)) {
+                    var t = this;
+                    return new Promise(function(e) {
+                        wx.login({
+                            success: function(o) {
+                                l.default.post({
+                                    url: "/sheep/v1/user/login_wx",
+                                    data: {
+                                        code: o.code
+                                    },
+                                    success: function(o) {
+                                        e(), 0 == o.err_code && o.data && t.setUserData(o);
+                                    },
+                                    fail: function() {
+                                        e();
                                     }
-                                },
-                                fail: function() {
-                                    t();
-                                }
-                            });
-                        },
-                        fail: function(e) {
-                            console.log("登录失败: ", e), t();
-                        }
+                                });
+                            },
+                            fail: function(t) {
+                                console.log("登录失败: ", t), e();
+                            }
+                        });
                     });
-                });
+                }
             }, e.getWxUserInfo = function() {
                 return a(this, void 0, Promise, function() {
                     return r(this, function() {
@@ -2470,31 +2485,30 @@ window.__require = function t(e, o, n) {
                     });
                 });
             }, e.qqLogin = function() {
-                if (console.log("[api] qq login"), l.default.isPlatform(l.Platform.qq)) return new Promise(function(t) {
-                    qq.login({
-                        success: function(e) {
-                            console.log("login 调用成功 code = " + e.code), l.default.post({
-                                url: "/sheep/v1/user/login_qq",
-                                data: {
-                                    code: e.code
-                                },
-                                success: function(e) {
-                                    if (t(), 0 == e.err_code && e.data) {
-                                        var o = c.default.getUserData();
-                                        o.userID = e.data.uid + "", o.openid = e.data.openid, o.token = e.data.token, c.default.saveUserData(o), 
-                                        u.default.user.uid = Number(o.userID), c.default.getUserData();
+                if (console.log("[api] qq login"), h.default.isPlatform(h.Platform.qq)) {
+                    var t = this;
+                    return new Promise(function(e) {
+                        qq.login({
+                            success: function(o) {
+                                console.log("login 调用成功"), l.default.post({
+                                    url: "/sheep/v1/user/login_qq",
+                                    data: {
+                                        code: o.code
+                                    },
+                                    success: function(o) {
+                                        e(), 0 == o.err_code && o.data && t.setUserData(o);
+                                    },
+                                    fail: function() {
+                                        e();
                                     }
-                                },
-                                fail: function() {
-                                    t();
-                                }
-                            });
-                        },
-                        fail: function(e) {
-                            console.log("登录失败: ", e), t();
-                        }
+                                });
+                            },
+                            fail: function(t) {
+                                console.log("登录失败: ", t), e();
+                            }
+                        });
                     });
-                });
+                }
             }, e.getQqUserInfo = function() {
                 return a(this, void 0, Promise, function() {
                     return r(this, function() {
@@ -2526,80 +2540,114 @@ window.__require = function t(e, o, n) {
                         }) ];
                     });
                 });
-            }, e.oppoLogin = function() {
-                if (console.log("[api] oppo login"), l.default.isPlatform(l.Platform.oppo)) return new Promise(function(t) {
-                    qg.login({
-                        success: function(e) {
-                            t(), e.data && l.default.post({
-                                url: "/sheep/v1/user/login_oppo",
-                                data: {
-                                    uid: e.data.uid,
-                                    nick_name: e.data.nickName,
-                                    avatar: e.data.avatar,
-                                    sex: 1
-                                },
-                                success: function(e) {
-                                    if (t(), 0 == e.err_code && e.data) {
-                                        var o = c.default.getUserData();
-                                        o.userID = e.data.uid + "", o.openid = e.data.openid, o.token = e.data.token, c.default.saveUserData(o), 
-                                        u.default.user.uid = Number(o.userID);
+            }, e.ksLogin = function() {
+                if (console.log("[api] 快手 login"), h.default.isPlatform(h.Platform.ks)) {
+                    var t = this;
+                    return new Promise(function(e) {
+                        ks.login({
+                            success: function(o) {
+                                l.default.post({
+                                    url: "/sheep/v1/user/login_ks",
+                                    data: {
+                                        game_id: o.gameUserId,
+                                        game_token: o.gameToken
+                                    },
+                                    success: function(o) {
+                                        e(), 0 == o.err_code && o.data && t.setUserData(o);
+                                    },
+                                    fail: function(t) {
+                                        console.log("ks login 调用失败", t), e();
                                     }
+                                });
+                            },
+                            fail: function(t) {
+                                console.log("登录失败: ", t), e();
+                            }
+                        });
+                    });
+                }
+            }, e.getKsUserInfo = function() {
+                return a(this, void 0, Promise, function() {
+                    return r(this, function() {
+                        return [ 2, new Promise(function(t, e) {
+                            ks.getUserInfo({
+                                desc: "用于完善个人资料",
+                                success: function(o) {
+                                    var n = o.userInfo, i = n.nickName, a = n.userHead, r = n.gender;
+                                    u.default.user.avatar = a, u.default.user.nickName = i, u.default.user.gender = r, 
+                                    l.default.post({
+                                        url: "/sheep/v1/game/update_user",
+                                        data: {
+                                            nick_name: i,
+                                            avatar: a,
+                                            gender: r
+                                        },
+                                        success: function() {
+                                            t();
+                                        },
+                                        fail: function() {
+                                            e();
+                                        }
+                                    });
                                 },
-                                fail: function() {
-                                    t();
+                                fail: function(e) {
+                                    console.log("getUserInfo 调用失败", e), t();
                                 }
                             });
-                        },
-                        fail: function(e) {
-                            t(), console.log(JSON.stringify(e));
-                        }
+                        }) ];
                     });
                 });
+            }, e.oppoLogin = function() {
+                if (console.log("[api] oppo login"), h.default.isPlatform(h.Platform.oppo)) {
+                    var t = this;
+                    return new Promise(function(e) {
+                        qg.login({
+                            success: function(o) {
+                                e(), o.data && l.default.post({
+                                    url: "/sheep/v1/user/login_oppo",
+                                    data: {
+                                        uid: o.data.uid,
+                                        nick_name: o.data.nickName,
+                                        avatar: o.data.avatar,
+                                        sex: 1,
+                                        token: o.data.token
+                                    },
+                                    success: function(o) {
+                                        e(), 0 == o.err_code && o.data && t.setUserData(o);
+                                    },
+                                    fail: function() {
+                                        e();
+                                    }
+                                });
+                            },
+                            fail: function(t) {
+                                e(), console.log(JSON.stringify(t));
+                            }
+                        });
+                    });
+                }
             }, e.vivoLogin = function() {
-                if (console.log("[api] vivo login"), l.default.isPlatform(l.Platform.vivo)) return new Promise(function(t) {
-                    qg.getSystemInfoSync().platformVersionCode >= 1063 ? qg.login().then(function(e) {
-                        e.data.token ? e.data && l.default.post({
-                            url: "/sheep/v1/user/login_vivos",
-                            data: {
-                                token: e.data.token
-                            },
-                            success: function(e) {
-                                if (t(), 0 == e.err_code && e.data) {
-                                    console.log("res.data.uid: ", e.data.uid);
-                                    var o = c.default.getUserData();
-                                    o.userID = e.data.uid + "", o.openid = e.data.openid, o.token = e.data.token, c.default.saveUserData(o), 
-                                    u.default.user.uid = Number(o.userID);
+                if (console.log("[api] vivo login"), h.default.isPlatform(h.Platform.vivo)) {
+                    var t = this;
+                    return new Promise(function(e) {
+                        qg.getSystemInfoSync().platformVersionCode >= 1063 ? qg.login().then(function(o) {
+                            o.data.token ? o.data && l.default.post({
+                                url: "/sheep/v1/user/login_vivos",
+                                data: {
+                                    token: o.data.token
+                                },
+                                success: function(o) {
+                                    e(), 0 == o.err_code && o.data && t.setUserData(o);
+                                },
+                                fail: function() {
+                                    e();
                                 }
-                            },
-                            fail: function() {
-                                t();
-                            }
-                        }) : t();
-                    }, function(e) {
-                        console.log("登录失败" + JSON.stringify(e)), t();
-                    }) : t();
-                });
-            }, e.iosLogin = function() {
-                console.log("[api] ios login");
-                var t = p.default.randomCharNum();
-                return console.log("[api] ios uuid = ", t), new Promise(function(e) {
-                    l.default.post({
-                        url: "/sheep/v1/user/login_tourist",
-                        data: {
-                            uuid: t
-                        },
-                        success: function(t) {
-                            if (e(), 0 == t.err_code && t.data) {
-                                var o = c.default.getUserData();
-                                o.userID = t.data.uid + "", o.openid = t.data.openid, o.token = t.data.token, c.default.saveUserData(o), 
-                                u.default.user.uid = Number(o.userID);
-                            }
-                        },
-                        fail: function() {
-                            e();
-                        }
+                            }) : e();
+                        }, function(t) {
+                            console.log("登录失败" + JSON.stringify(t)), e();
+                        }) : e();
                     });
-                });
+                }
             }, e.requestUserInfo = function() {
                 return a(this, void 0, Promise, function() {
                     return r(this, function() {
@@ -2663,8 +2711,8 @@ window.__require = function t(e, o, n) {
                     }
                 });
             }, e.getRankInfoData = function(t, e) {
-                var o = h.default.getInstance().initCfg;
-                o && o.dailyrank == s.GameDailyRankSwitch.close ? h.default.getInstance().rankInfo = {
+                var o = d.default.getInstance().initCfg;
+                o && o.dailyrank == s.GameDailyRankSwitch.close ? d.default.getInstance().rankInfo = {
                     list: [],
                     user: null
                 } : l.default.get({
@@ -2672,9 +2720,14 @@ window.__require = function t(e, o, n) {
                     params: {
                         isByte: !0
                     },
-                    success: function(e) {
-                        var o = d.protocol.GetRankInfoResp.decode(e);
-                        o ? t && t(o) : console.log("读取数据失败");
+                    success: function(o) {
+                        try {
+                            var n = p.protocol.GetRankInfoResp.decode(o);
+                            n ? t && t(n) : console.log("读取数据失败");
+                        } catch (i) {
+                            i = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(i);
+                            e && e();
+                        }
                     },
                     fail: function() {
                         e && e();
@@ -2801,9 +2854,9 @@ window.__require = function t(e, o, n) {
         o.default = f, cc._RF.pop();
     }, {
         "../../script/manager/data-manager": "data-manager",
-        "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../manager/GameManager": "GameManager",
         "../net/protobuf/proto": "proto"
@@ -3557,8 +3610,7 @@ window.__require = function t(e, o, n) {
                 for (o = 0; o < e.length; o++) this.bulletsArray.splice(e[o], 1);
                 this.timer >= 3 && (this.timer = 0, this.showBullets());
             }, e.prototype.showBullets = function() {
-                0 != this.bulletsArray.length && 4 != this.bulletsArray.length || (console.log("再次创建弹幕 ### " + this.bulletsArray.length), 
-                this.spawnBullets());
+                0 != this.bulletsArray.length && 4 != this.bulletsArray.length || this.spawnBullets();
             }, a([ h ], e);
         }(cc.Component));
         o.default = f, cc._RF.pop();
@@ -4060,8 +4112,7 @@ window.__require = function t(e, o, n) {
             }, e.prototype.createBlockTypeObj = function() {
                 var t = this.nowLevelData.blockTypeData;
                 for (var e in this.blockTypeArr = [], this.nowLevelBlockObj = {}, t) for (var o = 3 * t[e], n = 0; n < o; n++) this.blockTypeArr.push(e);
-                console.log("花色0：", this.blockTypeArr), console.log("PUSH=> block ", this.blockTypeArr.length), 
-                this.blockTypeArr = c.default.shuffle(this.blockTypeArr), console.log("花色：", this.blockTypeArr), 
+                console.log("PUSH=> block ", this.blockTypeArr.length), this.blockTypeArr = c.default.shuffle(this.blockTypeArr), 
                 p.default.blacksInfo.blockCurCount = this.blockTypeArr.length, p.default.blacksInfo.blockAllCount = this.blockTypeArr.length, 
                 console.log("blockCurCount = " + p.default.blacksInfo.blockCurCount + " blockAllCount = " + p.default.blacksInfo.blockAllCount);
             }, e.prototype.initBlockNodeLayer = function(t) {
@@ -4959,6 +5010,11 @@ window.__require = function t(e, o, n) {
                 evn: n.ENV.onlineQq,
                 host: "https://cat-match.easygame2021.com",
                 reportPrefix: "sheep_qq_"
+            },
+            onlineKs: {
+                evn: n.ENV.onlineKs,
+                host: "https://cat-match.easygame2021.com",
+                reportPrefix: "sheep_ks_"
             }
         };
         o.getEnvConfig = function() {
@@ -4990,7 +5046,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var a = t("../common/dataTs"), r = t("../common/enumConfig"), c = t("./DateManager"), s = t("./GameManager"), l = function(t) {
+        var a = t("../common/dataTs"), r = t("../common/enumConfig"), c = t("./DateManager"), s = t("./GameManager"), l = t("../common/platform-utils"), u = function(t) {
             function e() {
                 return null !== t && t.apply(this, arguments) || this;
             }
@@ -5023,7 +5079,7 @@ window.__require = function t(e, o, n) {
                 return -1;
             }, e.checkExpireData = function(t) {
                 -1 == e.todayIsWin() && (a.default.removeItem(t), console.log("本地缓存过期数据 ###### cacheName = ", t)), 
-                a.default.isPlatform(a.GDPlatform.web) && a.default.removeItem(t);
+                l.default.isPlatform(l.Platform.web) && a.default.removeItem(t);
             }, e.getTAUserInfo = function() {
                 e.checkExpireData(r.STORAGEKEY.TAUSERINFO);
                 var t = s.default.getInstance().reportProperty, o = t.challenge_count, n = t.cancel_use + t.random_use + t.remove_use, i = t.resurrection_ad_frequency, c = t.resurrection_ad_frequency + t.cancel_ad + t.random_ad + t.remove_ad, l = 0;
@@ -5196,10 +5252,11 @@ window.__require = function t(e, o, n) {
                 type: 2
             } ], e;
         }(cc.Component);
-        o.default = l, cc._RF.pop();
+        o.default = u, cc._RF.pop();
     }, {
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
+        "../common/platform-utils": "platform-utils",
         "./DateManager": "DateManager",
         "./GameManager": "GameManager"
     } ],
@@ -5210,7 +5267,8 @@ window.__require = function t(e, o, n) {
         }), o.ENV = void 0, function(t) {
             t.local = "local", t.beta = "beta", t.online = "online", t.onlineWx = "onlineWx", 
             t.leiTing = "leiTing", t.onlineOppo = "onlineOppo", t.onlineVivo = "onlineVivo", 
-            t.onlineIos = "onlineIos", t.online4399 = "online4399", t.onlineQq = "onlineQq";
+            t.onlineIos = "onlineIos", t.online4399 = "online4399", t.onlineQq = "onlineQq", 
+            t.onlineKs = "onlineKs";
         }(o.ENV || (o.ENV = {})), cc._RF.pop();
     }, {} ],
     dataModel: [ function(t, e, o) {
@@ -5223,46 +5281,41 @@ window.__require = function t(e, o, n) {
         "use strict";
         cc._RF.push(e, "2b52b5mP0hOv4ijR3rDmmai", "dataTs"), Object.defineProperty(o, "__esModule", {
             value: !0
-        }), o.GDPlatform = void 0;
-        var n, i = t("../manager/GameManager"), a = t("../manager/report-common"), r = t("../tools/random/xorshift"), c = t("./CcJsFunc"), s = t("./enumConfig"), l = t("./native/native-bridge"), u = t("./native/native-def"), p = t("./sdk");
-        (function(t) {
-            t[t.android = 0] = "android", t[t.ios = 1] = "ios", t[t.wx = 2] = "wx", t[t.tt = 3] = "tt", 
-            t[t.web = 4] = "web", t[t.oppo = 5] = "oppo", t[t.vivo = 6] = "vivo", t[t.qq = 7] = "qq";
-        })(n = o.GDPlatform || (o.GDPlatform = {}));
-        var d = function() {
+        });
+        var n = t("../manager/GameManager"), i = t("../manager/report-common"), a = t("../tools/random/xorshift"), r = t("./CcJsFunc"), c = t("./enumConfig"), s = t("./native/native-bridge"), l = t("./native/native-def"), u = t("./platform-utils"), p = t("./sdk"), d = function() {
             function t() {}
             return t.GetVedioID = function() {
-                return p.default.isPlatform(p.Platform.wx) ? this.WXVedioID : p.default.isPlatform(p.Platform.tt) ? this.TTVedioID : p.default.isPlatform(p.Platform.android) ? this.AndroidVedioID : p.default.isPlatform(p.Platform.oppo) ? this.OppoVedioID : p.default.isPlatform(p.Platform.vivo) ? this.VivoVedioID : p.default.isPlatform(p.Platform.qq) ? this.QQVedioID : "";
+                return u.default.isPlatform(u.Platform.wx) ? this.WXVedioID : u.default.isPlatform(u.Platform.tt) ? this.TTVedioID : u.default.isPlatform(u.Platform.android) ? this.AndroidVedioID : u.default.isPlatform(u.Platform.oppo) ? this.OppoVedioID : u.default.isPlatform(u.Platform.vivo) ? this.VivoVedioID : u.default.isPlatform(u.Platform.qq) ? this.QQVedioID : u.default.isPlatform(u.Platform.ks) ? this.ksAdID : "";
             }, t.getGameConfigData = function() {
                 return this.gameConfigData;
             }, t.initData = function(e) {
                 var o = this, n = this;
                 if (cc.sys.localStorage.getItem(this.localKeyName)) r = this.getUserData(); else {
                     this.registerUserData();
-                    var i = this.getUserData().userID;
-                    if (l.default.callNative(u.NativeFun.publicParamsInfo, {
-                        userId: i
-                    }), a.default.reportTACommon("register", {}), l.default.deviceInfo) {
+                    var a = this.getUserData().userID;
+                    if (s.default.callNative(l.NativeFun.publicParamsInfo, {
+                        userId: a
+                    }), i.default.reportTACommon("register", {}), s.default.deviceInfo) {
                         console.log("AF af_register打点");
                         var r = t.getUserData(), c = {
-                            androidid: l.default.deviceInfo.androidId,
+                            androidid: s.default.deviceInfo.androidId,
                             chennal: "310001",
                             gameCode: "59",
                             userId: r.userID,
                             type: 3
                         };
-                        l.default.leitingReport("af_register", c), console.log("AF af_character打点");
-                        var s = {
-                            androidid: l.default.deviceInfo.androidId,
+                        s.default.leitingReport("af_register", c), console.log("AF af_character打点");
+                        var u = {
+                            androidid: s.default.deviceInfo.androidId,
                             chennal: "310001",
                             gameCode: "59",
                             userId: r.userID,
                             type: 3,
-                            roleId: l.default.deviceInfo.gaid,
+                            roleId: s.default.deviceInfo.gaid,
                             serviceName: "海外测试服",
                             serviceId: "1"
                         };
-                        l.default.leitingReport("af_character", s);
+                        s.default.leitingReport("af_character", u);
                     }
                 }
                 var p = 2;
@@ -5273,12 +5326,12 @@ window.__require = function t(e, o, n) {
                 });
             }, t.registerUserData = function() {
                 if (!cc.sys.localStorage.getItem(this.localKeyName)) {
-                    this.gameUserLocalData = this.registerData, p.default.isPlatform(p.Platform.android) ? l.default.loginInfo && l.default.loginInfo.userId ? this.gameUserLocalData.userData.userID = l.default.loginInfo.userId : this.gameUserLocalData.userData.userID = c.default.randomCharNum() : p.default.isPlatform(p.Platform.tt) ? this.gameUserLocalData.userData.userID = "" : p.default.isPlatform(p.Platform.wx) ? this.gameUserLocalData.userData.userID = "" : p.default.isPlatform(p.Platform.qq) ? this.gameUserLocalData.userData.userID = "" : p.default.isPlatform(p.Platform.web) ? (this.gameUserLocalData.userData.userID = "", 
-                    this.gameUserLocalData.userData.token = "") : p.default.isPlatform(p.Platform.oppo) ? this.gameUserLocalData.userData.userID = "" : p.default.isPlatform(p.Platform.vivo) ? this.gameUserLocalData.userData.userID = "" : p.default.isPlatform(p.Platform.ios) ? this.gameUserLocalData.userData.userID = "" : this.gameUserLocalData.userData.userID = c.default.randomCharNum(), 
+                    this.gameUserLocalData = this.registerData, u.default.isPlatform(u.Platform.android) ? s.default.loginInfo && s.default.loginInfo.userId ? this.gameUserLocalData.userData.userID = s.default.loginInfo.userId : this.gameUserLocalData.userData.userID = r.default.randomCharNum() : u.default.isPlatform(u.Platform.tt) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.wx) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.qq) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.ks) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.web) ? (this.gameUserLocalData.userData.userID = "", 
+                    this.gameUserLocalData.userData.token = "") : u.default.isPlatform(u.Platform.oppo) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.vivo) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.ios) ? this.gameUserLocalData.userData.userID = "" : this.gameUserLocalData.userData.userID = r.default.randomCharNum(), 
                     this.gameUserLocalData.userData.registerTime = Date.now() + "";
                     var t = JSON.stringify(this.gameUserLocalData);
                     cc.sys.localStorage.setItem(this.localKeyName, t), console.log("[PUSH] 注册用户 ######"), 
-                    i.default.getInstance().register = !0;
+                    n.default.getInstance().register = !0;
                 }
             }, t.removeUserData = function() {
                 cc.sys.localStorage.getItem(this.localKeyName) && (cc.sys.localStorage.clear(), 
@@ -5315,6 +5368,11 @@ window.__require = function t(e, o, n) {
             }, t.getUserData = function() {
                 var t = cc.sys.localStorage.getItem(this.localKeyName);
                 return this.gameUserLocalData = JSON.parse(t), this.gameUserLocalData.userData;
+            }, t.clearToken = function() {
+                if (!u.default.isPlatform(u.Platform.web)) {
+                    var e = t.getUserData();
+                    e.token = "", t.saveUserData(e);
+                }
             }, t.getPictureData = function() {
                 var t = cc.sys.localStorage.getItem(this.localKeyName);
                 return this.gameUserLocalData = JSON.parse(t), this.gameUserLocalData.pictureData;
@@ -5331,15 +5389,16 @@ window.__require = function t(e, o, n) {
                 cc.sys.localStorage.setItem(this.localKeyName, e);
             }, t.updateFirendCount = function(t) {
                 var e = {
-                    moonCount: t
+                    moonCount: t,
+                    score: t
                 };
-                p.default.rankScoreUpdate(s.ShownType.friendRank, JSON.stringify(e), s.RefreshType.add);
+                p.default.rankScoreUpdate(c.ShownType.friendRank, JSON.stringify(e), c.RefreshType.add);
             }, t.updateTodayCount = function(t, e) {
                 var o = {
                     moonCount: t,
                     state: e
                 };
-                p.default.rankScoreUpdate(s.ShownType.todayRank, JSON.stringify(o), s.RefreshType.add);
+                p.default.rankScoreUpdate(c.ShownType.todayRank, JSON.stringify(o), c.RefreshType.add);
             }, t.getDailyWinCount = function() {
                 var e = t.getUserData();
                 if (e.dailyData) {
@@ -5357,12 +5416,12 @@ window.__require = function t(e, o, n) {
                 t.saveUserData(i);
             }, t.gameLevelWin = function(t, e) {
                 e || (console.log("获取刚完成关卡的奖励数据, 随机获取填充 ###"), e = this.getRewardBoxData(this.gameUserLocalData.userData.playLevelId));
-                var o = Number(e.everLevelRewardObj.coin), n = Number(e.everLevelRewardObj.fish);
-                if (i.default.getInstance().gameType == s.GAMETYPE.GAMELEVEL ? (o = Number(o), n = Number(n), 
-                this.gameUserLocalData.userData.playLevelId++) : i.default.getInstance().gameType == s.GAMETYPE.GAMEDAILY && (o = 2 * Number(o), 
-                n = 2 * Number(n)), this.gameUserLocalData.userData.coin += o, this.gameUserLocalData.userData.fish += n, 
-                this.gameUserLocalData.userData.coin, i.default.getInstance().moneyDict.coin = o += Number(i.default.getInstance().moneyDict.coin), 
-                i.default.getInstance().moneyDict.fish = n += Number(i.default.getInstance().moneyDict.fish), 
+                var o = Number(e.everLevelRewardObj.coin), i = Number(e.everLevelRewardObj.fish);
+                if (n.default.getInstance().gameType == c.GAMETYPE.GAMELEVEL ? (o = Number(o), i = Number(i), 
+                this.gameUserLocalData.userData.playLevelId++) : n.default.getInstance().gameType == c.GAMETYPE.GAMEDAILY && (o = 2 * Number(o), 
+                i = 2 * Number(i)), this.gameUserLocalData.userData.coin += o, this.gameUserLocalData.userData.fish += i, 
+                this.gameUserLocalData.userData.coin, n.default.getInstance().moneyDict.coin = o += Number(n.default.getInstance().moneyDict.coin), 
+                n.default.getInstance().moneyDict.fish = i += Number(n.default.getInstance().moneyDict.fish), 
                 e.levelNewNum == e.levelNumMax) {
                     console.log("添加宝箱奖励");
                     for (var a = 0; a < e.boxReward.length; a++) {
@@ -5435,22 +5494,22 @@ window.__require = function t(e, o, n) {
                 return !i && o.length < n.length && (t || 0 == o.length) && o.push(n[o.length]), 
                 e.unlockHouseUserData = o, this.saveUserData(e), e.unlockHouseUserData;
             }, t.checkCollectionData = function() {
-                var t = this.gameConfigData.baseConfigData.rewardCollection, e = this.getUserData(), o = this.getPictureData(), n = null;
+                var t = this.gameConfigData.baseConfigData.rewardCollection, e = this.getUserData(), o = this.getPictureData(), i = null;
                 for (var a in t) {
                     var r = t[a];
                     if (e.playLevelId - 1 == r.levelNum) {
-                        n = r;
+                        i = r;
                         break;
                     }
                 }
-                if (n) {
+                if (i) {
                     var c = this.gameConfigData.baseConfigData.pictureData.bgMaxNum, s = this.gameConfigData.baseConfigData.pictureData.brickMaxNum;
-                    o.bgNum += Number(n.wallpaper), o.brickNum += Number(n.brick), o.bgNum >= c && (o.bgNum = c), 
-                    o.brickNum >= s && (o.brickNum = s), this.savePictureData(o), i.default.getInstance().collectionMark.tabbarCollection = !0, 
-                    Number(n.wallpaper) > 0 && (i.default.getInstance().collectionMark.bgNum = o.bgNum), 
-                    Number(n.brick) > 0 && (i.default.getInstance().collectionMark.brickNum = o.brickNum);
+                    o.bgNum += Number(i.wallpaper), o.brickNum += Number(i.brick), o.bgNum >= c && (o.bgNum = c), 
+                    o.brickNum >= s && (o.brickNum = s), this.savePictureData(o), n.default.getInstance().collectionMark.tabbarCollection = !0, 
+                    Number(i.wallpaper) > 0 && (n.default.getInstance().collectionMark.bgNum = o.bgNum), 
+                    Number(i.brick) > 0 && (n.default.getInstance().collectionMark.brickNum = o.brickNum);
                 }
-                return n;
+                return i;
             }, t.getCollectionUnlockData = function() {
                 for (var t = this.getUserData().playLevelId - 1, e = this.gameConfigData.baseConfigData.rewardCollection, o = {
                     buildNewNum: 1,
@@ -5486,8 +5545,8 @@ window.__require = function t(e, o, n) {
                 for (var n = t.getGameConfigData().baseConfigData.catClothesData["cat_" + e], i = 0; i < n.length; i++) if (n[i].clothesID == o) return n[i];
                 return null;
             }, t.getSprintRewardData = function() {
-                if (cc.sys.localStorage.getItem(s.STORAGEKEY.SPRINTREWARDKEY)) {
-                    var t = cc.sys.localStorage.getItem(s.STORAGEKEY.SPRINTREWARDKEY);
+                if (cc.sys.localStorage.getItem(c.STORAGEKEY.SPRINTREWARDKEY)) {
+                    var t = cc.sys.localStorage.getItem(c.STORAGEKEY.SPRINTREWARDKEY);
                     return JSON.parse(t);
                 }
                 var e = {
@@ -5497,21 +5556,21 @@ window.__require = function t(e, o, n) {
                     pastTime: Date.now(),
                     isGameEd: 0
                 }, o = JSON.stringify(e);
-                return cc.sys.localStorage.setItem(s.STORAGEKEY.SPRINTREWARDKEY, o), e;
+                return cc.sys.localStorage.setItem(c.STORAGEKEY.SPRINTREWARDKEY, o), e;
             }, t.setSprintRewardData = function(t) {
                 var e = JSON.stringify(t);
-                cc.sys.localStorage.setItem(s.STORAGEKEY.SPRINTREWARDKEY, e);
+                cc.sys.localStorage.setItem(c.STORAGEKEY.SPRINTREWARDKEY, e);
             }, t.updateSprintRewardTime = function() {
-                var t = this.getSprintRewardData(), e = t.pastTime, o = 1e3 * this.gameConfigData.baseConfigData.sprintRewardTime, n = Number(Date.now()) - e, a = Math.floor(n / o), r = 0;
-                return a >= 1 ? (t.pastTime = Date.now(), this.resetSprintReward(t), i.default.getInstance().sprintMark = !1, 
-                cc.game.emit(s.EMITKEY.MAINUPDATEUI)) : r = o - (n - a * o), r;
+                var t = this.getSprintRewardData(), e = t.pastTime, o = 1e3 * this.gameConfigData.baseConfigData.sprintRewardTime, i = Number(Date.now()) - e, a = Math.floor(i / o), r = 0;
+                return a >= 1 ? (t.pastTime = Date.now(), this.resetSprintReward(t), n.default.getInstance().sprintMark = !1, 
+                cc.game.emit(c.EMITKEY.MAINUPDATEUI)) : r = o - (i - a * o), r;
             }, t.resetSprintReward = function(t) {
-                i.default.getInstance().gameType == s.GAMETYPE.GAMELEVEL && (t ? console.log("活动结束中断连胜 ######") : (t = this.getSprintRewardData(), 
+                n.default.getInstance().gameType == c.GAMETYPE.GAMELEVEL && (t ? console.log("活动结束中断连胜 ######") : (t = this.getSprintRewardData(), 
                 console.log("普通玩法中断连胜 ######")), t.winNum = 0, t.winBox = 0, t.rewardProgress = 0, 
                 t.isGameEd = 0, this.setSprintRewardData(t));
             }, t.getCookieRewardData = function() {
-                if (cc.sys.localStorage.getItem(s.STORAGEKEY.COOKIECOLLECTIONKEY)) {
-                    var t = cc.sys.localStorage.getItem(s.STORAGEKEY.COOKIECOLLECTIONKEY);
+                if (cc.sys.localStorage.getItem(c.STORAGEKEY.COOKIECOLLECTIONKEY)) {
+                    var t = cc.sys.localStorage.getItem(c.STORAGEKEY.COOKIECOLLECTIONKEY);
                     return JSON.parse(t);
                 }
                 var e = {
@@ -5519,14 +5578,14 @@ window.__require = function t(e, o, n) {
                     pastTime: Date.now(),
                     progress: 0
                 }, o = JSON.stringify(e);
-                return cc.sys.localStorage.setItem(s.STORAGEKEY.COOKIECOLLECTIONKEY, o), e;
+                return cc.sys.localStorage.setItem(c.STORAGEKEY.COOKIECOLLECTIONKEY, o), e;
             }, t.setCookieRewardData = function(t) {
                 var e = JSON.stringify(t);
-                cc.sys.localStorage.setItem(s.STORAGEKEY.COOKIECOLLECTIONKEY, e);
+                cc.sys.localStorage.setItem(c.STORAGEKEY.COOKIECOLLECTIONKEY, e);
             }, t.updateCookieRewardTime = function() {
                 var t = this.getCookieRewardData(), e = t.pastTime, o = 1e3 * this.gameConfigData.baseConfigData.cookieRewardTime, n = Number(Date.now()) - e, i = Math.floor(n / o), a = 0;
                 return i >= 1 ? (t.pastTime = Date.now(), t.cookieNum = 0, t.progress = 0, this.setCookieRewardData(t), 
-                cc.game.emit(s.EMITKEY.MAINUPDATEUI)) : a = o - (n - i * o), a;
+                cc.game.emit(c.EMITKEY.MAINUPDATEUI)) : a = o - (n - i * o), a;
             }, t.setItem = function(t, e, o) {
                 (!o || o <= 0) && (o = -1);
                 var n = {
@@ -5547,26 +5606,26 @@ window.__require = function t(e, o, n) {
             }, t.removeItem = function(t) {
                 cc.sys.localStorage.removeItem(t);
             }, t.getSheepClothesData = function() {
-                var e = cc.sys.localStorage.getItem(s.STORAGEKEY.SHEEPCLOTHESDATA), o = t.gameConfigData.baseConfigData;
+                var e = cc.sys.localStorage.getItem(c.STORAGEKEY.SHEEPCLOTHESDATA), o = t.gameConfigData.baseConfigData;
                 if (!e) return o && o.sheepClothesData && this.setSheepClothesData(o.sheepClothesData), 
                 console.log("本地没有羊皮肤数据，进行缓存 ###### "), o.sheepClothesData;
                 var n = JSON.parse(e);
                 if (o.sheepClothesData.length > n.length) for (var i = 0; i < o.sheepClothesData.length; i++) {
-                    for (var a = o.sheepClothesData[i], r = !1, c = 0; c < n.length; c++) if ("Sheeps" == (l = n[c]).spName && l.spSkin.indexOf("skin_") < 0 && (l.spSkin = "skin_" + l.spSkin), 
+                    for (var a = o.sheepClothesData[i], r = !1, s = 0; s < n.length; s++) if ("Sheeps" == (l = n[s]).spName && l.spSkin.indexOf("skin_") < 0 && (l.spSkin = "skin_" + l.spSkin), 
                     a.clothesId == l.clothesId) {
                         r = !0;
                         break;
                     }
                     0 == r && n.push(a);
                 } else if (o.sheepClothesData.length == n.length) for (i = 0; i < o.sheepClothesData.length; i++) for (a = o.sheepClothesData[i], 
-                c = 0; c < n.length; c++) {
-                    var l = n[c];
+                s = 0; s < n.length; s++) {
+                    var l = n[s];
                     a.clothesId == l.clothesId && (l.name = a.name);
                 }
                 return this.setSheepClothesData(n), n;
             }, t.setSheepClothesData = function(t) {
                 var e = JSON.stringify(t);
-                cc.sys.localStorage.setItem(s.STORAGEKEY.SHEEPCLOTHESDATA, e);
+                cc.sys.localStorage.setItem(c.STORAGEKEY.SHEEPCLOTHESDATA, e);
             }, t.setLevelMapData = function(t, e) {
                 var o = JSON.stringify(e);
                 p.default.post({
@@ -5581,7 +5640,7 @@ window.__require = function t(e, o, n) {
                 });
             }, t.loadMapDataFromLocalStorageOrNetWork = function(e) {
                 return new Promise(function(o, n) {
-                    var i = s.STORAGEKEY.GAMEMAP + e, a = t.getItem(i);
+                    var i = c.STORAGEKEY.GAMEMAP + e, a = t.getItem(i);
                     if (a) o(a); else {
                         var r = "https://cat-match-static.easygame2021.com/maps/" + e + ".txt";
                         cc.assetManager.loadRemote(r, {
@@ -5598,8 +5657,9 @@ window.__require = function t(e, o, n) {
                         matchType: t
                     },
                     success: function(t) {
-                        0 == t.err_code ? (i.default.getInstance().mapMd5s = t.data.map_md5, i.default.getInstance().seed = t.data.map_seed, 
-                        r.XorShift.instance.setSeed(t.data.map_seed), r.XorShift.instance.random(), e && e()) : cc.game.emit("showTips", "读取地图失败");
+                        0 == t.err_code ? (console.log("++开始配置", t), n.default.getInstance().mapMd5s = t.data.map_md5, 
+                        n.default.getInstance().seed = t.data.map_seed, a.XorShift.instance.setSeed(t.data.map_seed), 
+                        a.XorShift.instance.random(), e && e()) : cc.game.emit("showTips", "读取地图失败");
                     }
                 });
             }, t.getLevelMapData = function(e, o) {
@@ -5620,37 +5680,10 @@ window.__require = function t(e, o, n) {
                         }
                     });
                 });
-            }, t.isPlatform = function(t) {
-                switch (t) {
-                  case n.android:
-                    return !(!cc.sys.isNative || cc.sys.os != cc.sys.OS_ANDROID);
-
-                  case n.ios:
-                    return !(!cc.sys.isNative || cc.sys.os != cc.sys.OS_IOS);
-
-                  case n.wx:
-                    return cc.sys.platform == cc.sys.WECHAT_GAME && !window.qq;
-
-                  case n.tt:
-                    return cc.sys.platform == cc.sys.BYTEDANCE_GAME;
-
-                  case n.oppo:
-                    return cc.sys.platform == cc.sys.OPPO_GAME;
-
-                  case n.vivo:
-                    return cc.sys.platform == cc.sys.VIVO_GAME;
-
-                  case n.qq:
-                    return !(cc.sys.platform != cc.sys.WECHAT_GAME || !window.qq);
-
-                  case n.web:
-                    return cc.sys.isBrowser;
-                }
-                return !1;
             }, t.localKeyName = "gameUserLocalData", t.VERSION = "1_0_1", t.GAMEVERSION = "", 
             t.WXVedioID = "adunit-e64f338bb42a2cf3", t.TTVedioID = "2h8vke2e0oo3771fk4", t.AndroidVedioID = "", 
             t.OppoVedioID = "623096", t.VivoVedioID = "0bdbd3191938407b8751a51610a84451", t.QQVedioID = "1de3ab25d5d6112a602465ea00c191f9", 
-            t.langCode = s.LangEnum.zhCN, t.gameConfigData = {
+            t.ksAdID = "2300003267_01", t.langCode = c.LangEnum.zhCN, t.gameConfigData = {
                 baseConfigData: null,
                 levelConfigData: null
             }, t.gameUserLocalData = {
@@ -5720,6 +5753,7 @@ window.__require = function t(e, o, n) {
         "./enumConfig": "enumConfig",
         "./native/native-bridge": "native-bridge",
         "./native/native-def": "native-def",
+        "./platform-utils": "platform-utils",
         "./sdk": "sdk"
     } ],
     editorGameLayer: [ function(t, e, o) {
@@ -6021,7 +6055,8 @@ window.__require = function t(e, o, n) {
             t.BULLETSEND = "BULLETSEND", t.BULLETSTATE = "BULLETSTATE", t.GAMEOVERRESTART = "GAMEOVERRESTART", 
             t.GAMEOVERSUCCESS = "GAMEOVERSUCCESS", t.BEGINGAME = "BEGINGAME", t.SHOWMODULE = "SHOWMODULE", 
             t.TOPICACCOUNT = "TOPICACCOUNT", t.TOPICRANKINFO = "TOPICRANKINFO", t.TOPICPOSITION = "TOPICPOSITION", 
-            t.CHANGESHEEPCLOTHES = "CHANGESHEEPCLOTHES", t.RANKLOADINGSUCCESS = "RANKLOADINGSUCCESS";
+            t.CHANGESHEEPCLOTHES = "CHANGESHEEPCLOTHES", t.RANKLOADINGSUCCESS = "RANKLOADINGSUCCESS", 
+            t.TOKENINVALIDMSG = "TOKENINVALIDMSG", t.SHOWDIALOG = "SHOWDIALOG";
         }(o.EMITKEY || (o.EMITKEY = {})), function(t) {
             t.GAMEUSERLOCALDATA = "gameUserLocalData", t.SPRINTREWARDKEY = "SPRINTREWARDKEY", 
             t.COOKIECOLLECTIONKEY = "COOKIECOLLECTIONKEY", t.BULLETSWITCH = "BULLETSWITCH", 
@@ -6095,7 +6130,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../../i18n/gd_language"), c = t("../../i18n/i18n"), s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/enumConfig"), p = t("../common/native/share"), d = t("../common/native/tt-sdk"), h = t("../common/sdk"), f = t("../common/spine"), m = t("../manager/GameManager"), g = t("../manager/report-common"), y = t("../../script/manager/data-manager"), v = t("../utils/uma/uma-sdk"), b = t("../api/api-sheep"), _ = cc._decorator, N = _.ccclass, w = _.property, C = function(t) {
+        var r = t("../../i18n/gd_language"), c = t("../../i18n/i18n"), s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/enumConfig"), p = t("../common/native/share"), d = t("../common/native/tt-sdk"), h = t("../common/sdk"), f = t("../common/spine"), m = t("../manager/GameManager"), g = t("../manager/report-common"), y = t("../../script/manager/data-manager"), v = t("../utils/uma/uma-sdk"), b = t("../api/api-sheep"), _ = t("../common/platform-utils"), N = cc._decorator, w = N.ccclass, P = N.property, C = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.fainNode = null, e.descLabel = null, e.failNumLabel = null, e.restartNode = null, 
@@ -6140,13 +6175,17 @@ window.__require = function t(e, o, n) {
                 }).start();
             }, e.prototype.shareBtnFunc = function() {
                 var t = this;
-                l.default.isPlatform(l.GDPlatform.tt) ? d.default.shareTemplate(function(e) {
+                _.default.isPlatform(_.Platform.tt) ? d.default.shareTemplate(function(e) {
                     e && (t.shareNode.active = !1, t.showButton());
-                }) : l.default.isPlatform(l.GDPlatform.wx) ? p.default.shareMethod({
+                }) : _.default.isPlatform(_.Platform.wx) ? p.default.shareMethod({
                     success: function() {},
                     fail: function() {},
                     complete: function() {}
-                }) : l.default.isPlatform(l.GDPlatform.qq) ? p.default.shareMethod({
+                }) : _.default.isPlatform(_.Platform.qq) ? p.default.shareMethod({
+                    success: function() {},
+                    fail: function() {},
+                    complete: function() {}
+                }) : _.default.isPlatform(_.Platform.ks) ? p.default.shareMethod({
                     success: function() {},
                     fail: function() {},
                     complete: function() {}
@@ -6199,7 +6238,7 @@ window.__require = function t(e, o, n) {
                 } else cc.game.emit("showMainTips", c.default.instance.trans(r.GDLanguage.coin_inadequate));
             }, e.prototype.freeCallBackFunc = function(t) {
                 var e = this;
-                if (this.type = t, h.default.isPlatform(h.Platform.wx) && m.default.getInstance().isSharedMapOption()) {
+                if (this.type = t, _.default.isPlatform(_.Platform.wx) && m.default.getInstance().isSharedMapOption()) {
                     var o = l.default.GetVedioID(), n = l.default.getUserData().openid;
                     if (h.default.wxIsPolicy() && h.default.wxIsPolicyShare()) return void h.default.share(n, o, function() {
                         e.watchSuc(1);
@@ -6207,17 +6246,9 @@ window.__require = function t(e, o, n) {
                         cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                     });
                 }
-                if (h.default.isPlatform(h.Platform.qq) && m.default.getInstance().isSharedMapOption()) {
-                    var i = l.default.GetVedioID();
-                    if (n = l.default.getUserData().openid, h.default.wxIsPolicy() && h.default.wxIsPolicyShare()) return void h.default.share(n, i, function() {
-                        e.watchSuc(1);
-                    }, function() {
-                        cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败，请分享QQ群与好友PK");
-                    });
-                }
-                var a = l.default.GetVedioID();
+                var i = l.default.GetVedioID();
                 h.default.watchAdVideo({
-                    id: a,
+                    id: i,
                     success: function() {
                         e.watchSuc(1);
                     },
@@ -6237,19 +6268,19 @@ window.__require = function t(e, o, n) {
                 }
             }, e.prototype.shareTTAction = function() {
                 var t = this;
-                if (h.default.isPlatform(h.Platform.wx)) {
+                if (_.default.isPlatform(_.Platform.wx)) {
                     var e = l.default.GetVedioID(), o = l.default.getUserData().openid;
                     h.default.share(o, e, function() {
                         t.shareCbMethod();
                     }, function() {
                         cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                     });
-                } else if (h.default.isPlatform(h.Platform.qq)) e = l.default.GetVedioID(), o = l.default.getUserData().openid, 
+                } else if (_.default.isPlatform(_.Platform.qq)) e = l.default.GetVedioID(), o = l.default.getUserData().openid, 
                 h.default.share(o, e, function() {
                     t.shareCbMethod();
                 }, function() {
                     cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败，请分享QQ群与好友PK");
-                }); else if (h.default.isPlatform(h.Platform.tt)) {
+                }); else if (_.default.isPlatform(_.Platform.tt)) {
                     var n = {
                         popName: "shareNodePop",
                         showPopData: {
@@ -6361,43 +6392,43 @@ window.__require = function t(e, o, n) {
                     }
                 };
                 cc.game.emit("showPop", e);
-            }, a([ w(cc.Node) ], e.prototype, "fainNode", void 0), a([ w(cc.Label) ], e.prototype, "descLabel", void 0), 
-            a([ w(cc.Label) ], e.prototype, "failNumLabel", void 0), a([ w({
+            }, a([ P(cc.Node) ], e.prototype, "fainNode", void 0), a([ P(cc.Label) ], e.prototype, "descLabel", void 0), 
+            a([ P(cc.Label) ], e.prototype, "failNumLabel", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "重新挑战"
-            }) ], e.prototype, "restartNode", void 0), a([ w({
+            }) ], e.prototype, "restartNode", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "返回羊群"
-            }) ], e.prototype, "backNode", void 0), a([ w({
+            }) ], e.prototype, "backNode", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "墓碑spine"
-            }) ], e.prototype, "tombNode", void 0), a([ w({
+            }) ], e.prototype, "tombNode", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "墓碑气泡"
-            }) ], e.prototype, "tombBubble", void 0), a([ w({
+            }) ], e.prototype, "tombBubble", void 0), a([ P({
                 type: cc.Label,
                 tooltip: "墓碑描述"
-            }) ], e.prototype, "tombDesc", void 0), a([ w({
+            }) ], e.prototype, "tombDesc", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "墓碑粒子"
-            }) ], e.prototype, "tombParticle", void 0), a([ w({
+            }) ], e.prototype, "tombParticle", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "排名base"
-            }) ], e.prototype, "rankNode", void 0), a([ w({
+            }) ], e.prototype, "rankNode", void 0), a([ P({
                 type: cc.Label,
                 tooltip: "排名"
-            }) ], e.prototype, "rankPreLabel", void 0), a([ w({
+            }) ], e.prototype, "rankPreLabel", void 0), a([ P({
                 type: cc.Label,
                 tooltip: "排名"
-            }) ], e.prototype, "rankNumLabel", void 0), a([ w({
+            }) ], e.prototype, "rankNumLabel", void 0), a([ P({
                 type: cc.Label,
                 tooltip: "排名"
-            }) ], e.prototype, "rankLastLabel", void 0), a([ w(cc.Node) ], e.prototype, "shareNode", void 0), 
-            a([ w(cc.Node) ], e.prototype, "shareBtn", void 0), a([ w(cc.Node) ], e.prototype, "noShareBtn", void 0), 
-            a([ w(cc.Node) ], e.prototype, "shareCloseBtn", void 0), a([ w({
+            }) ], e.prototype, "rankLastLabel", void 0), a([ P(cc.Node) ], e.prototype, "shareNode", void 0), 
+            a([ P(cc.Node) ], e.prototype, "shareBtn", void 0), a([ P(cc.Node) ], e.prototype, "noShareBtn", void 0), 
+            a([ P(cc.Node) ], e.prototype, "shareCloseBtn", void 0), a([ P({
                 type: cc.Node,
                 tooltip: "底部分享按钮"
-            }) ], e.prototype, "bottomShareBtn", void 0), a([ N ], e);
+            }) ], e.prototype, "bottomShareBtn", void 0), a([ w ], e);
         }(cc.Component);
         o.default = C, cc._RF.pop();
     }, {
@@ -6410,6 +6441,7 @@ window.__require = function t(e, o, n) {
         "../common/enumConfig": "enumConfig",
         "../common/native/share": "share",
         "../common/native/tt-sdk": "tt-sdk",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../common/spine": "spine",
         "../manager/GameManager": "GameManager",
@@ -7001,7 +7033,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/native/audio"), l = t("../main/mainLayer"), u = t("./chessboard"), p = t("./crushArea"), d = t("./gameUiLayer"), h = t("./moveOutArea"), f = t("../common/spine"), m = t("../common/enumConfig"), g = t("../manager/GameManager"), y = t("../manager/DateManager"), v = t("../utils/uma/uma-sdk"), b = t("../../i18n/i18n"), _ = t("../../i18n/gd_language"), N = t("../common/native/native-bridge"), w = t("../manager/report-common"), C = t("../manager/data-manager"), P = t("../api/api-sheep"), k = t("../net/protobuf/proto"), S = t("../common/util"), T = cc._decorator, O = T.ccclass, A = T.property, D = function(t) {
+        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/native/audio"), l = t("../main/mainLayer"), u = t("./chessboard"), p = t("./crushArea"), d = t("./gameUiLayer"), h = t("./moveOutArea"), f = t("../common/spine"), m = t("../common/enumConfig"), g = t("../manager/GameManager"), y = t("../manager/DateManager"), v = t("../utils/uma/uma-sdk"), b = t("../../i18n/i18n"), _ = t("../../i18n/gd_language"), N = t("../common/native/native-bridge"), w = t("../manager/report-common"), P = t("../manager/data-manager"), C = t("../api/api-sheep"), k = t("../net/protobuf/proto"), S = t("../common/util"), O = cc._decorator, T = O.ccclass, A = O.property, D = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.mainLayer = null, e.bgLayer = null, e.chessboard = null, e.crushArea = null, 
@@ -7040,7 +7072,7 @@ window.__require = function t(e, o, n) {
             }, e.prototype.onPointIsContains = function() {
                 this.chessboard.getBoundingBoxToWorld();
                 for (var t = r.default.getWorldPosition(this.moveOutArea), e = this.chessboard.getBoundingBoxToWorld(); e.contains(t); ) {
-                    if (this.chessboard.scale -= .05, this.chessboard.scale < .5) {
+                    if (this.chessboard.scale -= .05, this.chessboard.scale < .8) {
                         console.log("超出最小scale 退出 ###### ");
                         break;
                     }
@@ -7105,7 +7137,7 @@ window.__require = function t(e, o, n) {
             }, e.prototype.playNumberfunc = function() {
                 if (this.levelDataArray.length < 1) this.showMainLayer(m.GAMEOVER.NONE); else {
                     cc.game.emit("closeAllPop"), g.default.getInstance().gameType == m.GAMETYPE.GAMEDAILY ? this.uiLayer.getComponent(d.default).recoverTime(1) : g.default.getInstance().gameType == m.GAMETYPE.GAMETOPIC && this.uiLayer.getComponent(d.default).recoverTime(1);
-                    var t = C.default.getGameLevelData();
+                    var t = P.default.getGameLevelData();
                     t ? (console.log("获取关卡缓存数据 ###### "), this.initLevelLayer(t)) : this.initLevelLayer(this.levelDataArray);
                 }
             }, e.prototype.showSetUpLayer = function() {
@@ -7176,11 +7208,11 @@ window.__require = function t(e, o, n) {
                     e.showMainLayer(), cc.game.emit(m.EMITKEY.SHOWMODULE, m.MODULETYPE.COMMON);
                 }, 1500);
                 if (g.default.getInstance().gameType == m.GAMETYPE.GAMEDAILY) {
-                    if (C.default.rankUserInfo && 1 == C.default.rankUserInfo.state) return;
-                    P.default.gameOver(N, function() {
-                        cc.game.emit(m.EMITKEY.GAMEOVERSUCCESS), P.default.requestRankUserInfo();
+                    if (P.default.rankUserInfo && 1 == P.default.rankUserInfo.state) return;
+                    C.default.gameOver(N, function() {
+                        cc.game.emit(m.EMITKEY.GAMEOVERSUCCESS), C.default.requestRankUserInfo();
                     });
-                } else g.default.getInstance().gameType == m.GAMETYPE.GAMETOPIC && P.default.topicGameOver(N, function() {
+                } else g.default.getInstance().gameType == m.GAMETYPE.GAMETOPIC && C.default.topicGameOver(N, function() {
                     cc.game.emit(m.EMITKEY.GAMEOVERSUCCESS);
                 });
             }, e.prototype.checkIsTodayWin = function() {
@@ -7311,7 +7343,7 @@ window.__require = function t(e, o, n) {
             a([ A(cc.Node) ], e.prototype, "chessboard", void 0), a([ A(cc.Node) ], e.prototype, "crushArea", void 0), 
             a([ A(cc.Node) ], e.prototype, "moveOutArea", void 0), a([ A(cc.Node) ], e.prototype, "uiLayer", void 0), 
             a([ A(cc.Node) ], e.prototype, "gameTopUi", void 0), a([ A(cc.Node) ], e.prototype, "gameWin", void 0), 
-            a([ A(cc.Node) ], e.prototype, "gameNext", void 0), a([ O ], e);
+            a([ A(cc.Node) ], e.prototype, "gameNext", void 0), a([ T ], e);
         }(cc.Component);
         o.default = D, cc._RF.pop();
     }, {
@@ -7362,7 +7394,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/native/audio"), u = t("../common/sdk"), p = t("../manager/DateManager"), d = t("../manager/GameManager"), h = t("./chessboard"), f = t("./crushArea"), m = t("./gameLayer"), g = t("../../pre/item/prop-prefab"), y = t("../utils/uma/uma-sdk"), v = t("../manager/report-common"), b = t("../../i18n/i18n"), _ = t("../../i18n/gd_language"), N = t("../manager/data-manager"), w = cc._decorator, C = w.ccclass, P = w.property, k = function(t) {
+        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/native/audio"), u = t("../common/sdk"), p = t("../manager/DateManager"), d = t("../manager/GameManager"), h = t("./chessboard"), f = t("./crushArea"), m = t("./gameLayer"), g = t("../../pre/item/prop-prefab"), y = t("../utils/uma/uma-sdk"), v = t("../manager/report-common"), b = t("../../i18n/i18n"), _ = t("../../i18n/gd_language"), N = t("../manager/data-manager"), w = t("../common/platform-utils"), P = cc._decorator, C = P.ccclass, k = P.property, S = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.removeBtn = null, e.removeBg1 = null, e.removeMask = null, e.removeNumLabel = null, 
@@ -7529,7 +7561,7 @@ window.__require = function t(e, o, n) {
                 } else cc.game.emit("showMainTips", b.default.instance.trans(_.GDLanguage.coin_inadequate));
             }, e.prototype.freeCallBackFunc = function(t) {
                 var e = this;
-                if (this.getPropType = t, console.log("type = " + t), (u.default.isPlatform(u.Platform.wx) || u.default.isPlatform(u.Platform.qq)) && d.default.getInstance().isSharedMapOption()) {
+                if (this.getPropType = t, console.log("type = " + t), w.default.isPlatform(w.Platform.wx) && d.default.getInstance().isSharedMapOption()) {
                     var o = N.default.getPropData(), n = 0;
                     if (d.default.getInstance().gameType == s.GAMETYPE.GAMEDAILY ? 1 == t ? n = o.daily.prop_remove : 2 == t ? n = o.daily.prop_cancel : 3 == t && (n = o.daily.prop_random) : d.default.getInstance().gameType == s.GAMETYPE.GAMETOPIC && (1 == t ? n = o.topic.prop_remove : 2 == t ? n = o.topic.prop_cancel : 3 == t && (n = o.topic.prop_random)), 
                     u.default.wxIsPolicy() && u.default.wxIsPolicyShare()) return void e.shareTTAction(t);
@@ -7551,19 +7583,24 @@ window.__require = function t(e, o, n) {
                 });
             }, e.prototype.shareTTAction = function(t) {
                 var e = this;
-                if (u.default.isPlatform(u.Platform.wx)) {
+                if (w.default.isPlatform(w.Platform.wx)) {
                     var o = c.default.GetVedioID(), n = c.default.getUserData().openid;
                     u.default.share(n, o, function() {
                         e.shareCbMethod(), e.updateShareCount(t);
                     }, function() {
                         cc.game.emit(s.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                     });
-                } else if (u.default.isPlatform(u.Platform.qq)) o = c.default.GetVedioID(), n = c.default.getUserData().openid, 
+                } else if (w.default.isPlatform(w.Platform.qq)) o = c.default.GetVedioID(), n = c.default.getUserData().openid, 
                 u.default.share(n, o, function() {
                     e.shareCbMethod(), e.updateShareCount(t);
                 }, function() {
-                    cc.game.emit(s.EMITKEY.SHOWMAINTIPS, "分享失败，请分享QQ群与好友PK");
-                }); else if (u.default.isPlatform(u.Platform.tt)) {
+                    cc.game.emit(s.EMITKEY.SHOWMAINTIPS, "分享失败");
+                }); else if (w.default.isPlatform(w.Platform.ks)) o = c.default.GetVedioID(), n = c.default.getUserData().openid, 
+                u.default.share(n, o, function() {
+                    e.shareCbMethod(), e.updateShareCount(t);
+                }, function() {
+                    cc.game.emit(s.EMITKEY.SHOWMAINTIPS, "分享失败");
+                }); else if (w.default.isPlatform(w.Platform.tt)) {
                     var i = {
                         popName: "shareNodePop",
                         showPopData: {
@@ -7604,21 +7641,21 @@ window.__require = function t(e, o, n) {
                     }
                 };
                 cc.game.emit("showPop", o);
-            }, a([ P(cc.Node) ], e.prototype, "removeBtn", void 0), a([ P(cc.Node) ], e.prototype, "removeBg1", void 0), 
-            a([ P(cc.Node) ], e.prototype, "removeMask", void 0), a([ P(cc.Label) ], e.prototype, "removeNumLabel", void 0), 
-            a([ P(cc.Node) ], e.prototype, "removeVedio", void 0), a([ P(cc.Node) ], e.prototype, "cancelBtn", void 0), 
-            a([ P(cc.Node) ], e.prototype, "cancelBg1", void 0), a([ P(cc.Node) ], e.prototype, "cancelMask", void 0), 
-            a([ P(cc.Label) ], e.prototype, "cancelNumLabel", void 0), a([ P(cc.Node) ], e.prototype, "cancelVedio", void 0), 
-            a([ P(cc.Node) ], e.prototype, "randomBtn", void 0), a([ P(cc.Node) ], e.prototype, "randomBg1", void 0), 
-            a([ P(cc.Node) ], e.prototype, "randomMask", void 0), a([ P(cc.Label) ], e.prototype, "randomNumLabel", void 0), 
-            a([ P(cc.Node) ], e.prototype, "randomVedio", void 0), a([ P(cc.Node) ], e.prototype, "setUpBtn", void 0), 
-            a([ P(cc.Node) ], e.prototype, "moveOutArea", void 0), a([ P(cc.Node) ], e.prototype, "chessboardNode", void 0), 
-            a([ P(cc.Node) ], e.prototype, "crushArea", void 0), a([ P(cc.Node) ], e.prototype, "levelNode", void 0), 
-            a([ P(cc.Label) ], e.prototype, "levelNumLabel", void 0), a([ P(cc.Node) ], e.prototype, "stageOneNode", void 0), 
-            a([ P(cc.Node) ], e.prototype, "stageTwoNode", void 0), a([ P(cc.Node) ], e.prototype, "maskStage", void 0), 
-            a([ P(cc.Prefab) ], e.prototype, "propPrefab", void 0), a([ C ], e);
+            }, a([ k(cc.Node) ], e.prototype, "removeBtn", void 0), a([ k(cc.Node) ], e.prototype, "removeBg1", void 0), 
+            a([ k(cc.Node) ], e.prototype, "removeMask", void 0), a([ k(cc.Label) ], e.prototype, "removeNumLabel", void 0), 
+            a([ k(cc.Node) ], e.prototype, "removeVedio", void 0), a([ k(cc.Node) ], e.prototype, "cancelBtn", void 0), 
+            a([ k(cc.Node) ], e.prototype, "cancelBg1", void 0), a([ k(cc.Node) ], e.prototype, "cancelMask", void 0), 
+            a([ k(cc.Label) ], e.prototype, "cancelNumLabel", void 0), a([ k(cc.Node) ], e.prototype, "cancelVedio", void 0), 
+            a([ k(cc.Node) ], e.prototype, "randomBtn", void 0), a([ k(cc.Node) ], e.prototype, "randomBg1", void 0), 
+            a([ k(cc.Node) ], e.prototype, "randomMask", void 0), a([ k(cc.Label) ], e.prototype, "randomNumLabel", void 0), 
+            a([ k(cc.Node) ], e.prototype, "randomVedio", void 0), a([ k(cc.Node) ], e.prototype, "setUpBtn", void 0), 
+            a([ k(cc.Node) ], e.prototype, "moveOutArea", void 0), a([ k(cc.Node) ], e.prototype, "chessboardNode", void 0), 
+            a([ k(cc.Node) ], e.prototype, "crushArea", void 0), a([ k(cc.Node) ], e.prototype, "levelNode", void 0), 
+            a([ k(cc.Label) ], e.prototype, "levelNumLabel", void 0), a([ k(cc.Node) ], e.prototype, "stageOneNode", void 0), 
+            a([ k(cc.Node) ], e.prototype, "stageTwoNode", void 0), a([ k(cc.Node) ], e.prototype, "maskStage", void 0), 
+            a([ k(cc.Prefab) ], e.prototype, "propPrefab", void 0), a([ C ], e);
         }(cc.Component);
-        o.default = k, cc._RF.pop();
+        o.default = S, cc._RF.pop();
     }, {
         "../../i18n/gd_language": "gd_language",
         "../../i18n/i18n": "i18n",
@@ -7627,6 +7664,7 @@ window.__require = function t(e, o, n) {
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
         "../common/native/audio": "audio",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../manager/DateManager": "DateManager",
         "../manager/GameManager": "GameManager",
@@ -7769,7 +7807,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../../i18n/gd_language"), c = t("../../i18n/i18n"), s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/enumConfig"), p = t("../common/sdk"), d = t("../manager/data-manager"), h = t("../manager/GameManager"), f = t("../manager/report-common"), m = cc._decorator, g = m.ccclass, y = m.property, v = function(t) {
+        var r = t("../../i18n/gd_language"), c = t("../../i18n/i18n"), s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/enumConfig"), p = t("../common/platform-utils"), d = t("../common/sdk"), h = t("../manager/data-manager"), f = t("../manager/GameManager"), m = t("../manager/report-common"), g = cc._decorator, y = g.ccclass, v = g.property, b = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.mask = null, e.closeBtn = null, e.freePropBtn = null, e.popNode = null, 
@@ -7803,26 +7841,31 @@ window.__require = function t(e, o, n) {
             }, e.prototype.noWhiteBtnFunc = function() {
                 this.node.active = !1, 4 != this.showPopData.popType && 5 != this.showPopData.popType || cc.game.emit(u.EMITKEY.SHOWMAINLAYER);
             }, e.prototype.freePropBtnFunc = function() {
-                console.log("beginBtnFunc ### unLimitVideo = " + h.default.getInstance().unLimitVideo), 
-                4 == this.showPopData.popType && h.default.getInstance().sheepMark.resurgenceCount >= 1 ? cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "无复活机会") : (this.showPopData && this.showPopData.popCallbackCollect && this.showPopData.popCallbackCollect.freeCallBack(this.showPopData.popType), 
+                console.log("beginBtnFunc ### unLimitVideo = " + f.default.getInstance().unLimitVideo), 
+                4 == this.showPopData.popType && f.default.getInstance().sheepMark.resurgenceCount >= 1 ? cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "无复活机会") : (this.showPopData && this.showPopData.popCallbackCollect && this.showPopData.popCallbackCollect.freeCallBack(this.showPopData.popType), 
                 this.updateWxUI());
             }, e.prototype.beginBtnFunc = function() {
-                cc.game.emit(u.EMITKEY.RESTARTNOWLEVEL), f.default.reportTACommon("challenge_again", {}), 
+                cc.game.emit(u.EMITKEY.RESTARTNOWLEVEL), m.default.reportTACommon("challenge_again", {}), 
                 this.node.active = !1;
             }, e.prototype.shareTTAction = function() {
                 var t = this;
                 if (p.default.isPlatform(p.Platform.wx)) {
                     var e = l.default.GetVedioID(), o = l.default.getUserData().openid;
-                    p.default.share(o, e, function() {
+                    d.default.share(o, e, function() {
                         t.shareCbMethod();
                     }, function() {
                         cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                     });
                 } else if (p.default.isPlatform(p.Platform.qq)) e = l.default.GetVedioID(), o = l.default.getUserData().openid, 
-                p.default.share(o, e, function() {
+                d.default.share(o, e, function() {
                     t.shareCbMethod();
                 }, function() {
                     cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败，请分享QQ群与好友PK");
+                }); else if (p.default.isPlatform(p.Platform.ks)) e = l.default.GetVedioID(), o = l.default.getUserData().openid, 
+                d.default.share(o, e, function() {
+                    t.shareCbMethod();
+                }, function() {
+                    cc.game.emit(u.EMITKEY.SHOWMAINTIPS, "分享失败");
                 }); else if (p.default.isPlatform(p.Platform.tt)) {
                     var n = {
                         popName: "shareNodePop",
@@ -7834,7 +7877,7 @@ window.__require = function t(e, o, n) {
                     cc.game.emit("showPop", n);
                 }
             }, e.prototype.shareCbMethod = function() {
-                console.log("分享成功 ######"), cc.game.emit(u.EMITKEY.RESTARTNOWLEVEL), f.default.reportTACommon("challenge_again_share", {}), 
+                console.log("分享成功 ######"), cc.game.emit(u.EMITKEY.RESTARTNOWLEVEL), m.default.reportTACommon("challenge_again_share", {}), 
                 this.node.active = !1;
             }, e.prototype.showGetPropPop = function(t) {
                 this.node.active = !0, this.showPopData = t, this.noBlockBtn.active = !1, this.noWhiteBtn.active = !0, 
@@ -7854,20 +7897,20 @@ window.__require = function t(e, o, n) {
                 var e = t.popType, o = "", n = "", i = "Buy props";
                 if (this.freeLabel.string = "获得", this.updateWxUI(), p.default.isPlatform(p.Platform.ios) && (this.freeBtnVideo.active = !1), 
                 1 == e) o = "rewardIcon/prop_remove.png", i = "移出道具", n = c.default.instance.trans(r.GDLanguage.draw_back), 
-                (a = 1 - h.default.getInstance().sheepMark.propRemoveCount) < 0 && (a = 0), this.freeDescLabel.string = "(" + a + "/1)"; else if (2 == e) o = "rewardIcon/prop_cancel.png", 
-                i = "撤回道具", n = c.default.instance.trans(r.GDLanguage.put_recent), (a = 1 - h.default.getInstance().sheepMark.propCancelCount) < 0 && (a = 0), 
+                (a = 1 - f.default.getInstance().sheepMark.propRemoveCount) < 0 && (a = 0), this.freeDescLabel.string = "(" + a + "/1)"; else if (2 == e) o = "rewardIcon/prop_cancel.png", 
+                i = "撤回道具", n = c.default.instance.trans(r.GDLanguage.put_recent), (a = 1 - f.default.getInstance().sheepMark.propCancelCount) < 0 && (a = 0), 
                 this.freeDescLabel.string = "(" + a + "/1)"; else if (3 == e) o = "rewardIcon/prop_random.png", 
-                i = "洗牌道具", n = c.default.instance.trans(r.GDLanguage.shuffle_unused), (a = 1 - h.default.getInstance().sheepMark.propRandomCount) < 0 && (a = 0), 
+                i = "洗牌道具", n = c.default.instance.trans(r.GDLanguage.shuffle_unused), (a = 1 - f.default.getInstance().sheepMark.propRandomCount) < 0 && (a = 0), 
                 this.freeDescLabel.string = "(" + a + "/1)"; else if (4 == e) {
                     var a;
                     o = "rewardIcon/prop_life_remove.png", i = "复活吗?", n = "复活并使用移出道具", this.noBlockBtn.active = !0, 
                     this.noWhiteBtn.active = !1, this.closeBtn.active = !1, this.freeLabel.string = "复活", 
-                    console.log(h.default.getInstance().sheepMark.resurgenceCount), (a = 1 - h.default.getInstance().sheepMark.resurgenceCount) < 0 && (a = 0), 
+                    console.log(f.default.getInstance().sheepMark.resurgenceCount), (a = 1 - f.default.getInstance().sheepMark.resurgenceCount) < 0 && (a = 0), 
                     this.freeDescLabel.string = "(" + a + "/1)";
                 } else 5 == e ? (i = "再次挑战", this.closeBtn.active = !1, this.freeDescLabel.string = "", 
                 this.freeLabel.string = "重新挑战", this.noWhiteBtn.getChildByName("label").getComponent(cc.Label).string = "返回羊群", 
                 n = "观看视频，以获得1次\n额外的挑战机会。", o = "rewardIcon/prop_life_one.png", this.freePropBtn.active = !1, 
-                this.beginBtn.active = !0, h.default.getInstance().unLimitVideo ? (this.beginBtnVideo.active = !1, 
+                this.beginBtn.active = !0, f.default.getInstance().unLimitVideo ? (this.beginBtnVideo.active = !1, 
                 n = "已获得无限次数挑战\n赶紧试试吧", o = "rewardIcon/prop_nolimit.png") : this.beginBtnVideo.active = !0) : 6 == e && (i = "再次挑战", 
                 this.freeDescLabel.string = "", this.freeLabel.string = "挑战一次", this.noWhiteBtn.getChildByName("label").getComponent(cc.Label).string = "不,谢谢", 
                 n = "观看视频，以获得1次\n额外的挑战机会。", o = "rewardIcon/prop_life_one.png", this.freePropBtn.active = !1, 
@@ -7875,33 +7918,34 @@ window.__require = function t(e, o, n) {
                 s.default.changeSpriteFrame(this.propImage, o), this.descLabel.string = n, this.titleLabel.string = i;
             }, e.prototype.updateWxUI = function() {
                 var t = this.showPopData.popType;
-                if (l.default.isPlatform(l.GDPlatform.wx) || l.default.isPlatform(l.GDPlatform.qq)) {
-                    var e = d.default.getPropData();
+                if (p.default.isPlatform(p.Platform.wx) || p.default.isPlatform(p.Platform.qq)) {
+                    var e = h.default.getPropData();
                     console.log("propData = ", e);
                     var o = 0;
-                    if (h.default.getInstance().gameType == u.GAMETYPE.GAMEDAILY ? 1 == t ? o = e.daily.prop_remove : 2 == t ? o = e.daily.prop_cancel : 3 == t && (o = e.daily.prop_random) : h.default.getInstance().gameType == u.GAMETYPE.GAMETOPIC && (1 == t ? o = e.topic.prop_remove : 2 == t ? o = e.topic.prop_cancel : 3 == t && (o = e.topic.prop_random)), 
+                    if (f.default.getInstance().gameType == u.GAMETYPE.GAMEDAILY ? 1 == t ? o = e.daily.prop_remove : 2 == t ? o = e.daily.prop_cancel : 3 == t && (o = e.daily.prop_random) : f.default.getInstance().gameType == u.GAMETYPE.GAMETOPIC && (1 == t ? o = e.topic.prop_remove : 2 == t ? o = e.topic.prop_cancel : 3 == t && (o = e.topic.prop_random)), 
                     o > 0 ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_share_black.png") : s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_video_block.png"), 
-                    d.default.setPropData(e), h.default.getInstance().isShareAndVideoMapOption()) return;
+                    h.default.setPropData(e), f.default.getInstance().isShareAndVideoMapOption()) return;
                 }
-                h.default.getInstance().isVideoMapOption() ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_video_block.png") : h.default.getInstance().isSharedMapOption() ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_share_black.png") : p.default.wxIsPolicy() && (p.default.wxIsPolicyShare() ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_share_black.png") : s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_video_block.png")), 
-                h.default.getInstance().isNoneShareVideoMapOption() ? this.freeBtnVideo.active = !1 : this.freeBtnVideo.active = !0;
-            }, a([ y(cc.Node) ], e.prototype, "mask", void 0), a([ y(cc.Node) ], e.prototype, "closeBtn", void 0), 
-            a([ y(cc.Node) ], e.prototype, "freePropBtn", void 0), a([ y(cc.Node) ], e.prototype, "popNode", void 0), 
-            a([ y(cc.Label) ], e.prototype, "titleLabel", void 0), a([ y(cc.Label) ], e.prototype, "descLabel", void 0), 
-            a([ y(cc.Label) ], e.prototype, "buyLabel", void 0), a([ y(cc.Label) ], e.prototype, "freeLabel", void 0), 
-            a([ y(cc.Label) ], e.prototype, "freeDescLabel", void 0), a([ y(cc.Node) ], e.prototype, "propImage", void 0), 
-            a([ y(cc.Node) ], e.prototype, "noBlockBtn", void 0), a([ y(cc.Node) ], e.prototype, "noWhiteBtn", void 0), 
-            a([ y(cc.Node) ], e.prototype, "beginBtn", void 0), a([ y(cc.Node) ], e.prototype, "freeBtnVideo", void 0), 
-            a([ y(cc.Node) ], e.prototype, "beginBtnVideo", void 0), a([ y(cc.Node) ], e.prototype, "timeNode", void 0), 
-            a([ g ], e);
+                f.default.getInstance().isVideoMapOption() ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_video_block.png") : f.default.getInstance().isSharedMapOption() ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_share_black.png") : d.default.wxIsPolicy() && (d.default.wxIsPolicyShare() ? s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_share_black.png") : s.default.changeSpriteFrame(this.freeBtnVideo, "rewardIcon/reward_video_block.png")), 
+                f.default.getInstance().isNoneShareVideoMapOption() ? this.freeBtnVideo.active = !1 : this.freeBtnVideo.active = !0;
+            }, a([ v(cc.Node) ], e.prototype, "mask", void 0), a([ v(cc.Node) ], e.prototype, "closeBtn", void 0), 
+            a([ v(cc.Node) ], e.prototype, "freePropBtn", void 0), a([ v(cc.Node) ], e.prototype, "popNode", void 0), 
+            a([ v(cc.Label) ], e.prototype, "titleLabel", void 0), a([ v(cc.Label) ], e.prototype, "descLabel", void 0), 
+            a([ v(cc.Label) ], e.prototype, "buyLabel", void 0), a([ v(cc.Label) ], e.prototype, "freeLabel", void 0), 
+            a([ v(cc.Label) ], e.prototype, "freeDescLabel", void 0), a([ v(cc.Node) ], e.prototype, "propImage", void 0), 
+            a([ v(cc.Node) ], e.prototype, "noBlockBtn", void 0), a([ v(cc.Node) ], e.prototype, "noWhiteBtn", void 0), 
+            a([ v(cc.Node) ], e.prototype, "beginBtn", void 0), a([ v(cc.Node) ], e.prototype, "freeBtnVideo", void 0), 
+            a([ v(cc.Node) ], e.prototype, "beginBtnVideo", void 0), a([ v(cc.Node) ], e.prototype, "timeNode", void 0), 
+            a([ y ], e);
         }(cc.Component);
-        o.default = v, cc._RF.pop();
+        o.default = b, cc._RF.pop();
     }, {
         "../../i18n/gd_language": "gd_language",
         "../../i18n/i18n": "i18n",
         "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../manager/GameManager": "GameManager",
         "../manager/data-manager": "data-manager",
@@ -8385,12 +8429,12 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         }), o.Method = void 0;
-        var r, c = t("query-string"), s = t("./sdk");
+        var r, c = t("query-string"), s = t("./enumConfig"), l = t("./platform-utils");
         (function(t) {
             t.OPTIONS = "OPTIONS", t.GET = "GET", t.HEAD = "HEAD", t.POST = "POST", t.PUT = "PUT", 
             t.DELETE = "DELETE", t.TRACE = "TRACE", t.CONNECT = "CONNECT";
         })(r = o.Method || (o.Method = {}));
-        var l = function() {
+        var u = function() {
             function t() {}
             return t.requestBefore = function(t) {
                 this.requestBeforeFunc = t;
@@ -8517,7 +8561,7 @@ window.__require = function t(e, o, n) {
                 }
             }, t.request = function(t) {
                 this.requestBeforeFunc && (t = this.requestBeforeFunc(t)), t.header = t.header ? n(n({}, t.baseParams), t.header) : t.baseParams, 
-                s.default.isPlatform(s.Platform.wx) ? this.wxRequest(t) : s.default.isPlatform(s.Platform.qq) ? this.qqRequest(t) : this.h5Request(t);
+                l.default.isPlatform(l.Platform.wx) ? this.wxRequest(t) : l.default.isPlatform(l.Platform.qq) ? this.qqRequest(t) : this.h5Request(t);
             }, t.requestSync = function(t) {
                 var e = this;
                 return new Promise(function(o, i) {
@@ -8525,7 +8569,8 @@ window.__require = function t(e, o, n) {
                     try {
                         e.request(n(n({}, t), {
                             success: function(t) {
-                                a && a(t), o(t);
+                                a && a(t), o(t), 10006 != t.err_code && 10003 != t.err_code && 10007 != t.err_code || (console.warn("token 无效 ###### ", t.err_code), 
+                                cc.game.emit(s.EMITKEY.TOKENINVALIDMSG));
                             },
                             fail: function(t) {
                                 r && r(t), i(t);
@@ -8538,9 +8583,10 @@ window.__require = function t(e, o, n) {
                 });
             }, t.requestBeforeFunc = null, t;
         }();
-        o.default = l, cc._RF.pop();
+        o.default = u, cc._RF.pop();
     }, {
-        "./sdk": "sdk",
+        "./enumConfig": "enumConfig",
+        "./platform-utils": "platform-utils",
         "query-string": 3
     } ],
     i18n: [ function(t, e, o) {
@@ -8888,6 +8934,317 @@ window.__require = function t(e, o, n) {
         o.default = a, cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, a.keyDown, a), 
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, a.keyUp, a), cc._RF.pop();
     }, {} ],
+    "ks-sdk": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "c7679W/+ltMmarusazE4dtG", "ks-sdk");
+        var n = this && this.__awaiter || function(t, e, o, n) {
+            return new (o || (o = Promise))(function(i, a) {
+                function r(t) {
+                    try {
+                        s(n.next(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function c(t) {
+                    try {
+                        s(n.throw(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function s(t) {
+                    var e;
+                    t.done ? i(t.value) : (e = t.value, e instanceof o ? e : new o(function(t) {
+                        t(e);
+                    })).then(r, c);
+                }
+                s((n = n.apply(t, e || [])).next());
+            });
+        }, i = this && this.__generator || function(t, e) {
+            var o, n, i, a, r = {
+                label: 0,
+                sent: function() {
+                    if (1 & i[0]) throw i[1];
+                    return i[1];
+                },
+                trys: [],
+                ops: []
+            };
+            return a = {
+                next: c(0),
+                throw: c(1),
+                return: c(2)
+            }, "function" == typeof Symbol && (a[Symbol.iterator] = function() {
+                return this;
+            }), a;
+            function c(t) {
+                return function(e) {
+                    return s([ t, e ]);
+                };
+            }
+            function s(a) {
+                if (o) throw new TypeError("Generator is already executing.");
+                for (;r; ) try {
+                    if (o = 1, n && (i = 2 & a[0] ? n.return : a[0] ? n.throw || ((i = n.return) && i.call(n), 
+                    0) : n.next) && !(i = i.call(n, a[1])).done) return i;
+                    switch (n = 0, i && (a = [ 2 & a[0], i.value ]), a[0]) {
+                      case 0:
+                      case 1:
+                        i = a;
+                        break;
+
+                      case 4:
+                        return r.label++, {
+                            value: a[1],
+                            done: !1
+                        };
+
+                      case 5:
+                        r.label++, n = a[1], a = [ 0 ];
+                        continue;
+
+                      case 7:
+                        a = r.ops.pop(), r.trys.pop();
+                        continue;
+
+                      default:
+                        if (!(i = (i = r.trys).length > 0 && i[i.length - 1]) && (6 === a[0] || 2 === a[0])) {
+                            r = 0;
+                            continue;
+                        }
+                        if (3 === a[0] && (!i || a[1] > i[0] && a[1] < i[3])) {
+                            r.label = a[1];
+                            break;
+                        }
+                        if (6 === a[0] && r.label < i[1]) {
+                            r.label = i[1], i = a;
+                            break;
+                        }
+                        if (i && r.label < i[2]) {
+                            r.label = i[2], r.ops.push(a);
+                            break;
+                        }
+                        i[2] && r.ops.pop(), r.trys.pop();
+                        continue;
+                    }
+                    a = e.call(t, r);
+                } catch (c) {
+                    c = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(c);
+                    a = [ 6, c ], n = 0;
+                } finally {
+                    o = i = 0;
+                }
+                if (5 & a[0]) throw a[1];
+                return {
+                    value: a[0] ? a[1] : void 0,
+                    done: !0
+                };
+            }
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var a = t("../platform-utils"), r = function() {
+            function t() {}
+            return t.init = function() {
+                this._isKs && (this.authorize(), console.info("-- 开启转发 --"), this.registerShowHide());
+            }, t.registerShowHide = function() {
+                return n(this, void 0, Promise, function() {
+                    var t = this;
+                    return i(this, function() {
+                        return ks.onShow(function() {
+                            t.onShowFunction && t.onShowFunction.forEach(function(t) {
+                                return t();
+                            }), t.onShowOnceFunction && (t.onShowOnceFunction.forEach(function(t) {
+                                t();
+                            }), t.onShowOnceFunction.length = 0);
+                        }), ks.onHide(function() {
+                            t.onHideFunction && t.onHideFunction.forEach(function(t) {
+                                return t();
+                            }), t.onHideOnceFunction && (t.onHideOnceFunction.forEach(function(t) {
+                                t();
+                            }), t.onHideOnceFunction.length = 0);
+                        }), [ 2 ];
+                    });
+                });
+            }, t.onShareAppMessageQuery = function() {
+                return ks.getEnterOptionsSync().query;
+            }, t.authorizeLocation = function() {
+                return n(this, void 0, Promise, function() {
+                    return i(this, function() {
+                        return ks.authorize({
+                            scope: "scope.userLocation",
+                            success: function(t) {
+                                cc.log("authorize success:", t);
+                            },
+                            fail: function(t) {
+                                cc.log("authorize fail:", t);
+                            }
+                        }), [ 2 ];
+                    });
+                });
+            }, t.authorize = function() {
+                return n(this, void 0, Promise, function() {
+                    return i(this, function() {
+                        return [ 2 ];
+                    });
+                });
+            }, t.weiBoJump = function() {
+                ks.navigateToMiniProgram({
+                    appId: "wx9074de28009e1111",
+                    path: "pages/profile/profile?nickname=羊了个羊",
+                    success: function() {
+                        console.log("成功跳转微博小程序");
+                    }
+                });
+            }, t.ksOpenPage = function() {
+                if (this._isKs) try {
+                    ks.openPage({
+                        openlink: "Lg2A3Tnj9pY0gW2ARxbwzuYxIZ4JfgUSv4vIWCi7V29WTct59cquQ3dKDj_tN9-W2UwAR5JgLHHDbvvV_EpNgJpUhReRFWi-vGluDEqTXpiM",
+                        success: console.log,
+                        fail: console.error,
+                        complete: console.log
+                    });
+                } catch (t) {}
+            }, t.createGameClub = function() {
+                if (this._isKs) try {
+                    var t = ks.getSystemInfoSync();
+                    return console.log("sysInfo = ", t), this.gameClubButton = ks.createGameClubButton({
+                        icon: "dark",
+                        style: {
+                            left: t.windowWidth - 50,
+                            top: t.safeArea.top + 140,
+                            width: 40,
+                            height: 40
+                        }
+                    }), this.gameClubButton;
+                } catch (e) {}
+            }, t.gameClubShow = function() {
+                if (this._isKs) try {
+                    console.log("gameClubShow ###"), this.gameClubButton && this.gameClubButton.show();
+                } catch (t) {}
+            }, t.gameClubHide = function() {
+                if (this._isKs) try {
+                    console.log("gameClubHide ###"), this.gameClubButton && this.gameClubButton.hide();
+                } catch (t) {}
+            }, t.vibrateShort = function(t) {
+                void 0 === t && (t = "light"), ks.vibrateShort({
+                    type: t,
+                    style: t
+                });
+            }, t.vibrateLong = function() {
+                ks.vibrateLong({});
+            }, t.ksAppLogin = function() {
+                throw new Error("Method not implemented.");
+            }, t.getSubVersion = function(t) {
+                var e = t.split(".");
+                return {
+                    first: parseInt(e[0].trim()),
+                    second: parseInt(e[1].trim()),
+                    third: parseInt(e[2].trim())
+                };
+            }, t.isVersionLower = function(t, e) {
+                var o = this.getSubVersion(t), n = this.getSubVersion(e);
+                return !(o.first > n.first || o.second > n.second || o.third > n.third);
+            }, t.ksRankScoreUpdate = function(t, e, o) {
+                this._isKs && ks.getOpenDataContext().postMessage({
+                    cmd: "update-" + t,
+                    type: o,
+                    score: e
+                });
+            }, t.ksRankScoreRemove = function(t) {
+                this._isKs && ks.getOpenDataContext().postMessage({
+                    cmd: "remove-" + t,
+                    score: 0
+                });
+            }, t.ksShowSubContext = function(t, e, o, n) {
+                this._isKs && ks.getOpenDataContext().postMessage({
+                    cmd: "show-" + t,
+                    setData: e,
+                    w: o,
+                    h: n
+                });
+            }, t.onShareAppMessage = function(t) {
+                ks.showShareMenu && (ks.showShareMenu({
+                    withShareTicket: !0
+                }), ks.onShareAppMessage(function() {
+                    return {
+                        title: t.title,
+                        imageUrl: t.imageUrl,
+                        query: t.query
+                    };
+                }), ks.onShareTimeline(function() {
+                    return {
+                        title: "羊了个羊",
+                        imageUrl: "",
+                        query: "a=1&b=2"
+                    };
+                }));
+            }, t.setOnShow = function(t) {
+                t && this.onShowFunction.push(t);
+            }, t.setOffShow = function(t) {
+                var e = this.onShowFunction.indexOf(t);
+                e > -1 && this.onShowFunction.splice(e, 1);
+            }, t.setOnShowOnce = function(t) {
+                t && this.onShowOnceFunction.push(t);
+            }, t.setOffShowOnce = function(t) {
+                var e = this.onShowOnceFunction.indexOf(t);
+                e > -1 && this.onShowOnceFunction.splice(e, 1);
+            }, t.setOnHide = function(t) {
+                t && this.onHideFunction.push(t);
+            }, t.setOffHide = function(t) {
+                var e = this.onHideFunction.indexOf(t);
+                e > -1 && this.onHideFunction.splice(e, 1);
+            }, t.setOnHideOnce = function(t) {
+                t && this.onHideOnceFunction.push(t);
+            }, t.setOffHideOnce = function(t) {
+                var e = this.onHideOnceFunction.indexOf(t);
+                e > -1 && this.onHideOnceFunction.splice(e, 1);
+            }, t.getAppVersion = function() {
+                if (this._isKs && ks.getAccountInfoSync) {
+                    var t = ks.getAccountInfoSync();
+                    return cc.log("[sdk] accountInfo:", t), t.miniProgram.version || "";
+                }
+                return "";
+            }, t.setClipboardData = function(t) {
+                ks.setClipboardData({
+                    data: t,
+                    success: function() {
+                        ks.getClipboardData({
+                            success: function(t) {
+                                cc.log("ks get clipboard data:", t.data);
+                            }
+                        });
+                    }
+                });
+            }, t.showToast = function(t) {
+                ks.showToast(t);
+            }, t.showBannerAd = function() {}, t.hideBannerAd = function() {}, t.showInterstitialAd = function() {}, 
+            t.showRewardVideoAd = function(t, e, o) {
+                if (ks) {
+                    var n = !1, i = ks.createRewardedVideoAd({
+                        adUnitId: t
+                    });
+                    i.onClose(function(t) {
+                        0 == n && (n = !0, t && t.isEnded || void 0 === t ? e() : o(!1, "观看失败"));
+                    }), i.onError(function(t) {
+                        0 == n && (n = !0, o(!1, t.errMsg));
+                    }), i.load().then(function() {
+                        i.show();
+                    }).catch(function() {
+                        o(!1, "广告拉取失败");
+                    });
+                } else o(!1, "ks undefined");
+            }, t.onShowFunction = [], t.onHideFunction = [], t.onShowOnceFunction = [], t.onHideOnceFunction = [], 
+            t.gameClubButton = null, t._isKs = a.default.isPlatform(a.Platform.ks), t;
+        }();
+        o.default = r, r.init(), cc._RF.pop();
+    }, {
+        "../platform-utils": "platform-utils"
+    } ],
     loadCanvas: [ function(t, e, o) {
         "use strict";
         cc._RF.push(e, "29c5c6pohNMuIwinCm1KXPJ", "loadCanvas");
@@ -8979,16 +9336,11 @@ window.__require = function t(e, o, n) {
             }
             n(t, e), t.prototype = null === e ? Object.create(e) : (o.prototype = e.prototype, 
             new o());
-        }), a = this && this.__assign || function() {
-            return (a = Object.assign || function(t) {
-                for (var e, o = 1, n = arguments.length; o < n; o++) for (var i in e = arguments[o]) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
-                return t;
-            }).apply(this, arguments);
-        }, r = this && this.__decorate || function(t, e, o, n) {
+        }), a = this && this.__decorate || function(t, e, o, n) {
             var i, a = arguments.length, r = a < 3 ? e : null === n ? n = Object.getOwnPropertyDescriptor(e, o) : n;
             if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) r = Reflect.decorate(t, e, o, n); else for (var c = t.length - 1; c >= 0; c--) (i = t[c]) && (r = (a < 3 ? i(r) : a > 3 ? i(e, o, r) : i(e, o)) || r);
             return a > 3 && r && Object.defineProperty(e, o, r), r;
-        }, c = this && this.__awaiter || function(t, e, o, n) {
+        }, r = this && this.__awaiter || function(t, e, o, n) {
             return new (o || (o = Promise))(function(i, a) {
                 function r(t) {
                     try {
@@ -9014,7 +9366,7 @@ window.__require = function t(e, o, n) {
                 }
                 s((n = n.apply(t, e || [])).next());
             });
-        }, s = this && this.__generator || function(t, e) {
+        }, c = this && this.__generator || function(t, e) {
             var o, n, i, a, r = {
                 label: 0,
                 sent: function() {
@@ -9098,49 +9450,43 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         }), cc.macro.CLEANUP_IMAGE_CACHE = !1, cc.dynamicAtlasManager.enabled = !0;
-        var l = t("../../i18n/i18n"), u = t("../common/CcJsFunc"), p = t("../common/dataTs"), d = t("../common/native/native-bridge"), h = t("../common/native/native-def"), f = t("../common/native/native-event"), m = t("../common/native/share"), g = t("../common/sdk"), y = t("../common/spine"), v = t("../effect/player-head-atlas"), b = t("../manager/GameManager"), _ = t("../manager/report-common"), N = t("../pop/PrivacyUserPop"), w = t("../tools/register-head-image"), C = t("../utils/uma/uma-sdk"), P = cc._decorator, k = P.ccclass, S = P.property, T = function(t) {
+        var s = t("../../i18n/i18n"), l = t("../api/login-api"), u = t("../common/CcJsFunc"), p = t("../common/dataTs"), d = t("../common/native/share"), h = t("../common/spine"), f = t("../effect/player-head-atlas"), m = t("../manager/GameManager"), g = t("../manager/report-common"), y = t("../pop/PrivacyUserPop"), v = t("../tools/register-head-image"), b = cc._decorator, _ = b.ccclass, N = b.property, w = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.bgLayer = null, e.loadProgressBar = null, e.descNode = null, e.userNode = null, 
                 e.privacyNode = null, e.chooseNode = null, e.chooseBg = null, e.beginNode = null, 
                 e.tipsNode = null, e.arrowBgBase = null, e.userNodeBase = null, e.privacyUserPop = null, 
-                e.loadNum = 0, e.loadOverNum = 2, e.initX = 250, e.initY = -60, e.progressCurrent = 0, 
-                e.progressAll = 2, e.sceneLoadEd = !1, e.loginStatusEd = !1, e;
+                e.progressCurrent = 0, e.progressAll = 100, e.mProgressTarget = 0, e.sceneLoadEd = !1, 
+                e.mPromise18N = void 0, e.mPromiseGameSceneLoad = void 0, e.mPromiseLoadJson = void 0, 
+                e;
             }
             return i(e, t), e.prototype.update = function(t) {
-                g.default.isPrivacyUser() ? this.loginStatusEd && this.progressAction(t) : this.progressAction(t);
-            }, e.prototype.progressAction = function(t) {
-                this.progressCurrent += t, this.progressCurrent <= this.progressAll ? this.loadProgressBar.progress = this.progressCurrent / this.progressAll : this.progressCurrent > this.progressAll && (this.loadProgressBar.progress = 1, 
-                this.loadNum >= this.loadOverNum && !this.sceneLoadEd && (console.log("PUSH=>加载成功 update"), 
-                this.getInfoMainScene()));
+                this.progressAction(t);
+            }, e.prototype.progressAction = function() {
+                if (this.progressCurrent = cc.misc.lerp(this.progressCurrent, this.mProgressTarget, .9), 
+                this.progressCurrent <= this.progressAll) {
+                    var t = this.progressCurrent / this.progressAll;
+                    t > this.loadProgressBar.progress && (this.loadProgressBar.progress = t);
+                } else this.loadProgressBar.progress = 1;
             }, e.prototype.start = function() {
-                if (this.bgLayer.getChildByName("sp").getComponent(y.default).play("2Grass", 0), 
-                this.privacyUserPop.active = !1, g.default.isPrivacyUser()) {
-                    this.descNode.active = !0;
-                    var t = cc.sys.localStorage.getItem("gameloading");
-                    console.log("loading = ", t), t ? (this.beginNode.active = !1, this.arrowBgBase.active = !1, 
-                    this.userNodeBase.active = !1, this.loginStatusEd = !0) : (this.beginNode.active = !0, 
-                    this.arrowBgBase.active = !0, this.userNodeBase.active = !0), this.chooseNode.active = !1;
-                } else this.descNode.active = !1;
-                b.default.getInstance().initData(), this.loadNum = 0, this.loadMainScene(), m.default.init(), 
-                this.loadCfg(), v.default.instance.init(2048, 2048, 100), w.registerHeadImgLoader(), 
+                this.loadMainScene(), this.bgLayer.getChildByName("sp").getComponent(h.default).play("2Grass", 0), 
+                this.privacyUserPop.active = !1, this.showDescBegin(!1), m.default.getInstance().initData(), 
+                d.default.init(), this.loadCfg(), f.default.instance.init(2048, 2048, 100), v.registerHeadImgLoader(), 
                 u.default.addbtnTouchOriginEndScale(this.userNode, this.userNodeFunc.bind(this)), 
                 u.default.addbtnTouchOriginEndScale(this.privacyNode, this.privacyNodeFunc.bind(this)), 
                 u.default.addbtnTouchOriginEndScale(this.chooseBg, this.chooseBgFunc.bind(this)), 
-                u.default.addbtnTouchOriginEndScale(this.beginNode, this.beginNodeFunc.bind(this)), 
+                u.default.addTargetTouchUpInside(this.beginNode, this.beginNodeFunc.bind(this)), 
                 this.tipsNode.active = !1;
-            }, e.prototype.onEnable = function() {
-                cc.game.on(f.NativeEvent.LeitingGetDeviceInfo, this.leitingGetDeviceInfo, this), 
-                cc.game.on(f.NativeEvent.LeitingLoginInfo, this.onLeitingLoginInfo, this), cc.game.on(f.NativeEvent.LeitingLoginErr, this.onLeitingLoginErr, this);
-            }, e.prototype.onDisable = function() {
-                cc.game.off(f.NativeEvent.LeitingGetDeviceInfo, this.leitingGetDeviceInfo, this), 
-                cc.game.off(f.NativeEvent.LeitingLoginInfo, this.onLeitingLoginInfo, this), cc.game.off(f.NativeEvent.LeitingLoginErr, this.onLeitingLoginErr, this);
+            }, e.prototype.showDescBegin = function(t) {
+                t ? (this.beginNode.active = !0, this.arrowBgBase.active = !0, this.userNodeBase.active = !0, 
+                this.chooseNode.active = !1) : (this.beginNode.active = !1, this.arrowBgBase.active = !1, 
+                this.userNodeBase.active = !1, this.chooseNode.active = !0);
             }, e.prototype.userNodeFunc = function() {
-                console.log("用户协议"), this.privacyUserPop.getComponent(N.default).showPop({
+                console.log("用户协议"), this.privacyUserPop.getComponent(y.default).showPop({
                     type: "user"
                 });
             }, e.prototype.privacyNodeFunc = function() {
-                console.log("隐私政策"), this.privacyUserPop.getComponent(N.default).showPop({
+                console.log("隐私政策"), this.privacyUserPop.getComponent(y.default).showPop({
                     type: "privacy"
                 });
             }, e.prototype.chooseBgFunc = function() {
@@ -9151,121 +9497,326 @@ window.__require = function t(e, o, n) {
                 void setTimeout(function() {
                     t.tipsNode.active = !1;
                 }, 2e3);
-                cc.sys.localStorage.setItem("gameloading", "gameloading"), this.loginStatusEd = !0, 
-                this.loadCfg();
-            }, e.prototype.leitingGetDeviceInfo = function() {
-                var t = p.default.getUserData();
-                if (t && t.userID && t.userID.length > 0 && d.default.callNative(h.NativeFun.publicParamsInfo, {
-                    userId: t.userID
-                }), d.default.deviceInfo) {
-                    var e = {
-                        androidid: d.default.deviceInfo.androidId,
-                        chennal: "310001",
-                        gameCode: "59"
-                    };
-                    d.default.leitingReport("af_before_login", e);
-                }
-            }, e.prototype.onLeitingLoginInfo = function() {
-                this.loginStatusEd = !0, this.loadJson(), _.default.reportTACommon("login", {
-                    login_type: "正常登录"
-                }), d.default.loginInfo && (d.default.loginInfo.userId, d.default.media);
-                var t = {};
-                if (d.default.deviceInfo) {
-                    var e = p.default.getUserData();
-                    t = {
-                        androidid: d.default.deviceInfo.androidId,
-                        chennal: "310001",
-                        gameCode: "59",
-                        userId: e.userID,
-                        type: 2,
-                        roldId: d.default.deviceInfo.gaid
-                    };
-                }
-                var o = {};
-                d.default.loginInfo && (e = p.default.getUserData(), o = {
-                    loginType: "1",
-                    chennal: d.default.loginInfo.channelNo,
-                    gameCode: "59",
-                    userId: e.userID,
-                    type: 2,
-                    serviceName: "海外测试服",
-                    serviceId: "1",
-                    loginMode: "1",
-                    playLevelId: e.playLevelId
-                });
-                var n = a(a({}, t), o);
-                d.default.leitingReport("af_login", n);
-            }, e.prototype.onLeitingLoginErr = function() {
-                this.loginStatusEd = !0, this.loadJson();
-            }, e.prototype.loadCfg = function() {
-                return c(this, void 0, Promise, function() {
-                    return s(this, function(t) {
+                this.isLogins();
+            }, e.prototype.isLogins = function() {
+                return r(this, void 0, Promise, function() {
+                    return c(this, function(t) {
                         switch (t.label) {
                           case 0:
-                            return [ 4, l.default.instance.init() ];
+                            return [ 4, l.LoginApi.beginLogin() ];
 
                           case 1:
-                            return t.sent(), g.default.isPrivacyUser() ? this.loginStatusEd && this.loadJson() : this.loadJson(), 
-                            [ 2 ];
+                            return 0 == t.sent() ? [ 2 ] : (this.showDescBegin(!1), this.loadScene(), [ 2 ]);
                         }
                     });
                 });
+            }, e.prototype.loadCfg = function() {
+                return r(this, void 0, Promise, function() {
+                    return c(this, function() {
+                        return this.mPromise18N || (this.mPromise18N = s.default.instance.init()), this.loadJson(), 
+                        [ 2 ];
+                    });
+                });
             }, e.prototype.loadJson = function() {
-                var t = this;
-                p.default.initData(function() {
-                    console.log("JSON加载完成");
-                    var e = p.default.getUserData();
-                    C.default.setUserid(e.userID);
-                    var o = p.default.getHourseUnlockData(), n = 0;
-                    if (o.length) {
-                        var i = o[o.length - 1];
-                        for (var a in i) if (!i[a].unlock) {
-                            n = i[a].unlockID;
-                            break;
-                        }
-                    }
-                    for (var r in n || o.length, e.dailyData) for (var c in e.dailyData[r]) e.dailyData[r][c].isWin;
-                    t.loadScene();
-                }), _.default.initTA();
+                return r(this, void 0, Promise, function() {
+                    var t = this;
+                    return c(this, function() {
+                        return null != this.mPromiseLoadJson ? [ 2 ] : (g.default.initTA(), [ 2, this.mPromiseLoadJson = new Promise(function(e) {
+                            var o = t;
+                            p.default.initData(function() {
+                                console.log("JSON加载完成"), e(), o.loadScene();
+                            });
+                        }) ]);
+                    });
+                });
             }, e.prototype.loadMainScene = function() {
                 var t = this;
-                cc.director.preloadScene("game", function() {}, function() {
-                    console.log("PUSH=>主场景加载完成"), t.loadScene();
+                this.mPromiseGameSceneLoad = new Promise(function(e) {
+                    cc.director.preloadScene("game", function(t, e) {
+                        this.mProgressTarget = t, this.progressAll = e;
+                    }.bind(t), function() {
+                        console.log("PUSH=>主场景加载完成"), e(), 1 == this.arrowBgBase.active && 0 == p.default.isLogin() ? this.showDescBegin(!0) : this.loadScene();
+                    }.bind(t));
                 });
             }, e.prototype.loadScene = function() {
-                this.loadNum += 1, console.log("PUSH=>", this.loadNum), this.loadNum >= this.loadOverNum && this.progressCurrent >= this.progressAll && !this.sceneLoadEd && (console.log("PUSH=>loadScene加载成功"), 
-                this.getInfoMainScene());
-            }, e.prototype.getInfoMainScene = function() {
-                this.sceneLoadEd = !0, _.default.reportTACommon("app_start", {
-                    step: "启动"
-                }), cc.director.loadScene("game", function() {
-                    console.log("PUSH=>进入主场景");
+                return r(this, void 0, void 0, function() {
+                    return c(this, function(t) {
+                        switch (t.label) {
+                          case 0:
+                            return console.assert(null != this.mPromiseLoadJson), [ 4, Promise.all([ this.mPromise18N, this.mPromiseGameSceneLoad, this.mPromiseLoadJson ]) ];
+
+                          case 1:
+                            return t.sent(), this.getInfoMainScene(), [ 2 ];
+                        }
+                    });
                 });
-            }, r([ S(cc.Node) ], e.prototype, "bgLayer", void 0), r([ S(cc.ProgressBar) ], e.prototype, "loadProgressBar", void 0), 
-            r([ S(cc.Node) ], e.prototype, "descNode", void 0), r([ S(cc.Node) ], e.prototype, "userNode", void 0), 
-            r([ S(cc.Node) ], e.prototype, "privacyNode", void 0), r([ S(cc.Node) ], e.prototype, "chooseNode", void 0), 
-            r([ S(cc.Node) ], e.prototype, "chooseBg", void 0), r([ S(cc.Node) ], e.prototype, "beginNode", void 0), 
-            r([ S(cc.Node) ], e.prototype, "tipsNode", void 0), r([ S(cc.Node) ], e.prototype, "arrowBgBase", void 0), 
-            r([ S(cc.Node) ], e.prototype, "userNodeBase", void 0), r([ S(cc.Node) ], e.prototype, "privacyUserPop", void 0), 
-            r([ k ], e);
+            }, e.prototype.getInfoMainScene = function() {
+                if (!this.sceneLoadEd) {
+                    var t = p.default.getItem("LoginExpirationTime");
+                    if (console.log("expirationTime ###### ", t), t) {
+                        var e = Date.now();
+                        Number(t) - e < 36e5 && (console.warn("失效 ###### "), p.default.clearToken());
+                    } else console.warn("本地无数据，清除 ###### "), p.default.clearToken();
+                    if (0 == p.default.isLogin()) return console.log("需要登录 ###### "), void this.showDescBegin(!0);
+                    this.sceneLoadEd = !0, console.log("PUSH=>loadScene加载成功"), g.default.reportTACommon("app_start", {
+                        step: "启动"
+                    }), cc.director.loadScene("game", function() {
+                        console.log("PUSH=>进入主场景");
+                    });
+                }
+            }, a([ N(cc.Node) ], e.prototype, "bgLayer", void 0), a([ N(cc.ProgressBar) ], e.prototype, "loadProgressBar", void 0), 
+            a([ N(cc.Node) ], e.prototype, "descNode", void 0), a([ N(cc.Node) ], e.prototype, "userNode", void 0), 
+            a([ N(cc.Node) ], e.prototype, "privacyNode", void 0), a([ N(cc.Node) ], e.prototype, "chooseNode", void 0), 
+            a([ N(cc.Node) ], e.prototype, "chooseBg", void 0), a([ N(cc.Node) ], e.prototype, "beginNode", void 0), 
+            a([ N(cc.Node) ], e.prototype, "tipsNode", void 0), a([ N(cc.Node) ], e.prototype, "arrowBgBase", void 0), 
+            a([ N(cc.Node) ], e.prototype, "userNodeBase", void 0), a([ N(cc.Node) ], e.prototype, "privacyUserPop", void 0), 
+            a([ _ ], e);
         }(cc.Component);
-        o.default = T, cc._RF.pop();
+        o.default = w, cc._RF.pop();
     }, {
         "../../i18n/i18n": "i18n",
+        "../api/login-api": "login-api",
         "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
-        "../common/native/native-bridge": "native-bridge",
-        "../common/native/native-def": "native-def",
-        "../common/native/native-event": "native-event",
         "../common/native/share": "share",
-        "../common/sdk": "sdk",
         "../common/spine": "spine",
         "../effect/player-head-atlas": "player-head-atlas",
         "../manager/GameManager": "GameManager",
         "../manager/report-common": "report-common",
         "../pop/PrivacyUserPop": "PrivacyUserPop",
-        "../tools/register-head-image": "register-head-image",
-        "../utils/uma/uma-sdk": "uma-sdk"
+        "../tools/register-head-image": "register-head-image"
+    } ],
+    "login-api": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "d4de2LEVvtJgKkLF/dcFQ/r", "login-api");
+        var n = this && this.__awaiter || function(t, e, o, n) {
+            return new (o || (o = Promise))(function(i, a) {
+                function r(t) {
+                    try {
+                        s(n.next(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function c(t) {
+                    try {
+                        s(n.throw(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function s(t) {
+                    var e;
+                    t.done ? i(t.value) : (e = t.value, e instanceof o ? e : new o(function(t) {
+                        t(e);
+                    })).then(r, c);
+                }
+                s((n = n.apply(t, e || [])).next());
+            });
+        }, i = this && this.__generator || function(t, e) {
+            var o, n, i, a, r = {
+                label: 0,
+                sent: function() {
+                    if (1 & i[0]) throw i[1];
+                    return i[1];
+                },
+                trys: [],
+                ops: []
+            };
+            return a = {
+                next: c(0),
+                throw: c(1),
+                return: c(2)
+            }, "function" == typeof Symbol && (a[Symbol.iterator] = function() {
+                return this;
+            }), a;
+            function c(t) {
+                return function(e) {
+                    return s([ t, e ]);
+                };
+            }
+            function s(a) {
+                if (o) throw new TypeError("Generator is already executing.");
+                for (;r; ) try {
+                    if (o = 1, n && (i = 2 & a[0] ? n.return : a[0] ? n.throw || ((i = n.return) && i.call(n), 
+                    0) : n.next) && !(i = i.call(n, a[1])).done) return i;
+                    switch (n = 0, i && (a = [ 2 & a[0], i.value ]), a[0]) {
+                      case 0:
+                      case 1:
+                        i = a;
+                        break;
+
+                      case 4:
+                        return r.label++, {
+                            value: a[1],
+                            done: !1
+                        };
+
+                      case 5:
+                        r.label++, n = a[1], a = [ 0 ];
+                        continue;
+
+                      case 7:
+                        a = r.ops.pop(), r.trys.pop();
+                        continue;
+
+                      default:
+                        if (!(i = (i = r.trys).length > 0 && i[i.length - 1]) && (6 === a[0] || 2 === a[0])) {
+                            r = 0;
+                            continue;
+                        }
+                        if (3 === a[0] && (!i || a[1] > i[0] && a[1] < i[3])) {
+                            r.label = a[1];
+                            break;
+                        }
+                        if (6 === a[0] && r.label < i[1]) {
+                            r.label = i[1], i = a;
+                            break;
+                        }
+                        if (i && r.label < i[2]) {
+                            r.label = i[2], r.ops.push(a);
+                            break;
+                        }
+                        i[2] && r.ops.pop(), r.trys.pop();
+                        continue;
+                    }
+                    a = e.call(t, r);
+                } catch (c) {
+                    c = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(c);
+                    a = [ 6, c ], n = 0;
+                } finally {
+                    o = i = 0;
+                }
+                if (5 & a[0]) throw a[1];
+                return {
+                    value: a[0] ? a[1] : void 0,
+                    done: !0
+                };
+            }
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        }), o.LoginApi = void 0;
+        var a = t("../common/dataTs"), r = t("../common/platform-utils"), c = t("./api-sheep"), s = function() {
+            function t() {}
+            return t.beginLogin = function(t) {
+                return void 0 === t && (t = !0), n(this, void 0, Promise, function() {
+                    var e, o, n, s;
+                    return i(this, function(i) {
+                        switch (i.label) {
+                          case 0:
+                            return a.default.isLogin() ? [ 2, !0 ] : r.default.isPlatform(r.Platform.tt) ? [ 4, c.default.ttLogin() ] : [ 3, 7 ];
+
+                          case 1:
+                            i.sent(), i.label = 2;
+
+                          case 2:
+                            return i.trys.push([ 2, 5, , 6 ]), t ? [ 4, c.default.getUserInfo() ] : [ 3, 4 ];
+
+                          case 3:
+                            i.sent(), i.label = 4;
+
+                          case 4:
+                            return [ 3, 6 ];
+
+                          case 5:
+                            return e = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", e), [ 3, 6 ];
+
+                          case 6:
+                            return [ 3, 33 ];
+
+                          case 7:
+                            return r.default.isPlatform(r.Platform.wx) ? [ 4, c.default.wxLogin() ] : [ 3, 14 ];
+
+                          case 8:
+                            i.sent(), i.label = 9;
+
+                          case 9:
+                            return i.trys.push([ 9, 12, , 13 ]), t ? [ 4, c.default.getWxUserInfo() ] : [ 3, 11 ];
+
+                          case 10:
+                            i.sent(), i.label = 11;
+
+                          case 11:
+                            return [ 3, 13 ];
+
+                          case 12:
+                            return o = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", o), [ 3, 13 ];
+
+                          case 13:
+                            return [ 3, 33 ];
+
+                          case 14:
+                            return r.default.isPlatform(r.Platform.oppo) ? [ 4, c.default.oppoLogin() ] : [ 3, 16 ];
+
+                          case 15:
+                            return i.sent(), [ 3, 33 ];
+
+                          case 16:
+                            return r.default.isPlatform(r.Platform.vivo) ? [ 4, c.default.vivoLogin() ] : [ 3, 18 ];
+
+                          case 17:
+                            return i.sent(), [ 3, 33 ];
+
+                          case 18:
+                            return r.default.isPlatform(r.Platform.qq) ? [ 4, c.default.qqLogin() ] : [ 3, 25 ];
+
+                          case 19:
+                            i.sent(), i.label = 20;
+
+                          case 20:
+                            return i.trys.push([ 20, 23, , 24 ]), t ? [ 4, c.default.getQqUserInfo() ] : [ 3, 22 ];
+
+                          case 21:
+                            i.sent(), i.label = 22;
+
+                          case 22:
+                            return [ 3, 24 ];
+
+                          case 23:
+                            return n = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", n), [ 3, 24 ];
+
+                          case 24:
+                            return [ 3, 33 ];
+
+                          case 25:
+                            return r.default.isPlatform(r.Platform.ks) ? [ 4, c.default.ksLogin() ] : [ 3, 32 ];
+
+                          case 26:
+                            i.sent(), i.label = 27;
+
+                          case 27:
+                            return i.trys.push([ 27, 30, , 31 ]), t ? [ 4, c.default.getKsUserInfo() ] : [ 3, 29 ];
+
+                          case 28:
+                            i.sent(), i.label = 29;
+
+                          case 29:
+                            return [ 3, 31 ];
+
+                          case 30:
+                            return s = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", s), [ 3, 31 ];
+
+                          case 31:
+                            return [ 3, 33 ];
+
+                          case 32:
+                            return [ 2, !1 ];
+
+                          case 33:
+                            return [ 2, !0 ];
+                        }
+                    });
+                });
+            }, t;
+        }();
+        o.LoginApi = s, cc._RF.pop();
+    }, {
+        "../common/dataTs": "dataTs",
+        "../common/platform-utils": "platform-utils",
+        "./api-sheep": "api-sheep"
     } ],
     long: [ function(t, e) {
         "use strict";
@@ -9788,7 +10339,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var s = t("../api/api-sheep"), l = t("../common/CcJsFunc"), u = t("../common/dataTs"), p = t("../common/enumConfig"), d = t("../common/spine"), h = t("../manager/GameManager"), f = t("../manager/report-common"), m = t("../manager/data-manager"), g = t("./mainUiLayer"), y = t("../module/ScrollMsg"), v = t("../common/native/audio"), b = t("../api/ApiTool"), _ = t("../module/sheep-flock-top"), N = t("../common/ui-dynamic-scroll-list/ui-scroll-top-list1"), w = cc._decorator, C = w.ccclass, P = w.property, k = function(t) {
+        var s = t("../api/api-sheep"), l = t("../common/CcJsFunc"), u = t("../common/dataTs"), p = t("../common/enumConfig"), d = t("../common/spine"), h = t("../manager/GameManager"), f = t("../manager/report-common"), m = t("../manager/data-manager"), g = t("./mainUiLayer"), y = t("../module/ScrollMsg"), v = t("../common/native/audio"), b = t("../api/ApiTool"), _ = t("../module/sheep-flock-top"), N = t("../common/ui-dynamic-scroll-list/ui-scroll-top-list1"), w = cc._decorator, P = w.ccclass, C = w.property, k = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.mainUILayer = null, e.positionNode = null, e.positionNodeIcon = null, e.positionNodeCycle = null, 
@@ -9877,8 +10428,8 @@ window.__require = function t(e, o, n) {
                     cc.game.emit(p.EMITKEY.RANKLOADINGSUCCESS, "fail");
                 }));
             }, e.prototype.setRankData = function(t) {
-                this.setSubViewData(t.list), this.mainUILayer.getComponent(g.default).showBottomRankNode(t.user), 
-                cc.game.emit(p.EMITKEY.RANKLOADINGSUCCESS, "success");
+                this.setSubViewData(t.list), this.userIdx = t.user ? t.user.index : -1, this.positionNode.active = this.userIdx > -1, 
+                this.mainUILayer.getComponent(g.default).showBottomRankNode(t.user), cc.game.emit(p.EMITKEY.RANKLOADINGSUCCESS, "success");
             }, e.prototype.setStageInfo = function() {
                 var t = this.stageInfo;
                 this._topBlock.capSp.active = !1, this._topBlock.sunglassesSp.active = !1, this._topBlock.hairSp.active = !1, 
@@ -9935,16 +10486,16 @@ window.__require = function t(e, o, n) {
                     g >= 1e7 && (N = "9999999+");
                     var w = v + "";
                     v >= 1e6 && (w = "999999+");
-                    var C = "今日挑战 " + N + " 羊，通关 " + w + " 羊";
+                    var P = "今日挑战 " + N + " 羊，通关 " + w + " 羊";
                     b.default.dailyAllNumber = g, b.default.dailywinNumber = v, b.default.avatar = m.default.user.avatar, 
                     this._topBlock.scrollMsg.getComponent(y.default).showMsg({
-                        msg: C
-                    }), this.updatePositionNode(this.dataArray);
-                    var P = [ {
+                        msg: P
+                    });
+                    var C = [ {
                         index: 0,
                         cardData: null
                     } ];
-                    for (d = 0; d < f; d++) P.push({
+                    for (d = 0; d < f; d++) C.push({
                         index: d + 1,
                         cardData: {
                             type: d + 1,
@@ -9952,7 +10503,7 @@ window.__require = function t(e, o, n) {
                             item: this.dataArray[d]
                         }
                     });
-                    if (this.rankList.updateData(P), 1 == h.default.getInstance().game_over && (cc.game.emit(p.EMITKEY.SHOWMASKLAYER), 
+                    if (this.rankList.updateData(C), 1 == h.default.getInstance().game_over && (cc.game.emit(p.EMITKEY.SHOWMASKLAYER), 
                     this.scheduleOnce(function() {
                         e.scrollToIndex(e.userIdx);
                     }, .1)), this.scheduleOnce(function() {
@@ -9971,39 +10522,24 @@ window.__require = function t(e, o, n) {
                 }
             }, e.prototype.scrollToIndex = function(t, e) {
                 void 0 === e && (e = .1);
-                var o = this.rankList.itemTemplate.data.height, n = this.rankList.paddingBottom, i = (t * o - o / 2) / (this.dataArray.length * o + n - this.rankList.scrollView.node.height);
+                var o = this.rankList.itemTemplate.data.height, n = this.rankList.paddingBottom, i = (t * o - o / 2 - 230) / (this.dataArray.length * o + n - 230 - this.rankList.scrollView.node.height / 2);
                 this.rankList.scrollView.scrollToPercentVertical(1 - i, e);
-            }, e.prototype.updatePositionNode = function(t) {
-                var e = u.default.getUserData().userID, o = 0, n = !1;
-                for (var i in this.userIdx = -1, t) {
-                    var a = t[i].list;
-                    if (a && a.length) {
-                        var r = a;
-                        for (var c in r) if (r[c].uid == Number(e)) {
-                            this.userIdx = o, n = !0, console.log("找到名字了 ###### " + o);
-                            break;
-                        }
-                        if (n) break;
-                        o++;
-                    }
-                }
-                this.positionNode.active = this.userIdx > -1;
-            }, a([ P({
+            }, a([ C({
                 type: cc.Node,
                 tooltip: "mainUILayer"
-            }) ], e.prototype, "mainUILayer", void 0), a([ P({
+            }) ], e.prototype, "mainUILayer", void 0), a([ C({
                 type: cc.Node,
                 tooltip: "定位按钮"
-            }) ], e.prototype, "positionNode", void 0), a([ P({
+            }) ], e.prototype, "positionNode", void 0), a([ C({
                 type: cc.Node,
                 tooltip: "定位按钮头像"
-            }) ], e.prototype, "positionNodeIcon", void 0), a([ P({
+            }) ], e.prototype, "positionNodeIcon", void 0), a([ C({
                 type: cc.Node,
                 tooltip: "定位按钮图标"
-            }) ], e.prototype, "positionNodeCycle", void 0), a([ P({
+            }) ], e.prototype, "positionNodeCycle", void 0), a([ C({
                 type: N.default,
                 tooltip: "排行榜列表"
-            }) ], e.prototype, "rankList", void 0), a([ C ], e);
+            }) ], e.prototype, "rankList", void 0), a([ P ], e);
         }(cc.Component);
         o.default = k, cc._RF.pop();
     }, {
@@ -10567,20 +11103,20 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../api/api-sheep"), c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/native/audio"), u = t("../common/sdk"), p = t("../game/gameLayer"), d = t("../manager/data-manager"), h = t("../manager/GameManager"), f = cc._decorator, m = f.ccclass, g = f.property, y = function(t) {
+        var r = t("../api/api-sheep"), c = t("../api/login-api"), s = t("../common/dataTs"), l = t("../common/enumConfig"), u = t("../common/native/audio"), p = t("../common/platform-utils"), d = t("../common/sdk"), h = t("../game/gameLayer"), f = t("../manager/data-manager"), m = t("../manager/GameManager"), g = cc._decorator, y = g.ccclass, v = g.property, b = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.gameLayer = null, e.commonUIPrefab = null, e.commonUI = null, e.topicUIPrefab = null, 
-                e.topicUI = null, e;
+                e.topicUI = null, e.invalidCount = 0, e;
             }
             return i(e, t), e.prototype.start = function() {
-                this.setupSubviews(), this.updateSubUI(), u.default.isPlatform(u.Platform.web) || this.preLoadVedio(), 
+                this.setupSubviews(), this.updateSubUI(), p.default.isPlatform(p.Platform.web) || this.preLoadVedio(), 
                 this.requestData();
             }, e.prototype.requestData = function() {
-                c.default.isLogin() && this.requestMatchResult();
+                s.default.isLogin() && this.requestMatchResult();
             }, e.prototype.requestMatchResult = function() {
-                if (!d.default.getMatchResultData()) {
-                    d.default.setMatchResultData();
+                if (!f.default.getMatchResultData()) {
+                    f.default.setMatchResultData();
                     var t = this;
                     setTimeout(function() {
                         r.default.getMatchResult(2, function(e) {
@@ -10597,18 +11133,27 @@ window.__require = function t(e, o, n) {
                     cc.game.emit("showPop", e);
                 }
             }, e.prototype.onEnable = function() {
-                this.updateSubUI(), cc.game.on(s.EMITKEY.BEGINGAME, this.beginGameFunc, this), cc.game.on(s.EMITKEY.SHOWMODULE, this.showModuleFunc, this);
+                this.updateSubUI(), cc.game.on(l.EMITKEY.BEGINGAME, this.beginGameFunc, this), cc.game.on(l.EMITKEY.SHOWMODULE, this.showModuleFunc, this), 
+                cc.game.on(l.EMITKEY.TOKENINVALIDMSG, this.tokenInvalidMethod, this);
             }, e.prototype.onDisable = function() {
-                cc.game.off(s.EMITKEY.BEGINGAME, this.beginGameFunc, this), cc.game.off(s.EMITKEY.SHOWMODULE, this.showModuleFunc, this);
+                cc.game.off(l.EMITKEY.BEGINGAME, this.beginGameFunc, this), cc.game.off(l.EMITKEY.SHOWMODULE, this.showModuleFunc, this), 
+                cc.game.off(l.EMITKEY.TOKENINVALIDMSG, this.tokenInvalidMethod, this);
+            }, e.prototype.tokenInvalidMethod = function() {
+                var t = this;
+                console.log("tokenInvalidMethod ###### "), this.invalidCount < 1 ? (s.default.clearToken(), 
+                c.LoginApi.beginLogin(!1), this.invalidCount++) : cc.game.emit(l.EMITKEY.SHOWMAINTIPS, "网络错误，请稍后重试~"), 
+                this.scheduleOnce(function() {
+                    t.invalidCount = 0;
+                }, 30);
             }, e.prototype.beginGameFunc = function() {
                 this.beginGame();
             }, e.prototype.showModuleFunc = function(t) {
-                switch (void 0 === t && (t = s.MODULETYPE.COMMON), t) {
-                  case s.MODULETYPE.COMMON:
+                switch (void 0 === t && (t = l.MODULETYPE.COMMON), t) {
+                  case l.MODULETYPE.COMMON:
                     this.commonUI.active = !0, this.topicUI.active = !1;
                     break;
 
-                  case s.MODULETYPE.TOPIC:
+                  case l.MODULETYPE.TOPIC:
                     this.commonUI.active = !1, this.topicUI.active = !0;
                 }
             }, e.prototype.setupSubviews = function() {
@@ -10616,58 +11161,60 @@ window.__require = function t(e, o, n) {
                 this.commonUI = cc.instantiate(this.commonUIPrefab), this.commonUI.active = !0, 
                 this.node.addChild(this.commonUI);
             }, e.prototype.updateSubUI = function() {
-                this.node.active = !0, this.gameLayer.active = !1, this.playMainBgMusic(), cc.game.emit(s.EMITKEY.MAINUPDATEUI);
+                this.node.active = !0, this.gameLayer.active = !1, this.playMainBgMusic(), cc.game.emit(l.EMITKEY.MAINUPDATEUI);
             }, e.prototype.showMainLayer = function(t) {
-                void 0 === t && (t = s.GAMEOVER.NONE), cc.game.emit(s.EMITKEY.TTSTOPRECORD), cc.game.emit(s.EMITKEY.TTSTARTRECORD), 
+                void 0 === t && (t = l.GAMEOVER.NONE), cc.game.emit(l.EMITKEY.TTSTOPRECORD), cc.game.emit(l.EMITKEY.TTSTARTRECORD), 
                 console.log("回到主页面 = " + t), this.node.active = !0, this.gameLayer.active = !1, 
-                this.updateRewardData(t), this.playMainBgMusic(), cc.game.emit(s.EMITKEY.MAINUPDATEUI), 
-                h.default.getInstance().gameType == s.GAMETYPE.GAMEDAILY ? cc.game.emit(s.EMITKEY.UPDATETABBARRECEIVE, 2) : cc.game.emit(s.EMITKEY.UPDATETABBARRECEIVE, 1);
+                this.updateRewardData(t), this.playMainBgMusic(), cc.game.emit(l.EMITKEY.MAINUPDATEUI), 
+                m.default.getInstance().gameType == l.GAMETYPE.GAMEDAILY ? cc.game.emit(l.EMITKEY.UPDATETABBARRECEIVE, 2) : cc.game.emit(l.EMITKEY.UPDATETABBARRECEIVE, 1);
             }, e.prototype.preLoadVedio = function() {
-                var t = c.default.GetVedioID();
-                u.default.preloadVideoAd(t, function() {
+                var t = s.default.GetVedioID();
+                d.default.preloadVideoAd(t, function() {
                     console.log("预加载视频成功");
                 }, function() {
                     console.log("预加载视频失败");
                 }, function() {}, !0);
             }, e.prototype.updateRewardData = function(t) {
                 switch (t) {
-                  case s.GAMEOVER.LEVELFAIL:
-                    h.default.getInstance().gameType == s.GAMETYPE.GAMELEVEL && c.default.resetSprintReward();
+                  case l.GAMEOVER.LEVELFAIL:
+                    m.default.getInstance().gameType == l.GAMETYPE.GAMELEVEL && s.default.resetSprintReward();
                 }
             }, e.prototype.playMainBgMusic = function() {
-                l.default.playBGM();
+                u.default.playBGM();
             }, e.prototype.beginGame = function() {
                 var t = this;
-                cc.game.emit(s.EMITKEY.TTSTARTRECORD), this.gameLayer.activeInHierarchy ? console.log("已经打开 mainLayer 1") : c.default.getTodayMap(h.default.getInstance().gameType, function() {
-                    for (var e = h.default.getInstance().mapMd5s, o = [], n = 0, i = function(i) {
-                        c.default.getLevelMapData(e[i], function(a) {
-                            n++, o[i] = a, n == e.length && (t.beginGameData(o), d.default.setGameLevelData(o));
+                cc.game.emit(l.EMITKEY.TTSTARTRECORD), this.gameLayer.activeInHierarchy ? console.log("已经打开 mainLayer 1") : s.default.getTodayMap(m.default.getInstance().gameType, function() {
+                    for (var e = m.default.getInstance().mapMd5s, o = [], n = 0, i = function(i) {
+                        s.default.getLevelMapData(e[i], function(a) {
+                            n++, o[i] = a, n == e.length && (t.beginGameData(o), f.default.setGameLevelData(o));
                         });
                     }, a = 0; a < e.length; a++) i(a);
                 });
             }, e.prototype.beginGameData = function(t) {
                 var e = this;
-                cc.game.emit(s.EMITKEY.SHOWTRANSITLAYER, function(o) {
+                cc.game.emit(l.EMITKEY.SHOWTRANSITLAYER, function(o) {
                     e.gameLayer.activeInHierarchy ? console.log("已经打开 mainLayer 2") : (console.log("可以打开了 mainLayer"), 
-                    e.gameLayer.getComponent(p.default).initLevelLayer(t), e.node.active = !1, o());
+                    e.gameLayer.getComponent(h.default).initLevelLayer(t), e.node.active = !1, o());
                 });
-            }, a([ g({
+            }, a([ v({
                 type: cc.Node,
                 tooltip: "游戏节点"
-            }) ], e.prototype, "gameLayer", void 0), a([ g({
+            }) ], e.prototype, "gameLayer", void 0), a([ v({
                 type: cc.Prefab,
                 tooltip: "common页面节点"
-            }) ], e.prototype, "commonUIPrefab", void 0), a([ g({
+            }) ], e.prototype, "commonUIPrefab", void 0), a([ v({
                 type: cc.Prefab,
                 tooltip: "topic节点"
-            }) ], e.prototype, "topicUIPrefab", void 0), a([ m ], e);
+            }) ], e.prototype, "topicUIPrefab", void 0), a([ y ], e);
         }(cc.Component);
-        o.default = y, cc._RF.pop();
+        o.default = b, cc._RF.pop();
     }, {
         "../api/api-sheep": "api-sheep",
+        "../api/login-api": "login-api",
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
         "../common/native/audio": "audio",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../game/gameLayer": "gameLayer",
         "../manager/GameManager": "GameManager",
@@ -10804,11 +11351,11 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/util"), p = t("../common/enumConfig"), d = t("../manager/report-common"), h = t("../manager/GameManager"), f = t("../manager/DateManager"), m = t("../common/sdk"), g = t("../api/api-sheep"), y = t("../common/native/tt-sdk"), v = t("../manager/data-manager"), b = t("../common/native/audio"), _ = t("../common/native/wx-sdk"), N = t("../common/native/qq-sdk"), w = cc._decorator, C = w.ccclass, P = w.property, k = function(t) {
+        var s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/util"), p = t("../common/enumConfig"), d = t("../manager/report-common"), h = t("../manager/GameManager"), f = t("../manager/DateManager"), m = t("../common/sdk"), g = t("../api/api-sheep"), y = t("../common/native/tt-sdk"), v = t("../manager/data-manager"), b = t("../common/native/audio"), _ = t("../common/native/wx-sdk"), N = t("../common/native/qq-sdk"), w = t("../common/platform-utils"), P = t("../api/login-api"), C = cc._decorator, k = C.ccclass, S = C.property, O = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.beginBtn = null, e.setupBtn = null, e.rankBtn = null, e.meBtn = null, e.focusBtn = null, 
-                e.childBtn = null, e.deskBtn = null, e.timeNode = null, e.timeLabel = null, e.bottomRankNode = null, 
+                e.deskBtn = null, e.timeNode = null, e.timeLabel = null, e.bottomRankNode = null, 
                 e.levelNumLabel = null, e.bulletNode = null, e.bulletBtn = null, e.collectBtn = null, 
                 e.topicBtn = null, e.friendBtn = null, e.ttRankBtn = null, e.openPageBtn = null, 
                 e.openChannelBtn = null, e.wxAccountBtn = null, e.popCallbackCollect = null, e.beginButtonDuration = 0, 
@@ -10834,25 +11381,24 @@ window.__require = function t(e, o, n) {
                 this.bulletStateFunc(), s.default.addTargetTouchUpInside(this.setupBtn, this.setupTouchEnd.bind(this)), 
                 s.default.addTargetTouchUpInside(this.rankBtn, this.rankBtnFunc.bind(this)), s.default.addTargetTouchUpInside(this.ttRankBtn, this.rankBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.beginBtn, this.beginBtnEnd.bind(this)), s.default.addTargetTouchUpInside(this.focusBtn, this.focusBtnFunc.bind(this)), 
-                s.default.addTargetTouchUpInside(this.childBtn, this.childBtnFunc.bind(this)), s.default.addTargetTouchUpInside(this.deskBtn, this.deskBtnFunc.bind(this)), 
-                s.default.addTargetTouchUpInside(this.bulletBtn, this.bulletBtnFunc.bind(this)), 
+                s.default.addTargetTouchUpInside(this.deskBtn, this.deskBtnFunc.bind(this)), s.default.addTargetTouchUpInside(this.bulletBtn, this.bulletBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.collectBtn, this.collectBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.topicBtn, this.topicBtnFunc.bind(this)), s.default.addTargetTouchUpInside(this.friendBtn, this.friendBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.meBtn, this.meBtnFunc.bind(this)), s.default.addTargetTouchUpInside(this.openPageBtn, this.openPageBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.openChannelBtn, this.openPageBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.wxAccountBtn, this.wxAccountBtnFunc.bind(this)), 
                 l.default.isLogin() ? this.meBtn.active = !0 : (this.bulletBtn.active = !1, this.meBtn.active = !1), 
-                this.bulletBtn.active = !1, this.childBtn.active = !1, this.deskBtn.active = !1, 
-                this.focusBtn.active = !1, y.default.isSupportFocusDouYin() && (this.focusBtn.active = !0), 
-                this.setMainLayerData(), this.updateTimeFunc(), this.popCallbackCollect = {
+                this.bulletBtn.active = !1, this.deskBtn.active = !1, this.focusBtn.active = !1, 
+                y.default.isSupportFocusDouYin() && (this.focusBtn.active = !0), this.setMainLayerData(), 
+                this.updateTimeFunc(), this.popCallbackCollect = {
                     freeCallBack: this.freeCallBackFunc.bind(this),
                     exitCallBack: this.exitCallBackFunc.bind(this)
                 }, this.bottomRankNode.active = !1, this.requestData(), this.wxAccountBtn.active = !1, 
-                l.default.isPlatform(l.GDPlatform.wx) ? (this.friendBtn.active = !0, this.rankBtn.active = !0, 
-                this.openPageBtn.active = !0, this.openChannelBtn.active = !1, this.wxAccountBtn.active = !0) : l.default.isPlatform(l.GDPlatform.qq) ? (this.rankBtn.active = !0, 
-                this.openChannelBtn.active = !0, this.openPageBtn.active = !1) : (this.friendBtn.active = !1, 
-                this.rankBtn.active = !1, this.openPageBtn.active = !1, this.openChannelBtn.active = !1), 
-                this.rankBtn.active = !0, l.default.isPlatform(l.GDPlatform.tt) || l.default.isPlatform(l.GDPlatform.oppo) || l.default.isPlatform(l.GDPlatform.vivo) || l.default.isPlatform(l.GDPlatform.ios) ? this.ttRankBtn.active = !0 : this.ttRankBtn.active = !1;
+                this.friendBtn.active = !1, this.rankBtn.active = !1, this.openPageBtn.active = !1, 
+                this.openChannelBtn.active = !1, w.default.isPlatform(w.Platform.wx) ? (this.friendBtn.active = !0, 
+                this.rankBtn.active = !0, this.openPageBtn.active = !0, this.wxAccountBtn.active = !0) : w.default.isPlatform(w.Platform.qq) ? (this.rankBtn.active = !0, 
+                this.openChannelBtn.active = !0) : w.default.isPlatform(w.Platform.ks) && (this.rankBtn.active = !0), 
+                w.default.isPlatform(w.Platform.tt) || w.default.isPlatform(w.Platform.oppo) || w.default.isPlatform(w.Platform.vivo) || w.default.isPlatform(w.Platform.ios) ? this.ttRankBtn.active = !0 : this.ttRankBtn.active = !1;
             }, e.prototype.onEnable = function() {
                 this.topicBtn.getChildByName("tag_icon").active = !v.default.getMatchResultData(), 
                 h.default.getInstance().collectionMark.topicClothesNum > 0 ? this.collectBtn.getChildByName("tag_icon").active = !0 : this.collectBtn.getChildByName("tag_icon").active = !1, 
@@ -10862,19 +11408,19 @@ window.__require = function t(e, o, n) {
                 cc.game.off(p.EMITKEY.MAINUPDATEUI, this.setMainLayerData, this), cc.game.off(p.EMITKEY.RANKUSERINFOSUCCESS, this.rankUserInfoFunc, this), 
                 cc.game.off(p.EMITKEY.BULLETSTATE, this.bulletStateFunc, this);
             }, e.prototype.openPageBtnFunc = function() {
-                l.default.isPlatform(l.GDPlatform.wx) ? _.default.wxOpenPage() : l.default.isPlatform(l.GDPlatform.qq) && N.default.qqOpenPage();
+                w.default.isPlatform(w.Platform.wx) ? _.default.wxOpenPage() : w.default.isPlatform(w.Platform.qq) && N.default.qqOpenPage();
             }, e.prototype.wxAccountBtnFunc = function() {
-                cc.game.emit("showPop", {
+                cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "wxPublicAccount",
                     showPopData: {}
                 });
             }, e.prototype.meBtnFunc = function() {
-                console.log("个人资料"), cc.game.emit("showPop", {
+                console.log("个人资料"), cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "personalPop",
                     showPopData: {}
                 });
             }, e.prototype.friendBtnFunc = function() {
-                console.log("朋友圈"), cc.game.emit("showPop", {
+                console.log("朋友圈"), cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "todayRankPop",
                     showPopData: {}
                 });
@@ -10891,7 +11437,7 @@ window.__require = function t(e, o, n) {
                         changeClothesCb: this.changeClothesFunc.bind(this)
                     }
                 };
-                cc.game.emit("showPop", t), this.collectBtn.getChildByName("tag_icon").active = !1, 
+                cc.game.emit(p.EMITKEY.SHOWPOP, t), this.collectBtn.getChildByName("tag_icon").active = !1, 
                 h.default.getInstance().collectionMark.topicClothesNum = 0;
             }, e.prototype.changeClothesFunc = function(t) {
                 g.default.updateUserSkin(t, function() {}), setTimeout(function() {
@@ -10905,14 +11451,12 @@ window.__require = function t(e, o, n) {
                 l.default.isLogin() ? this.meBtn.active = !0 : (this.bulletBtn.active = !1, this.meBtn.active = !1);
             }, e.prototype.bulletBtnFunc = function() {
                 h.default.getInstance().bulletTime <= 0 ? cc.game.emit(p.EMITKEY.SHOWMAINTIPS, "一分钟只能发一条弹幕哦~") : (console.log("发弹幕"), 
-                cc.game.emit("showPop", {
+                cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "bulletScreenPop",
                     showPopData: {}
                 }));
             }, e.prototype.focusBtnFunc = function() {
                 console.log("关注"), y.default.focusDouYin();
-            }, e.prototype.childBtnFunc = function() {
-                console.log("转跳"), y.default.gameBox();
             }, e.prototype.deskBtnFunc = function() {
                 console.log("桌面"), y.default.addShortcut();
             }, e.prototype.requestData = function() {
@@ -10922,7 +11466,7 @@ window.__require = function t(e, o, n) {
             }, e.prototype.freeCallBackFunc = function() {
                 console.log("观看广告 ###### ");
                 var t = this;
-                if (m.default.isPlatform(m.Platform.wx) && h.default.getInstance().isSharedMapOption()) {
+                if (w.default.isPlatform(w.Platform.wx) && h.default.getInstance().isSharedMapOption()) {
                     var e = l.default.GetVedioID(), o = l.default.getUserData().openid;
                     if (m.default.wxIsPolicy() && m.default.wxIsPolicyShare()) return void m.default.share(o, e, function() {
                         t.beginTouchCallbackFunc();
@@ -10930,37 +11474,38 @@ window.__require = function t(e, o, n) {
                         cc.game.emit(p.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                     });
                 }
-                if (m.default.isPlatform(m.Platform.qq) && h.default.getInstance().isSharedMapOption()) {
+                if (w.default.isPlatform(w.Platform.qq) && h.default.getInstance().isSharedMapOption()) {
                     var n = l.default.GetVedioID();
-                    if (o = l.default.getUserData().openid, m.default.wxIsPolicy() && m.default.wxIsPolicyShare()) return void m.default.share(o, n, function() {
+                    o = l.default.getUserData().openid, m.default.share(o, n, function() {
                         t.beginTouchCallbackFunc();
                     }, function() {
                         cc.game.emit(p.EMITKEY.SHOWMAINTIPS, "分享失败，请分享QQ群与好友PK");
                     });
+                } else {
+                    var i = l.default.GetVedioID();
+                    m.default.watchAdVideo({
+                        id: i,
+                        success: function() {
+                            console.log("成功 sdk"), t.beginTouchCallbackFunc();
+                        },
+                        fail: function() {
+                            console.log("失败");
+                        },
+                        nofit: function() {
+                            t.shareTTAction();
+                        }
+                    });
                 }
-                var i = l.default.GetVedioID();
-                m.default.watchAdVideo({
-                    id: i,
-                    success: function() {
-                        console.log("成功 sdk"), t.beginTouchCallbackFunc();
-                    },
-                    fail: function() {
-                        console.log("失败");
-                    },
-                    nofit: function() {
-                        t.shareTTAction();
-                    }
-                });
             }, e.prototype.shareTTAction = function() {
                 var t = this;
-                if (m.default.isPlatform(m.Platform.wx)) {
+                if (w.default.isPlatform(w.Platform.wx)) {
                     var e = l.default.GetVedioID(), o = l.default.getUserData().openid;
                     m.default.share(o, e, function() {
                         t.shareCbMethod();
                     }, function() {
                         cc.game.emit(p.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                     });
-                } else if (m.default.isPlatform(m.Platform.tt)) {
+                } else if (w.default.isPlatform(w.Platform.tt)) {
                     var n = {
                         popName: "shareNodePop",
                         showPopData: {
@@ -10968,18 +11513,18 @@ window.__require = function t(e, o, n) {
                             shareCb: this.shareCbMethod.bind(this)
                         }
                     };
-                    cc.game.emit("showPop", n);
-                } else m.default.isPlatform(m.Platform.qq) && (n = {
+                    cc.game.emit(p.EMITKEY.SHOWPOP, n);
+                } else w.default.isPlatform(w.Platform.qq) && (n = {
                     popName: "shareNodePop",
                     showPopData: {
                         type: 2,
                         shareCb: this.shareCbMethod.bind(this)
                     }
-                }, cc.game.emit("showPop", n));
+                }, cc.game.emit(p.EMITKEY.SHOWPOP, n));
             }, e.prototype.shareCbMethod = function() {
                 console.log("分享成功 ######"), this.beginTouchCallbackFunc();
             }, e.prototype.rankBtnFunc = function() {
-                console.log("排行榜"), cc.game.emit("showPop", {
+                console.log("排行榜"), cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "sheepRankPop",
                     showPopData: {
                         popCallbackCollect: null
@@ -10991,7 +11536,7 @@ window.__require = function t(e, o, n) {
                 -1 == t ? this.levelNumLabel.string = "加入羊群" : 0 == t ? this.levelNumLabel.string = "再次挑战" : 1 == t && (this.levelNumLabel.string = "已加入羊群", 
                 this.timeNode.active = !0);
             }, e.prototype.setupTouchEnd = function() {
-                console.log("打开设置弹窗"), cc.game.emit("showPop", {
+                console.log("打开设置弹窗"), cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "setupPop",
                     showPopData: {
                         popCallbackCollect: null,
@@ -11000,110 +11545,25 @@ window.__require = function t(e, o, n) {
                 });
             }, e.prototype.beginTouchEnd = function(t) {
                 return r(this, void 0, Promise, function() {
-                    var e, o, n;
-                    return c(this, function(i) {
-                        switch (i.label) {
+                    return c(this, function(e) {
+                        switch (e.label) {
                           case 0:
-                            return m.default.isPlatform(m.Platform.tt) ? 0 != l.default.isLogin() ? [ 3, 5 ] : [ 4, g.default.ttLogin() ] : [ 3, 6 ];
+                            return [ 4, P.LoginApi.beginLogin() ];
 
                           case 1:
-                            i.sent(), i.label = 2;
+                            return e.sent(), console.log("登录成功，或者已登录 ###### "), 1 != t ? [ 3, 2 ] : (this.beginGameStatus(), 
+                            [ 3, 4 ]);
 
                           case 2:
-                            return i.trys.push([ 2, 4, , 5 ]), [ 4, g.default.getUserInfo() ];
+                            return 2 != t ? [ 3, 4 ] : [ 4, g.default.getTopicData(function() {}) ];
 
                           case 3:
-                            return i.sent(), [ 3, 5 ];
-
-                          case 4:
-                            return e = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", e), [ 3, 5 ];
-
-                          case 5:
-                            return [ 3, 29 ];
-
-                          case 6:
-                            return m.default.isPlatform(m.Platform.wx) ? 0 != l.default.isLogin() ? [ 3, 11 ] : [ 4, g.default.wxLogin() ] : [ 3, 12 ];
-
-                          case 7:
-                            i.sent(), i.label = 8;
-
-                          case 8:
-                            return i.trys.push([ 8, 10, , 11 ]), [ 4, g.default.getWxUserInfo() ];
-
-                          case 9:
-                            return i.sent(), [ 3, 11 ];
-
-                          case 10:
-                            return o = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", o), [ 3, 11 ];
-
-                          case 11:
-                            return [ 3, 29 ];
-
-                          case 12:
-                            return m.default.isPlatform(m.Platform.oppo) ? 0 != l.default.isLogin() ? [ 3, 14 ] : [ 4, g.default.oppoLogin() ] : [ 3, 15 ];
-
-                          case 13:
-                            i.sent(), i.label = 14;
-
-                          case 14:
-                            return [ 3, 29 ];
-
-                          case 15:
-                            return m.default.isPlatform(m.Platform.vivo) ? 0 != l.default.isLogin() ? [ 3, 17 ] : [ 4, g.default.vivoLogin() ] : [ 3, 18 ];
-
-                          case 16:
-                            i.sent(), i.label = 17;
-
-                          case 17:
-                            return [ 3, 29 ];
-
-                          case 18:
-                            return m.default.isPlatform(m.Platform.ios) ? 0 != l.default.isLogin() ? [ 3, 20 ] : [ 4, g.default.iosLogin() ] : [ 3, 21 ];
-
-                          case 19:
-                            i.sent(), i.label = 20;
-
-                          case 20:
-                            return [ 3, 29 ];
-
-                          case 21:
-                            return m.default.isPlatform(m.Platform.qq) ? 0 != l.default.isLogin() ? [ 3, 26 ] : [ 4, g.default.qqLogin() ] : [ 3, 27 ];
-
-                          case 22:
-                            i.sent(), i.label = 23;
-
-                          case 23:
-                            return i.trys.push([ 23, 25, , 26 ]), [ 4, g.default.getQqUserInfo() ];
-
-                          case 24:
-                            return i.sent(), [ 3, 26 ];
-
-                          case 25:
-                            return n = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", n), [ 3, 26 ];
-
-                          case 26:
-                            return [ 3, 29 ];
-
-                          case 27:
-                            return console.log("游客登录 ###### "), 0 != l.default.isLogin() ? [ 3, 29 ] : [ 4, g.default.iosLogin() ];
-
-                          case 28:
-                            i.sent(), i.label = 29;
-
-                          case 29:
-                            return console.log("登录成功，或者已登录 ###### "), 1 != t ? [ 3, 30 ] : (this.beginGameStatus(), 
-                            [ 3, 32 ]);
-
-                          case 30:
-                            return 2 != t ? [ 3, 32 ] : [ 4, g.default.getTopicData(function() {}) ];
-
-                          case 31:
-                            i.sent(), d.default.reportTACommon("game_start", {
+                            e.sent(), d.default.reportTACommon("game_start", {
                                 type: "话题挑战"
                             }), v.default.topicModel && v.default.topicModel.info && 0 != v.default.topicModel.info.type ? this.enterTopicGame() : (this.showChoosePop(0), 
-                            console.log("加入话题")), i.label = 32;
+                            console.log("加入话题")), e.label = 4;
 
-                          case 32:
+                          case 4:
                             return [ 2 ];
                         }
                     });
@@ -11116,7 +11576,7 @@ window.__require = function t(e, o, n) {
                         chooseCallback: this.chooseCallbackFunc.bind(this)
                     }
                 };
-                cc.game.emit("showPop", e);
+                cc.game.emit(p.EMITKEY.SHOWPOP, e);
             }, e.prototype.chooseCallbackFunc = function() {
                 var t = this;
                 this.enterTopicGame(), setTimeout(function() {
@@ -11127,7 +11587,7 @@ window.__require = function t(e, o, n) {
                     cc.game.emit(p.EMITKEY.SHOWMODULE, p.MODULETYPE.TOPIC);
                 });
             }, e.prototype.showTeamPop = function() {
-                cc.game.emit("showPop", {
+                cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "topicJoinedPop",
                     showPopData: {}
                 });
@@ -11144,7 +11604,7 @@ window.__require = function t(e, o, n) {
                         popType: 0
                     }
                 };
-                cc.game.emit("showPop", t);
+                cc.game.emit(p.EMITKEY.SHOWPOP, t);
             }, e.prototype.videoGotoGame = function() {
                 var t = f.default.format(p.CALENDARNAMES[5], new Date()), e = f.default.format(p.CALENDARNAMES[6], new Date()), o = l.default.getDailyData(t, e);
                 o && o.unLimitVideo && o.unLimitVideo, h.default.getInstance().unLimitVideo = !0, 
@@ -11152,7 +11612,7 @@ window.__require = function t(e, o, n) {
             }, e.prototype.playVideoFunc = function() {
                 console.log("观看广告");
                 var t = this, e = l.default.GetVedioID();
-                if (m.default.isPlatform(m.Platform.wx) && h.default.getInstance().isSharedMapOption()) {
+                if (w.default.isPlatform(w.Platform.wx) && h.default.getInstance().isSharedMapOption()) {
                     var o = l.default.GetVedioID(), n = l.default.getUserData().openid;
                     if (m.default.wxIsPolicy() && m.default.wxIsPolicyShare()) return void m.default.share(n, o, function() {
                         t.playMethods();
@@ -11193,59 +11653,57 @@ window.__require = function t(e, o, n) {
             }, e.prototype.beginTouchCallbackFunc = function() {
                 this.beginButtonDuration >= 1 ? (this.beginButtonDuration = 0, h.default.setGameType(p.GAMETYPE.GAMEDAILY), 
                 b.default.playBGM(), cc.game.emit(p.EMITKEY.BEGINGAME)) : console.log("不能连续点击");
-            }, a([ P({
+            }, a([ S({
                 type: cc.Node,
                 tooltip: "开始游戏"
-            }) ], e.prototype, "beginBtn", void 0), a([ P(cc.Node) ], e.prototype, "setupBtn", void 0), 
-            a([ P({
+            }) ], e.prototype, "beginBtn", void 0), a([ S(cc.Node) ], e.prototype, "setupBtn", void 0), 
+            a([ S({
                 type: cc.Node,
                 tooltip: "wx排行榜"
-            }) ], e.prototype, "rankBtn", void 0), a([ P({
+            }) ], e.prototype, "rankBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "个人资料"
-            }) ], e.prototype, "meBtn", void 0), a([ P({
+            }) ], e.prototype, "meBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "关注抖音号"
-            }) ], e.prototype, "focusBtn", void 0), a([ P({
-                type: cc.Node,
-                tooltip: "托儿所"
-            }) ], e.prototype, "childBtn", void 0), a([ P({
+            }) ], e.prototype, "focusBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "添加到桌面"
-            }) ], e.prototype, "deskBtn", void 0), a([ P(cc.Node) ], e.prototype, "timeNode", void 0), 
-            a([ P(cc.Label) ], e.prototype, "timeLabel", void 0), a([ P(cc.Node) ], e.prototype, "bottomRankNode", void 0), 
-            a([ P(cc.Label) ], e.prototype, "levelNumLabel", void 0), a([ P({
+            }) ], e.prototype, "deskBtn", void 0), a([ S(cc.Node) ], e.prototype, "timeNode", void 0), 
+            a([ S(cc.Label) ], e.prototype, "timeLabel", void 0), a([ S(cc.Node) ], e.prototype, "bottomRankNode", void 0), 
+            a([ S(cc.Label) ], e.prototype, "levelNumLabel", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "弹幕页面"
-            }) ], e.prototype, "bulletNode", void 0), a([ P({
+            }) ], e.prototype, "bulletNode", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "弹幕"
-            }) ], e.prototype, "bulletBtn", void 0), a([ P({
+            }) ], e.prototype, "bulletBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "换装"
-            }) ], e.prototype, "collectBtn", void 0), a([ P({
+            }) ], e.prototype, "collectBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "今日话题页面"
-            }) ], e.prototype, "topicBtn", void 0), a([ P({
+            }) ], e.prototype, "topicBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "好友排行榜"
-            }) ], e.prototype, "friendBtn", void 0), a([ P({
+            }) ], e.prototype, "friendBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "tt排行榜"
-            }) ], e.prototype, "ttRankBtn", void 0), a([ P({
+            }) ], e.prototype, "ttRankBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "打开微信游戏圈"
-            }) ], e.prototype, "openPageBtn", void 0), a([ P({
+            }) ], e.prototype, "openPageBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "打开QQ频道"
-            }) ], e.prototype, "openChannelBtn", void 0), a([ P({
+            }) ], e.prototype, "openChannelBtn", void 0), a([ S({
                 type: cc.Node,
                 tooltip: "打开公众号"
-            }) ], e.prototype, "wxAccountBtn", void 0), a([ C ], e);
+            }) ], e.prototype, "wxAccountBtn", void 0), a([ k ], e);
         }(cc.Component);
-        o.default = k, cc._RF.pop();
+        o.default = O, cc._RF.pop();
     }, {
         "../api/api-sheep": "api-sheep",
+        "../api/login-api": "login-api",
         "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
@@ -11253,6 +11711,7 @@ window.__require = function t(e, o, n) {
         "../common/native/qq-sdk": "qq-sdk",
         "../common/native/tt-sdk": "tt-sdk",
         "../common/native/wx-sdk": "wx-sdk",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../common/util": "util",
         "../manager/DateManager": "DateManager",
@@ -11668,7 +12127,7 @@ window.__require = function t(e, o, n) {
         cc._RF.push(e, "2c85cEMdLpBjqoP7dN6ARgY", "native-bridge"), Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var n = t("../sdk"), i = t("./native-def"), a = t("./native-event"), r = function() {
+        var n = t("../platform-utils"), i = t("./native-def"), a = t("./native-event"), r = function() {
             function t() {}
             return t.leitingShareReq = function(e) {
                 t.shareInfo = e, t.callNative(i.NativeFun.leitingShare, {
@@ -11749,7 +12208,7 @@ window.__require = function t(e, o, n) {
         }();
         o.default = r, window.CocosCaller = r.CocosCaller, cc._RF.pop();
     }, {
-        "../sdk": "sdk",
+        "../platform-utils": "platform-utils",
         "./native-def": "native-def",
         "./native-event": "native-event"
     } ],
@@ -12188,7 +12647,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../../../i18n/gd_language"), c = t("../../../i18n/i18n"), s = t("../../common/CcJsFunc"), l = t("../../common/dataTs"), u = t("../../common/enumConfig"), p = t("../../common/sdk"), d = t("../../common/spine"), h = t("../../common/util"), f = t("../../manager/GameManager"), m = cc._decorator, g = m.ccclass, y = m.property, v = function(t) {
+        var r = t("../../../i18n/gd_language"), c = t("../../../i18n/i18n"), s = t("../../common/CcJsFunc"), l = t("../../common/dataTs"), u = t("../../common/enumConfig"), p = t("../../common/platform-utils"), d = t("../../common/spine"), h = t("../../common/util"), f = t("../../manager/GameManager"), m = cc._decorator, g = m.ccclass, y = m.property, v = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.mainLayer = null, e.nextBtn = null, e.sprintReward = null, e.sprintWinLabel = null, 
@@ -12274,7 +12733,7 @@ window.__require = function t(e, o, n) {
         "../../common/CcJsFunc": "CcJsFunc",
         "../../common/dataTs": "dataTs",
         "../../common/enumConfig": "enumConfig",
-        "../../common/sdk": "sdk",
+        "../../common/platform-utils": "platform-utils",
         "../../common/spine": "spine",
         "../../common/util": "util",
         "../../manager/GameManager": "GameManager"
@@ -12345,6 +12804,330 @@ window.__require = function t(e, o, n) {
         "../../i18n/i18n": "i18n",
         "../common/CcJsFunc": "CcJsFunc",
         "../manager/GameManager": "GameManager"
+    } ],
+    "platform-utils": [ function(t, e, o) {
+        "use strict";
+        var n;
+        cc._RF.push(e, "54fd9d2aK1JuYpwJvB1XvHg", "platform-utils"), Object.defineProperty(o, "__esModule", {
+            value: !0
+        }), o.Platform = void 0, function(t) {
+            t[t.android = 0] = "android", t[t.ios = 1] = "ios", t[t.wx = 2] = "wx", t[t.tt = 3] = "tt", 
+            t[t.web = 4] = "web", t[t.oppo = 5] = "oppo", t[t.vivo = 6] = "vivo", t[t.qq = 7] = "qq", 
+            t[t.ks = 8] = "ks";
+        }(n = o.Platform || (o.Platform = {}));
+        var i = function() {
+            function t() {}
+            return t.isPlatform = function(t) {
+                var e = "undefined" != typeof KSGameGlobal, o = "undefined" != typeof qq;
+                switch (t) {
+                  case n.android:
+                    return !(!cc.sys.isNative || cc.sys.os != cc.sys.OS_ANDROID);
+
+                  case n.ios:
+                    return !(!cc.sys.isNative || cc.sys.os != cc.sys.OS_IOS);
+
+                  case n.tt:
+                    return cc.sys.platform == cc.sys.BYTEDANCE_GAME;
+
+                  case n.oppo:
+                    return cc.sys.platform == cc.sys.OPPO_GAME;
+
+                  case n.vivo:
+                    return cc.sys.platform == cc.sys.VIVO_GAME;
+
+                  case n.ks:
+                    return !!e;
+
+                  case n.qq:
+                    return !(cc.sys.platform != cc.sys.WECHAT_GAME || !o || e);
+
+                  case n.wx:
+                    return cc.sys.platform == cc.sys.WECHAT_GAME && !o && !e;
+
+                  case n.web:
+                    return cc.sys.isBrowser;
+                }
+                return !1;
+            }, t.getPlatform = function() {
+                return cc.sys.isNative && cc.sys.os == cc.sys.OS_ANDROID ? n.android : cc.sys.isNative && cc.sys.os == cc.sys.OS_IOS ? n.ios : cc.sys.platform == cc.sys.WECHAT_GAME ? window.qq ? n.qq : n.wx : n.web;
+            }, t;
+        }();
+        o.default = i, cc._RF.pop();
+    }, {} ],
+    "play-play-btn": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "3367eRChJpImrwxH33YiTB4", "play-play-btn");
+        var n, i = this && this.__extends || (n = function(t, e) {
+            return (n = Object.setPrototypeOf || {
+                __proto__: []
+            } instanceof Array && function(t, e) {
+                t.__proto__ = e;
+            } || function(t, e) {
+                for (var o in e) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
+            })(t, e);
+        }, function(t, e) {
+            function o() {
+                this.constructor = t;
+            }
+            n(t, e), t.prototype = null === e ? Object.create(e) : (o.prototype = e.prototype, 
+            new o());
+        }), a = this && this.__decorate || function(t, e, o, n) {
+            var i, a = arguments.length, r = a < 3 ? e : null === n ? n = Object.getOwnPropertyDescriptor(e, o) : n;
+            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) r = Reflect.decorate(t, e, o, n); else for (var c = t.length - 1; c >= 0; c--) (i = t[c]) && (r = (a < 3 ? i(r) : a > 3 ? i(e, o, r) : i(e, o)) || r);
+            return a > 3 && r && Object.defineProperty(e, o, r), r;
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var r = t("../../common/enumConfig"), c = t("../../common/ui-button"), s = t("../../config/res-config"), l = t("../../manager/pop-manager-new"), u = cc._decorator, p = u.ccclass, d = u.property, h = function(t) {
+            function e() {
+                var e = null !== t && t.apply(this, arguments) || this;
+                return e.playPlayBtn = null, e.closeBtn = null, e.moving = !1, e;
+            }
+            return i(e, t), e.prototype.onLoad = function() {
+                this.node.active = !1, this.closeBtn.node.active = !1;
+            }, e.prototype.start = function() {
+                var t = this;
+                this.playPlayBtn.onClick(function() {
+                    t.playPlayBtnBtnFunc();
+                }), this.closeBtn.onClick(function() {
+                    t.closeBtnFunc();
+                }), this.node.on(cc.Node.EventType.TOUCH_MOVE, function(e) {
+                    var o = t.getPos(e);
+                    (Math.abs(o.x) >= 20 || Math.abs(o.y) >= 20) && (t.node.x += o.x, t.node.y += o.y, 
+                    t.moving = !0);
+                }), this.playPlayBtn.onClickStart = function() {
+                    t.moving = !1;
+                };
+            }, e.prototype.getPos = function(t) {
+                var e = t.touch.getLocation();
+                return this.node.convertToNodeSpaceAR(e);
+            }, e.prototype.playPlayBtnBtnFunc = function() {
+                this.moving || (console.log("打开弹窗 玩一玩"), cc.game.emit(r.EMITKEY.SHOWPOP, {
+                    popName: "playPlayPop",
+                    showPopData: {}
+                }), l.default.instance.open(s.ResConfig.playPlayPop), this.closeBtn.node.active = !0);
+            }, e.prototype.closeBtnFunc = function() {
+                this.node.destroy();
+            }, a([ d({
+                type: c.default,
+                tooltip: "开始游戏"
+            }) ], e.prototype, "playPlayBtn", void 0), a([ d({
+                type: c.default,
+                tooltip: "关闭按钮"
+            }) ], e.prototype, "closeBtn", void 0), a([ p ], e);
+        }(cc.Component);
+        o.default = h, cc._RF.pop();
+    }, {
+        "../../common/enumConfig": "enumConfig",
+        "../../common/ui-button": "ui-button",
+        "../../config/res-config": "res-config",
+        "../../manager/pop-manager-new": "pop-manager-new"
+    } ],
+    playPlayPopItem: [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "e82f0QDLwNIz7caP96B4u3n", "playPlayPopItem");
+        var n, i = this && this.__extends || (n = function(t, e) {
+            return (n = Object.setPrototypeOf || {
+                __proto__: []
+            } instanceof Array && function(t, e) {
+                t.__proto__ = e;
+            } || function(t, e) {
+                for (var o in e) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
+            })(t, e);
+        }, function(t, e) {
+            function o() {
+                this.constructor = t;
+            }
+            n(t, e), t.prototype = null === e ? Object.create(e) : (o.prototype = e.prototype, 
+            new o());
+        }), a = this && this.__decorate || function(t, e, o, n) {
+            var i, a = arguments.length, r = a < 3 ? e : null === n ? n = Object.getOwnPropertyDescriptor(e, o) : n;
+            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) r = Reflect.decorate(t, e, o, n); else for (var c = t.length - 1; c >= 0; c--) (i = t[c]) && (r = (a < 3 ? i(r) : a > 3 ? i(e, o, r) : i(e, o)) || r);
+            return a > 3 && r && Object.defineProperty(e, o, r), r;
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var r = t("../common/ui-button"), c = cc._decorator, s = c.ccclass, l = c.property, u = function(t) {
+            function e() {
+                var e = null !== t && t.apply(this, arguments) || this;
+                return e.box = null, e.sprite = null, e.spriteFrameList = [], e.gameSp = null, e.titleLabel = null, 
+                e.btn = null, e.isAnim = !1, e.index = 0, e;
+            }
+            return i(e, t), e.prototype.onLoad = function() {
+                this.box.active = !1;
+            }, e.prototype.showItem = function() {
+                this.box.active = !0, this.isAnim ? this.box.x = 0 : (this.box.x = -700, this.isAnim = !0, 
+                cc.tween(this.box).delay(.1 * this.index).to(.2, {
+                    x: 0
+                }).call(function() {}).start());
+            }, e.prototype.hideItem = function() {
+                this.box.active = !1;
+            }, e.prototype.onEnable = function() {}, e.prototype.updateItem = function(t) {
+                this.index = t.index, this.btn.onClick(function() {}), this.setRightImg(t.index);
+            }, e.prototype.setRightImg = function(t) {
+                void 0 === t && (t = 0), t >= 5 && (t = 5), t <= 0 && (t = 0), this.sprite.spriteFrame = this.spriteFrameList[t];
+            }, a([ l({
+                type: cc.Node,
+                tooltip: "box"
+            }) ], e.prototype, "box", void 0), a([ l({
+                type: cc.Sprite,
+                tooltip: "右上角图"
+            }) ], e.prototype, "sprite", void 0), a([ l({
+                type: [ cc.SpriteFrame ],
+                tooltip: "右上角图"
+            }) ], e.prototype, "spriteFrameList", void 0), a([ l({
+                type: cc.Sprite,
+                tooltip: "游戏图标"
+            }) ], e.prototype, "gameSp", void 0), a([ l({
+                type: cc.Label,
+                tooltip: "标题文本"
+            }) ], e.prototype, "titleLabel", void 0), a([ l({
+                type: r.default,
+                tooltip: "开始游戏"
+            }) ], e.prototype, "btn", void 0), a([ s ], e);
+        }(cc.Component);
+        o.default = u, cc._RF.pop();
+    }, {
+        "../common/ui-button": "ui-button"
+    } ],
+    playPlayPop: [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "08af93o3gNLXpvyyhUlyJ5I", "playPlayPop");
+        var n, i = this && this.__extends || (n = function(t, e) {
+            return (n = Object.setPrototypeOf || {
+                __proto__: []
+            } instanceof Array && function(t, e) {
+                t.__proto__ = e;
+            } || function(t, e) {
+                for (var o in e) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
+            })(t, e);
+        }, function(t, e) {
+            function o() {
+                this.constructor = t;
+            }
+            n(t, e), t.prototype = null === e ? Object.create(e) : (o.prototype = e.prototype, 
+            new o());
+        }), a = this && this.__decorate || function(t, e, o, n) {
+            var i, a = arguments.length, r = a < 3 ? e : null === n ? n = Object.getOwnPropertyDescriptor(e, o) : n;
+            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) r = Reflect.decorate(t, e, o, n); else for (var c = t.length - 1; c >= 0; c--) (i = t[c]) && (r = (a < 3 ? i(r) : a > 3 ? i(e, o, r) : i(e, o)) || r);
+            return a > 3 && r && Object.defineProperty(e, o, r), r;
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var r = t("../common/CcJsFunc"), c = t("../common/dialog-bese/ui-dialog"), s = t("./playPlayPopItem"), l = cc._decorator, u = l.ccclass, p = l.property, d = function(t) {
+            function e() {
+                var e = null !== t && t.apply(this, arguments) || this;
+                return e.popNode = null, e.scrollView = null, e.cardContainer = null, e.item = null, 
+                e.closeBtn = null, e.wolf1 = null, e.wolf2 = null, e.wolf3 = null, e.intervalY = -15, 
+                e.pathList = [], e.itemNodeList = {}, e.lastDifference = null, e;
+            }
+            return i(e, t), e.prototype.onLoad = function() {
+                this.scrollView.content.on("position-changed", this._updateContentView.bind(this)), 
+                this.wolfAnim();
+            }, e.prototype.start = function() {
+                r.default.addbtnTouchStartScale(this.closeBtn), r.default.addbtnTouchEndScale(this.closeBtn, this.closeBtnFunc.bind(this)), 
+                r.default.addbtnTouchCancelScale(this.closeBtn);
+            }, e.prototype.closeBtnFunc = function() {
+                this.node.active = !1, this.node.destroy();
+            }, e.prototype.init = function() {
+                this.node.active = !0, this.requestData();
+            }, e.prototype.renderList = function() {
+                var t = this;
+                this.cardContainer.destroyAllChildren(), this.pathList = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ], 
+                this.itemNodeList = {}, this.pathList.forEach(function(e, o) {
+                    var n = cc.instantiate(t.item);
+                    n.active = !0, t.cardContainer.addChild(n);
+                    var i = n.getComponent(s.default);
+                    i.updateItem({
+                        index: o
+                    }), t.itemNodeList[e] = i;
+                }), this.scheduleOnce(function() {
+                    t._updateHorizontalContentView();
+                });
+            }, e.prototype.requestData = function() {
+                var t = this;
+                cc.tween(this.popNode).set({
+                    scale: 0,
+                    opacity: 0
+                }).to(.2, {
+                    scale: 1.1,
+                    opacity: 255
+                }, {
+                    easing: cc.easing.quadOut
+                }).to(.2, {
+                    scale: 1
+                }).call(function() {
+                    t.renderList();
+                }).start();
+            }, e.prototype._updateContentView = function() {
+                this.scheduleOnce(this._updateHorizontalContentView.bind(this), 0);
+            }, e.prototype._updateHorizontalContentView = function(t) {
+                void 0 === t && (t = !1);
+                var e = 8, o = 0, n = this.cardContainer.y, i = Math.floor((n - this.scrollView.node.height) / (this.item.height + this.intervalY));
+                this.lastDifference == i && 1 != t || (this.lastDifference = i, i <= 0 && (i = 0), 
+                e += i, o += i, this.cardContainer.children.forEach(function(t, n) {
+                    n <= e && n >= o ? t.getComponent(s.default).showItem() : t.getComponent(s.default).hideItem();
+                }));
+            }, e.prototype.wolfAnim = function() {
+                cc.tween(this.wolf1).to(11 / 60, {
+                    x: 214
+                }, {
+                    easing: cc.easing.quadOut
+                }).to(11 / 60, {
+                    x: 90
+                }, {}).to(11 / 60, {
+                    x: 100
+                }, {}).call(function() {}).start(), cc.tween(this.wolf2).delay(7 / 60).to(7 / 60, {
+                    x: 125
+                }, {
+                    easing: cc.easing.quadOut
+                }).to(11 / 60, {
+                    x: -10
+                }, {}).to(11 / 60, {
+                    x: 0
+                }, {}).call(function() {}).start(), cc.tween(this.wolf3).delay(.2).to(8 / 60, {
+                    x: 60
+                }, {
+                    easing: cc.easing.quadOut
+                }).to(11 / 60, {
+                    x: -110
+                }, {}).to(11 / 60, {
+                    x: -100
+                }, {}).call(function() {}).start();
+            }, a([ p({
+                type: cc.Node,
+                tooltip: "popNode"
+            }) ], e.prototype, "popNode", void 0), a([ p({
+                type: cc.ScrollView,
+                tooltip: "scrollView"
+            }) ], e.prototype, "scrollView", void 0), a([ p({
+                type: cc.Node,
+                tooltip: "任务 卡片 容器"
+            }) ], e.prototype, "cardContainer", void 0), a([ p({
+                type: cc.Node,
+                tooltip: "item 子View"
+            }) ], e.prototype, "item", void 0), a([ p({
+                type: cc.Node,
+                tooltip: "关闭按钮"
+            }) ], e.prototype, "closeBtn", void 0), a([ p({
+                type: cc.Node,
+                tooltip: "狼"
+            }) ], e.prototype, "wolf1", void 0), a([ p({
+                type: cc.Node,
+                tooltip: "狼"
+            }) ], e.prototype, "wolf2", void 0), a([ p({
+                type: cc.Node,
+                tooltip: "狼"
+            }) ], e.prototype, "wolf3", void 0), a([ u ], e);
+        }(c.default);
+        o.default = d, cc._RF.pop();
+    }, {
+        "../common/CcJsFunc": "CcJsFunc",
+        "../common/dialog-bese/ui-dialog": "ui-dialog",
+        "./playPlayPopItem": "playPlayPopItem"
     } ],
     "player-head-atlas": [ function(t, e, o) {
         "use strict";
@@ -12437,6 +13220,42 @@ window.__require = function t(e, o, n) {
         }();
         o.default = n, cc._RF.pop();
     }, {} ],
+    "pop-manager-new": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "1dcfdFTtBdEwrDKvnDwr3Bj", "pop-manager-new"), Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var n = t("../common/dialog-bese/ui-dialog"), i = t("../common/enumConfig"), a = function() {
+            function t() {
+                this.popMap = {};
+            }
+            return Object.defineProperty(t, "instance", {
+                get: function() {
+                    return this._instance || (this._instance = new t()), this._instance;
+                },
+                enumerable: !1,
+                configurable: !0
+            }), t.prototype.open = function(t, e) {
+                this.popMap && this.popMap[t.path] && this.popMap[t.path].node && 1 == this.popMap[t.path].node.isValid ? this.popMap[t.path].init(e) : this.instantiation(t, e);
+            }, t.prototype.instantiation = function(t, e) {
+                var o = this, n = null;
+                cc.resources.load(t.path, function(i, a) {
+                    a ? (n = cc.instantiate(a), o.placeNode(n, t, e)) : cc.error(" -- 弹窗实例加载失败 地址错误 -- ", t);
+                });
+            }, t.prototype.placeNode = function(t, e, o) {
+                var a = t.getComponent(n.default);
+                this.popMap[e.path] = a, cc.game.emit(i.EMITKEY.SHOWDIALOG, t), a.init(o);
+            }, t.prototype.close = function(t) {
+                this.popMap[t.path] && (t.path.split("/"), delete this.popMap[t.path]);
+            }, t.prototype.closeAll = function() {
+                this.popMap = {};
+            }, t._instance = null, t;
+        }();
+        o.default = a, cc._RF.pop();
+    }, {
+        "../common/dialog-bese/ui-dialog": "ui-dialog",
+        "../common/enumConfig": "enumConfig"
+    } ],
     popManager: [ function(t, e, o) {
         "use strict";
         cc._RF.push(e, "3798fTcqOJGqIPq3Alhl8FP", "popManager");
@@ -12462,7 +13281,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/enumConfig"), c = t("../pop/bullet-screen-pop"), s = t("../pop/challengeSucPop"), l = t("../pop/ChooseAddressPop"), u = t("../pop/failPop"), p = t("../pop/FriendRankPop"), d = t("../pop/getPropPop"), h = t("../pop/loseLovePop"), f = t("../pop/nextLevelPop"), m = t("../pop/noLimitPop"), g = t("../pop/nothingPop"), y = t("../pop/PersonalPop"), v = t("../pop/PrivacyUserPop"), b = t("../pop/setupPop"), _ = t("../pop/shareNodePop"), N = t("../pop/sheep-rank-pop"), w = t("../pop/show-daily-pop"), C = t("../pop/stagePop"), P = t("../pop/TodayRankPop"), k = t("../pop/topicChoosePop"), S = t("../pop/topicCollectPop"), T = t("../pop/topicJoinedPop"), O = t("../pop/topicLastWinPop"), A = t("../pop/topicNewPop"), D = t("../pop/winPop"), I = t("../pop/wxPublicAccount"), E = cc._decorator, L = E.ccclass, M = E.property, B = function(t) {
+        var r = t("../common/enumConfig"), c = t("../common/platform-utils"), s = t("../pop/bullet-screen-pop"), l = t("../pop/challengeSucPop"), u = t("../pop/ChooseAddressPop"), p = t("../pop/failPop"), d = t("../pop/FriendRankPop"), h = t("../pop/getPropPop"), f = t("../pop/loseLovePop"), m = t("../pop/nextLevelPop"), g = t("../pop/noLimitPop"), y = t("../pop/nothingPop"), v = t("../pop/PersonalPop"), b = t("../pop/PrivacyUserPop"), _ = t("../pop/setupPop"), N = t("../pop/shareNodePop"), w = t("../pop/sheep-rank-pop"), P = t("../pop/show-daily-pop"), C = t("../pop/stagePop"), k = t("../pop/TodayRankPop"), S = t("../pop/topicChoosePop"), O = t("../pop/topicCollectPop"), T = t("../pop/topicJoinedPop"), A = t("../pop/topicLastWinPop"), D = t("../pop/topicNewPop"), I = t("../pop/winPop"), E = t("../pop/wxPublicAccount"), L = cc._decorator, M = L.ccclass, B = L.property, R = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.showDailyPrefab = null, e.showDailyPop = null, e.setupPopPrefab = null, 
@@ -12482,41 +13301,43 @@ window.__require = function t(e, o, n) {
                 e.showPopArray = [], e;
             }
             return i(e, t), e.prototype.start = function() {
-                this.initPop(), this.closeAllPop();
+                c.default.isPlatform(c.Platform.wx) && this.initPop(), this.closeAllPop();
             }, e.prototype.onEnable = function() {
-                cc.game.on(r.EMITKEY.SHOWPOP, this.showPop, this), cc.game.on(r.EMITKEY.CLOSEALLPOP, this.closeAllPop, this);
+                cc.game.on(r.EMITKEY.SHOWPOP, this.showPop, this), cc.game.on(r.EMITKEY.CLOSEALLPOP, this.closeAllPop, this), 
+                cc.game.on(r.EMITKEY.SHOWDIALOG, this.showDialog, this);
             }, e.prototype.onDisable = function() {
-                cc.game.off(r.EMITKEY.SHOWPOP, this.showPop, this), cc.game.off(r.EMITKEY.CLOSEALLPOP, this.closeAllPop, this);
+                cc.game.off(r.EMITKEY.SHOWPOP, this.showPop, this), cc.game.off(r.EMITKEY.CLOSEALLPOP, this.closeAllPop, this), 
+                cc.game.off(r.EMITKEY.SHOWDIALOG, this.showDialog, this);
             }, e.prototype.initPop = function() {
                 this.todayRankPop = this.ifHaveNode(this.todayRankPop, this.todayRankPopPrefab);
             }, e.prototype.showPop = function(t) {
                 var e = t.popName, o = t.showPopData;
                 "winPop" == e ? (this.winPop = this.ifHaveNode(this.winPop, this.winPopPrefab), 
-                this.winPop.getComponent(D.default).showWinPop(o)) : "failPop" == e ? (this.failPop = this.ifHaveNode(this.failPop, this.failPopPrefab), 
-                this.failPop.getComponent(u.default).showFailPop(o)) : "loseLovePop" == e ? (this.loseLovePop = this.ifHaveNode(this.loseLovePop, this.loseLovePopPrefab), 
-                this.loseLovePop.getComponent(h.default).showLoseLovePop(o)) : "setupPop" == e ? (this.setupPop = this.ifHaveNode(this.setupPop, this.setupPopPrefab), 
-                this.setupPop.getComponent(b.default).showSetupPop(o)) : "getPropPop" == e ? (this.getPropPop = this.ifHaveNode(this.getPropPop, this.getPropPopPrefab), 
-                this.getPropPop.getComponent(d.default).showGetPropPop(o)) : "nothingPop" == e ? (this.nothingPop = this.ifHaveNode(this.nothingPop, this.nothingPopPrefab), 
-                this.nothingPop.getComponent(g.default).showNothingPop(o)) : "showDailyPop" == e ? (this.showDailyPop = this.ifHaveNode(this.showDailyPop, this.showDailyPrefab), 
-                this.showDailyPop.getComponent(w.default).showPop(o)) : "noLimitPop" == e ? (this.noLimitPop = this.ifHaveNode(this.noLimitPop, this.noLimitPopPrefab), 
-                this.noLimitPop.getComponent(m.default).showNoLimitPop(o)) : "sheepRankPop" == e ? (this.sheepRankPop = this.ifHaveNode(this.sheepRankPop, this.sheepRankPopPrefab), 
-                this.sheepRankPop.getComponent(N.default).sheepRankPop(o)) : "stagePop" == e ? (this.stagePop = this.ifHaveNode(this.stagePop, this.stagePopPrefab), 
+                this.winPop.getComponent(I.default).showWinPop(o)) : "failPop" == e ? (this.failPop = this.ifHaveNode(this.failPop, this.failPopPrefab), 
+                this.failPop.getComponent(p.default).showFailPop(o)) : "loseLovePop" == e ? (this.loseLovePop = this.ifHaveNode(this.loseLovePop, this.loseLovePopPrefab), 
+                this.loseLovePop.getComponent(f.default).showLoseLovePop(o)) : "setupPop" == e ? (this.setupPop = this.ifHaveNode(this.setupPop, this.setupPopPrefab), 
+                this.setupPop.getComponent(_.default).showSetupPop(o)) : "getPropPop" == e ? (this.getPropPop = this.ifHaveNode(this.getPropPop, this.getPropPopPrefab), 
+                this.getPropPop.getComponent(h.default).showGetPropPop(o)) : "nothingPop" == e ? (this.nothingPop = this.ifHaveNode(this.nothingPop, this.nothingPopPrefab), 
+                this.nothingPop.getComponent(y.default).showNothingPop(o)) : "showDailyPop" == e ? (this.showDailyPop = this.ifHaveNode(this.showDailyPop, this.showDailyPrefab), 
+                this.showDailyPop.getComponent(P.default).showPop(o)) : "noLimitPop" == e ? (this.noLimitPop = this.ifHaveNode(this.noLimitPop, this.noLimitPopPrefab), 
+                this.noLimitPop.getComponent(g.default).showNoLimitPop(o)) : "sheepRankPop" == e ? (this.sheepRankPop = this.ifHaveNode(this.sheepRankPop, this.sheepRankPopPrefab), 
+                this.sheepRankPop.getComponent(w.default).sheepRankPop(o)) : "stagePop" == e ? (this.stagePop = this.ifHaveNode(this.stagePop, this.stagePopPrefab), 
                 this.stagePop.getComponent(C.default).showPop(o)) : "bulletScreenPop" == e ? (this.bulletScreenPop = this.ifHaveNode(this.bulletScreenPop, this.bulletScreenPopPrefab), 
-                this.bulletScreenPop.getComponent(c.default).showPop(o)) : "nextLevelPop" == e ? (this.nextLevelPop = this.ifHaveNode(this.nextLevelPop, this.nextLevelPopPrefab), 
-                this.nextLevelPop.getComponent(f.default).showPop(o)) : "shareNodePop" == e ? (this.shareNodePop = this.ifHaveNode(this.shareNodePop, this.shareNodePopPrefab), 
-                this.shareNodePop.getComponent(_.default).showPop(o)) : "topicChoosePop" == e ? (this.topicChoosePop = this.ifHaveNode(this.topicChoosePop, this.topicChoosePopPrefab), 
-                this.topicChoosePop.getComponent(k.default).showPop(o)) : "topicCollectPop" == e ? (this.topicCollectPop = this.ifHaveNode(this.topicCollectPop, this.topicCollectPopPrefab), 
-                this.topicCollectPop.getComponent(S.default).showPop(o)) : "topicLastWinPop" == e ? (this.topicLastWinPop = this.ifHaveNode(this.topicLastWinPop, this.topicLastWinPopPrefab), 
-                this.topicLastWinPop.getComponent(O.default).showPop(o)) : "topicNewPop" == e ? (this.topicNewPop = this.ifHaveNode(this.topicNewPop, this.topicNewPopPrefab), 
-                this.topicNewPop.getComponent(A.default).showPop(o)) : "friendRankPop" == e ? (this.firendRankPop = this.ifHaveNode(this.firendRankPop, this.firendRankPopPrefab), 
-                this.firendRankPop.getComponent(p.default).showPop(o)) : "todayRankPop" == e ? (this.todayRankPop = this.ifHaveNode(this.todayRankPop, this.todayRankPopPrefab), 
-                this.todayRankPop.getComponent(P.default).showPop(o)) : "personalPop" == e ? (this.personalPop = this.ifHaveNode(this.personalPop, this.personalPopPrefab), 
-                this.personalPop.getComponent(y.default).showPop(o)) : "topicJoinedPop" == e ? (this.topicJoinedPop = this.ifHaveNode(this.topicJoinedPop, this.topicJoinedPopPrefab), 
+                this.bulletScreenPop.getComponent(s.default).showPop(o)) : "nextLevelPop" == e ? (this.nextLevelPop = this.ifHaveNode(this.nextLevelPop, this.nextLevelPopPrefab), 
+                this.nextLevelPop.getComponent(m.default).showPop(o)) : "shareNodePop" == e ? (this.shareNodePop = this.ifHaveNode(this.shareNodePop, this.shareNodePopPrefab), 
+                this.shareNodePop.getComponent(N.default).showPop(o)) : "topicChoosePop" == e ? (this.topicChoosePop = this.ifHaveNode(this.topicChoosePop, this.topicChoosePopPrefab), 
+                this.topicChoosePop.getComponent(S.default).showPop(o)) : "topicCollectPop" == e ? (this.topicCollectPop = this.ifHaveNode(this.topicCollectPop, this.topicCollectPopPrefab), 
+                this.topicCollectPop.getComponent(O.default).showPop(o)) : "topicLastWinPop" == e ? (this.topicLastWinPop = this.ifHaveNode(this.topicLastWinPop, this.topicLastWinPopPrefab), 
+                this.topicLastWinPop.getComponent(A.default).showPop(o)) : "topicNewPop" == e ? (this.topicNewPop = this.ifHaveNode(this.topicNewPop, this.topicNewPopPrefab), 
+                this.topicNewPop.getComponent(D.default).showPop(o)) : "friendRankPop" == e ? (this.firendRankPop = this.ifHaveNode(this.firendRankPop, this.firendRankPopPrefab), 
+                this.firendRankPop.getComponent(d.default).showPop(o)) : "todayRankPop" == e ? (this.todayRankPop = this.ifHaveNode(this.todayRankPop, this.todayRankPopPrefab), 
+                this.todayRankPop.getComponent(k.default).showPop(o)) : "personalPop" == e ? (this.personalPop = this.ifHaveNode(this.personalPop, this.personalPopPrefab), 
+                this.personalPop.getComponent(v.default).showPop(o)) : "topicJoinedPop" == e ? (this.topicJoinedPop = this.ifHaveNode(this.topicJoinedPop, this.topicJoinedPopPrefab), 
                 this.topicJoinedPop.getComponent(T.default).showPop(o)) : "challengeSucPop" == e ? (this.challengeSucPop = this.ifHaveNode(this.challengeSucPop, this.challengeSucPopPrefab), 
-                this.challengeSucPop.getComponent(s.default).showPop(o)) : "privacyUserPop" == e ? (this.privacyUserPop = this.ifHaveNode(this.privacyUserPop, this.privacyUserPopPrefab), 
-                this.privacyUserPop.getComponent(v.default).showPop(o)) : "wxPublicAccount" == e ? (this.wxPublicAccount = this.ifHaveNode(this.wxPublicAccount, this.wxPublicAccountPrefab), 
-                this.wxPublicAccount.getComponent(I.default).showPop(o)) : "chooseAddressPop" == e && (this.chooseAddressPop = this.ifHaveNode(this.chooseAddressPop, this.chooseAddressPopPrefab), 
-                this.chooseAddressPop.getComponent(l.default).showPop(o));
+                this.challengeSucPop.getComponent(l.default).showPop(o)) : "privacyUserPop" == e ? (this.privacyUserPop = this.ifHaveNode(this.privacyUserPop, this.privacyUserPopPrefab), 
+                this.privacyUserPop.getComponent(b.default).showPop(o)) : "wxPublicAccount" == e ? (this.wxPublicAccount = this.ifHaveNode(this.wxPublicAccount, this.wxPublicAccountPrefab), 
+                this.wxPublicAccount.getComponent(E.default).showPop(o)) : "chooseAddressPop" == e && (this.chooseAddressPop = this.ifHaveNode(this.chooseAddressPop, this.chooseAddressPopPrefab), 
+                this.chooseAddressPop.getComponent(u.default).showPop(o));
             }, e.prototype.ifHaveNode = function(t, e) {
                 return t || (t = cc.instantiate(e), this.node.addChild(t)), t.setSiblingIndex(-1), 
                 t;
@@ -12526,86 +13347,89 @@ window.__require = function t(e, o, n) {
                     var o = t[e];
                     o.setSiblingIndex(0), o.active = !1;
                 }
-            }, a([ M({
+            }, e.prototype.showDialog = function(t) {
+                this.node.addChild(t);
+            }, a([ B({
                 type: cc.Prefab,
                 tooltip: "每日挑战获取礼包"
-            }) ], e.prototype, "showDailyPrefab", void 0), a([ M({
+            }) ], e.prototype, "showDailyPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "设置页面"
-            }) ], e.prototype, "setupPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "setupPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "获取道具页面"
-            }) ], e.prototype, "getPropPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "getPropPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "一些通用页面"
-            }) ], e.prototype, "nothingPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "nothingPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "失败页面"
-            }) ], e.prototype, "failPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "failPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "放弃挑战界面"
-            }) ], e.prototype, "loseLovePopPrefab", void 0), a([ M({
+            }) ], e.prototype, "loseLovePopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "胜利界面"
-            }) ], e.prototype, "winPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "winPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "无限生命页面"
-            }) ], e.prototype, "noLimitPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "noLimitPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "排行弹框页面"
-            }) ], e.prototype, "sheepRankPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "sheepRankPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "舞台弹框页面"
-            }) ], e.prototype, "stagePopPrefab", void 0), a([ M({
+            }) ], e.prototype, "stagePopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "弹幕弹框页面"
-            }) ], e.prototype, "bulletScreenPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "bulletScreenPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "下一等级提示"
-            }) ], e.prototype, "nextLevelPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "nextLevelPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "分享弹框"
-            }) ], e.prototype, "shareNodePopPrefab", void 0), a([ M({
+            }) ], e.prototype, "shareNodePopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "选择羊队"
-            }) ], e.prototype, "topicChoosePopPrefab", void 0), a([ M({
+            }) ], e.prototype, "topicChoosePopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "收藏页面"
-            }) ], e.prototype, "topicCollectPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "topicCollectPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "昨日获胜页面"
-            }) ], e.prototype, "topicLastWinPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "topicLastWinPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "昨日获胜页面奖励弹框"
-            }) ], e.prototype, "topicNewPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "topicNewPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "今日朋友圈"
-            }) ], e.prototype, "todayRankPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "todayRankPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "好友排行榜"
-            }) ], e.prototype, "firendRankPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "firendRankPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "个人资料"
-            }) ], e.prototype, "personalPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "personalPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "队伍分配弹窗"
-            }) ], e.prototype, "topicJoinedPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "topicJoinedPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "wx获胜弹框"
-            }) ], e.prototype, "challengeSucPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "challengeSucPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "用户协议隐私政策"
-            }) ], e.prototype, "privacyUserPopPrefab", void 0), a([ M({
+            }) ], e.prototype, "privacyUserPopPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "微信公众号"
-            }) ], e.prototype, "wxPublicAccountPrefab", void 0), a([ M({
+            }) ], e.prototype, "wxPublicAccountPrefab", void 0), a([ B({
                 type: cc.Prefab,
                 tooltip: "选择地址"
-            }) ], e.prototype, "chooseAddressPopPrefab", void 0), a([ L ], e);
+            }) ], e.prototype, "chooseAddressPopPrefab", void 0), a([ M ], e);
         }(cc.Component);
-        o.default = B, cc._RF.pop();
+        o.default = R, cc._RF.pop();
     }, {
         "../common/enumConfig": "enumConfig",
+        "../common/platform-utils": "platform-utils",
         "../pop/ChooseAddressPop": "ChooseAddressPop",
         "../pop/FriendRankPop": "FriendRankPop",
         "../pop/PersonalPop": "PersonalPop",
@@ -14046,7 +14870,7 @@ window.__require = function t(e, o, n) {
             }, t.qqOpenPage = function() {
                 if (this._isQq) try {
                     qq.openUrl({
-                        url: "https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1WRa21y&businessType=9&biz=ka&shareSource=1&mainSourceId=advertising&appChannel=advertising_qq_games_home_page&subSourceId=advertising_qq_games_home_page",
+                        url: "https://qun.qq.com/qqweb/qunpro/share?_wv=3&_wwv=128&inviteCode=1WTjoje&businessType=7&biz=ka&shareSource=1&mainSourceId=advertising&appChannel=advertising_qq_games_home_page&subSourceId=advertising_qq_games_home_page",
                         success: console.log,
                         fail: console.error,
                         complete: console.log
@@ -14114,6 +14938,19 @@ window.__require = function t(e, o, n) {
         "../common/enumConfig": "enumConfig",
         "../public/data-env": "data-env"
     } ],
+    "res-config": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "3bbca4zOh1CA4DbQw4aB5XI", "res-config"), Object.defineProperty(o, "__esModule", {
+            value: !0
+        }), o.ResConfig = o.Bundle = void 0, o.Bundle = {
+            resources: "resources"
+        }, o.ResConfig = {
+            playPlayPop: {
+                path: "pop-dialog/dialog-play-play/prefab/playPlayPop",
+                bundle: o.Bundle.resources
+            }
+        }, cc._RF.pop();
+    }, {} ],
     "reward-emitter": [ function(t, e, o) {
         "use strict";
         cc._RF.push(e, "eded8SCVetL/rNMC74RIvnT", "reward-emitter");
@@ -14397,20 +15234,17 @@ window.__require = function t(e, o, n) {
         };
         Object.defineProperty(o, "__esModule", {
             value: !0
-        }), o.Platform = o.VibrateType = o.SHARE_CALLBACK_RATE = o.SHARE_CALLBACK_TIME = void 0;
-        var i, a, r = t("./native/wx-sdk"), c = t("./native/tt-sdk"), s = t("./http"), l = t("./native/android-sdk"), u = t("../public/data-env"), p = t("./native/audio"), d = t("./enumConfig"), h = t("./native/share"), f = t("./native/qq-sdk"), m = t("../manager/GameManager"), g = u.getEnvConfig();
+        }), o.VibrateType = o.SHARE_CALLBACK_RATE = o.SHARE_CALLBACK_TIME = void 0;
+        var i, a = t("./native/wx-sdk"), r = t("./native/tt-sdk"), c = t("./http"), s = t("./native/android-sdk"), l = t("../public/data-env"), u = t("./native/audio"), p = t("./enumConfig"), d = t("./native/share"), h = t("./native/qq-sdk"), f = t("../manager/GameManager"), m = t("./platform-utils"), g = t("./native/ks-sdk"), y = l.getEnvConfig();
         o.SHARE_CALLBACK_TIME = 3, o.SHARE_CALLBACK_RATE = 0, function(t) {
             t[t.Light = 15] = "Light", t[t.Medium = 20] = "Medium", t[t.Heavy = 30] = "Heavy", 
             t[t.Long = 400] = "Long";
-        }(i = o.VibrateType || (o.VibrateType = {})), function(t) {
-            t[t.android = 0] = "android", t[t.ios = 1] = "ios", t[t.wx = 2] = "wx", t[t.tt = 3] = "tt", 
-            t[t.web = 4] = "web", t[t.oppo = 5] = "oppo", t[t.vivo = 6] = "vivo", t[t.qq = 7] = "qq";
-        }(a = o.Platform || (o.Platform = {}));
-        var y = function() {
+        }(i = o.VibrateType || (o.VibrateType = {}));
+        var v = function() {
             function t() {}
             return Object.defineProperty(t, "baseParams", {
                 get: function() {
-                    var t = cc.sys.localStorage.getItem(d.STORAGEKEY.GAMEUSERLOCALDATA);
+                    var t = cc.sys.localStorage.getItem(p.STORAGEKEY.GAMEUSERLOCALDATA);
                     return {
                         t: JSON.parse(t).userData.token
                     };
@@ -14418,12 +15252,12 @@ window.__require = function t(e, o, n) {
                 enumerable: !1,
                 configurable: !0
             }), t.get = function(t) {
-                return s.default.get(n({
+                return c.default.get(n({
                     host: this.host,
                     baseParams: this.baseParams
                 }, t));
             }, t.post = function(t) {
-                return s.default.post(n({
+                return c.default.post(n({
                     host: this.host,
                     baseParams: this.baseParams
                 }, t));
@@ -14433,100 +15267,102 @@ window.__require = function t(e, o, n) {
                 return cc.sys.localStorage.getItem(t);
             }, t.vibrateShort = function(t) {
                 void 0 === t && (t = i.Light);
-                var e = cc.sys.localStorage.getItem(d.STORAGEKEY.GAMEUSERLOCALDATA);
+                var e = cc.sys.localStorage.getItem(p.STORAGEKEY.GAMEUSERLOCALDATA);
                 if (e) {
                     var o = JSON.parse(e);
                     if (o && o.setUpData && o.setUpData.shockStatus < 1) return void console.log("shockStatus = " + o.setUpData.shockStatus);
                 }
-                this.isPlatform(a.wx) && wx.vibrateShort ? t == i.Light ? r.default.vibrateShort("light") : t == i.Medium ? r.default.vibrateShort("medium") : r.default.vibrateShort("heavy") : this.isPlatform(a.qq) && qq.vibrateShort ? t == i.Light ? f.default.vibrateShort("light") : t == i.Medium ? f.default.vibrateShort("medium") : f.default.vibrateShort("heavy") : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateShort ? c.default.vibrateShort() : this.isPlatform(a.android) && l.default.vibrateShort(t);
+                m.default.isPlatform(m.Platform.wx) && wx.vibrateShort ? t == i.Light ? a.default.vibrateShort("light") : t == i.Medium ? a.default.vibrateShort("medium") : a.default.vibrateShort("heavy") : m.default.isPlatform(m.Platform.qq) && qq.vibrateShort ? t == i.Light ? h.default.vibrateShort("light") : t == i.Medium ? h.default.vibrateShort("medium") : h.default.vibrateShort("heavy") : m.default.isPlatform(m.Platform.qq) && ks.vibrateShort ? t == i.Light ? g.default.vibrateShort("light") : t == i.Medium ? g.default.vibrateShort("medium") : g.default.vibrateShort("heavy") : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateShort ? r.default.vibrateShort() : m.default.isPlatform(m.Platform.android) && s.default.vibrateShort(t);
             }, t.vibrateLong = function(t) {
-                void 0 === t && (t = i.Long), this.isPlatform(a.wx) && wx.vibrateLong ? r.default.vibrateLong() : this.isPlatform(a.qq) && qq.vibrateLong ? f.default.vibrateLong() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateLong ? c.default.vibrateLong() : this.isPlatform(a.android) && l.default.vibrateShort(t);
+                void 0 === t && (t = i.Long), m.default.isPlatform(m.Platform.wx) && wx.vibrateLong ? a.default.vibrateLong() : m.default.isPlatform(m.Platform.qq) && qq.vibrateLong ? h.default.vibrateLong() : m.default.isPlatform(m.Platform.ks) && qq.vibrateLong ? g.default.vibrateLong() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateLong ? r.default.vibrateLong() : m.default.isPlatform(m.Platform.android) && s.default.vibrateShort(t);
             }, t.checkUpdateManager = function() {
-                this.isPlatform(a.wx) ? r.default.checkUpdateManager() : this.isPlatform(a.qq) ? f.default.checkUpdateManager() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || this.isPlatform(a.android);
+                m.default.isPlatform(m.Platform.wx) ? a.default.checkUpdateManager() : m.default.isPlatform(m.Platform.qq) ? h.default.checkUpdateManager() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android);
             }, t.onShareAppMessageQuery = function() {
-                return this.isPlatform(a.wx) ? r.default.onShareAppMessageQuery() : this.isPlatform(a.qq) ? f.default.onShareAppMessageQuery() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || this.isPlatform(a.android));
+                return m.default.isPlatform(m.Platform.wx) ? a.default.onShareAppMessageQuery() : m.default.isPlatform(m.Platform.qq) ? h.default.onShareAppMessageQuery() : m.default.isPlatform(m.Platform.ks) ? g.default.onShareAppMessageQuery() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
             }, t.setOnShow = function(t) {
-                this.isPlatform(a.wx) ? cc.game.on(cc.game.EVENT_SHOW, t) : this.isPlatform(a.tt) ? cc.game.on(cc.game.EVENT_SHOW, t) : (this.isPlatform(a.android), 
+                m.default.isPlatform(m.Platform.wx) ? cc.game.on(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.qq) ? cc.game.on(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.ks) ? cc.game.on(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.tt) ? cc.game.on(cc.game.EVENT_SHOW, t) : (m.default.isPlatform(m.Platform.android), 
                 cc.game.on(cc.game.EVENT_SHOW, t));
             }, t.setOffShow = function(t) {
-                this.isPlatform(a.wx) ? cc.game.off(cc.game.EVENT_SHOW, t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt ? cc.game.off(cc.game.EVENT_SHOW, t) : (this.isPlatform(a.android), 
+                m.default.isPlatform(m.Platform.wx) ? cc.game.off(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.qq) ? cc.game.off(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.ks) ? cc.game.off(cc.game.EVENT_SHOW, t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt ? cc.game.off(cc.game.EVENT_SHOW, t) : (m.default.isPlatform(m.Platform.android), 
                 cc.game.off(cc.game.EVENT_SHOW, t));
             }, t.setOnShowOnce = function(t) {
-                return this.isPlatform(a.wx) ? r.default.setOnShowOnce(t) : this.isPlatform(a.qq) ? f.default.setOnShowOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || this.isPlatform(a.android));
+                return m.default.isPlatform(m.Platform.wx) ? a.default.setOnShowOnce(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOnShowOnce(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOnShowOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
             }, t.setOnHide = function(t) {
-                return this.isPlatform(a.wx) ? r.default.setOnHide(t) : this.isPlatform(a.qq) ? f.default.setOnHide(t) : void (this.isPlatform(a.tt) ? cc.game.on(cc.game.EVENT_HIDE, t) : (this.isPlatform(a.android), 
+                return m.default.isPlatform(m.Platform.wx) ? a.default.setOnHide(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOnHide(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOnHide(t) : void (m.default.isPlatform(m.Platform.tt) ? cc.game.on(cc.game.EVENT_HIDE, t) : (m.default.isPlatform(m.Platform.android), 
                 cc.game.on(cc.game.EVENT_HIDE, t)));
             }, t.setOffHide = function(t) {
-                this.isPlatform(a.wx) ? r.default.setOffHide(t) : this.isPlatform(a.qq) ? f.default.setOffHide(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || (this.isPlatform(a.android), 
+                m.default.isPlatform(m.Platform.wx) ? a.default.setOffHide(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOffHide(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOffHide(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || (m.default.isPlatform(m.Platform.android), 
                 cc.game.off(cc.game.EVENT_HIDE, t));
             }, t.setOnHideOnce = function(t) {
-                return this.isPlatform(a.wx) ? r.default.setOnHideOnce(t) : this.isPlatform(a.qq) ? f.default.setOnHideOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || this.isPlatform(a.android));
+                return m.default.isPlatform(m.Platform.wx) ? a.default.setOnHideOnce(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOnHideOnce(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOnHideOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
             }, t.setOnShareAppMessage = function(t) {
-                console.log("pjhsvjdj", cc.sys.platform, cc.sys.QQ_PLAY), this.isPlatform(a.wx) ? r.default.onShareAppMessage(t) : this.isPlatform(a.qq) ? f.default.onShareAppMessage(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || this.isPlatform(a.android);
+                console.log("pjhsvjdj", cc.sys.platform, cc.sys.QQ_PLAY), m.default.isPlatform(m.Platform.wx) ? a.default.onShareAppMessage(t) : m.default.isPlatform(m.Platform.qq) ? h.default.onShareAppMessage(t) : m.default.isPlatform(m.Platform.ks) ? g.default.onShareAppMessage(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android);
             }, t.weiBoJump = function() {
-                return this.isPlatform(a.wx) ? r.default.weiBoJump() : this.isPlatform(a.qq) ? f.default.weiBoJump() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || this.isPlatform(a.android));
+                return m.default.isPlatform(m.Platform.wx) ? a.default.weiBoJump() : m.default.isPlatform(m.Platform.qq) ? h.default.weiBoJump() : m.default.isPlatform(m.Platform.ks) ? g.default.weiBoJump() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
             }, t.copyToClipboard = function(t) {
-                if (this.isPlatform(a.wx)) r.default.setClipboardData(t); else if (this.isPlatform(a.qq)) f.default.setClipboardData(t); else if (cc.sys.platform == cc.sys.BYTEDANCE_GAME) c.default.setClipboardData(t); else if (cc.sys.isBrowser) {
+                if (m.default.isPlatform(m.Platform.wx)) a.default.setClipboardData(t); else if (m.default.isPlatform(m.Platform.qq)) h.default.setClipboardData(t); else if (m.default.isPlatform(m.Platform.ks)) g.default.setClipboardData(t); else if (cc.sys.platform == cc.sys.BYTEDANCE_GAME) r.default.setClipboardData(t); else if (cc.sys.isBrowser) {
                     var e = t + "", o = document.createElement("textarea");
                     o.value = e, o.setAttribute("readonly", ""), o.style.position = "absolute", o.style.left = "-9999px", 
                     o.style.fontSize = "12pt";
                     var n = getSelection(), i = null;
                     n.rangeCount > 0 && (i = n.getRangeAt(0)), document.body.appendChild(o), o.select(), 
                     o.selectionStart = 0, o.selectionEnd = e.length;
-                    var s = !1;
+                    var c = !1;
                     try {
-                        s = document.execCommand("copy");
-                    } catch (l) {
-                        l = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(l);
-                        cc.warn("[sdk] copy to clipboard err", l);
+                        c = document.execCommand("copy");
+                    } catch (s) {
+                        s = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(s);
+                        cc.warn("[sdk] copy to clipboard err", s);
                     }
-                    document.body.removeChild(o), i && (n.removeAllRanges(), n.addRange(i)), s ? cc.log("h5 copy to clipboard success") : cc.log("h5 copy to clipboard failed");
+                    document.body.removeChild(o), i && (n.removeAllRanges(), n.addRange(i)), c ? cc.log("h5 copy to clipboard success") : cc.log("h5 copy to clipboard failed");
                 }
             }, t.chooseImage = function() {
-                this.isPlatform(a.wx) ? cc.log("---wxChooseImage---") : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? cc.log("---ttChooseImage---") : cc.sys.isBrowser && cc.log("---h5ChooseImage---");
+                m.default.isPlatform(m.Platform.wx) ? cc.log("---wxChooseImage---") : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? cc.log("---ttChooseImage---") : cc.sys.isBrowser && cc.log("---h5ChooseImage---");
             }, t.preloadVideoAd = function(t, e, o, n, i) {
-                var r = this;
+                var a = this;
                 void 0 === i && (i = !0), cc.log("[sdk] video ad", t);
-                var c = t;
-                if (console.log("cc.sys.os:", cc.sys.os), console.log("adID:", c), console.log("this.videoAdMap:", this.videoAdMap), 
-                "" != c) {
-                    var s = this, l = null;
-                    if (this.videoAdMap[c]) {
-                        if (!i) return console.log("[video ad] 使用已有回调方法"), this.videoAdMap[c];
-                        var u = this.videoAdMap[c], d = u.video, h = u.close, f = u.error;
-                        d.offClose(h), d.offError(f), l = d, console.log("[video ad] 清空回调方法");
-                    } else console.log("创建实力"), this.isPlatform(a.wx) ? l = wx.createRewardedVideoAd({
-                        adUnitId: c,
+                var r = t;
+                if (console.log("cc.sys.os:", cc.sys.os), console.log("adID:", r), console.log("this.videoAdMap:", this.videoAdMap), 
+                "" != r) {
+                    var c = this, s = null;
+                    if (this.videoAdMap[r]) {
+                        if (!i) return console.log("[video ad] 使用已有回调方法"), this.videoAdMap[r];
+                        var l = this.videoAdMap[r], p = l.video, d = l.close, h = l.error;
+                        p.offClose(d), p.offError(h), s = p, console.log("[video ad] 清空回调方法");
+                    } else console.log("创建实力"), m.default.isPlatform(m.Platform.wx) ? s = wx.createRewardedVideoAd({
+                        adUnitId: r,
                         multiton: !0
-                    }) : this.isPlatform(a.tt) ? l = tt.createRewardedVideoAd({
-                        adUnitId: c,
+                    }) : m.default.isPlatform(m.Platform.tt) ? s = tt.createRewardedVideoAd({
+                        adUnitId: r,
                         multiton: !0
-                    }) : this.isPlatform(a.oppo) ? l = qg.createRewardedVideoAd({
-                        adUnitId: c
-                    }) : this.isPlatform(a.vivo) ? l = qg.createRewardedVideoAd({
-                        posId: c
-                    }) : this.isPlatform(a.qq) && (l = qq.createRewardedVideoAd({
-                        adUnitId: c,
+                    }) : m.default.isPlatform(m.Platform.oppo) ? s = qg.createRewardedVideoAd({
+                        adUnitId: r
+                    }) : m.default.isPlatform(m.Platform.vivo) ? s = qg.createRewardedVideoAd({
+                        posId: r
+                    }) : m.default.isPlatform(m.Platform.qq) ? s = qq.createRewardedVideoAd({
+                        adUnitId: r,
                         multiton: !0
+                    }) : m.default.isPlatform(m.Platform.ks) && (s = ks.createRewardedVideoAd({
+                        adUnitId: r
                     }));
-                    var m = function(t) {
+                    var f = function(t) {
                         t && t.isEnded || void 0 === t ? (console.log("正常播放结束，可以下发游戏奖励 ++++"), e && e(), 
-                        s.isPlatform(a.wx) && s.reportRewardBehavior(4, c, l)) : (cc.game.emit("showMainTips", "中途退出，不下发游戏奖励"), 
-                        console.log("播放中途退出，不下发游戏奖励 ----"), o && o("quit", "中途退出"), s.isPlatform(a.wx) && s.reportRewardBehavior(3, c, l)), 
-                        p.default.playBGM(), r._canShowRewardedVideoAd = !0;
+                        m.default.isPlatform(m.Platform.wx) && c.reportRewardBehavior(4, r, s)) : (cc.game.emit("showMainTips", "中途退出，不下发游戏奖励"), 
+                        console.log("播放中途退出，不下发游戏奖励 ----"), o && o("quit", "中途退出"), m.default.isPlatform(m.Platform.wx) && c.reportRewardBehavior(3, r, s)), 
+                        u.default.playBGM(), a._canShowRewardedVideoAd = !0;
                     }, g = function(t) {
                         1004 == t.errCode || 1005 == t.errCode || 1006 == t.errCode ? n && n("no-fit", "没有合适的广告") : o && o(t.errCode, t.errMsg), 
-                        s.reportRewardBehavior(5, c, l), console.log("没有合适的广告 = ", t.errCode, t.errMsg), 
-                        p.default.playBGM(), r._canShowRewardedVideoAd = !0;
+                        c.reportRewardBehavior(5, r, s), console.log("没有合适的广告 = ", t.errCode, t.errMsg), 
+                        u.default.playBGM(), a._canShowRewardedVideoAd = !0;
                     };
-                    if (null != l && null != l) return l.onClose(m), l.onError(g), (this.isPlatform(a.wx) || this.isPlatform(a.qq)) && l.onLoad(function(t) {
-                        t && (1 == t.shareValue ? r.wxValue = "shareValue" : 1 == t.rewardValue ? r.wxValue = "rewardValue" : r.wxValue = ""), 
-                        console.log("激励视频 广告加载成功 = ", t, "wxValue = ", r.wxValue);
-                    }), cc.log("[video ad] 注册新的回调方法"), this.videoAdMap[c] = {
-                        video: l,
-                        close: m,
+                    if (null != s && null != s) return s.onClose(f), s.onError(g), (m.default.isPlatform(m.Platform.wx) || m.default.isPlatform(m.Platform.qq) || m.default.isPlatform(m.Platform.ks)) && s.onLoad(function(t) {
+                        t && (1 == t.shareValue ? a.wxValue = "shareValue" : 1 == t.rewardValue ? a.wxValue = "rewardValue" : a.wxValue = ""), 
+                        console.log("激励视频 广告加载成功 = ", t, "wxValue = ", a.wxValue);
+                    }), cc.log("[video ad] 注册新的回调方法"), this.videoAdMap[r] = {
+                        video: s,
+                        close: f,
                         error: g
-                    }, this.videoAdMap[c];
+                    }, this.videoAdMap[r];
                 }
             }, t.wxIsPolicy = function() {
                 return "shareValue" == this.wxValue || "rewardValue" == this.wxValue;
@@ -14536,7 +15372,7 @@ window.__require = function t(e, o, n) {
                 return "rewardValue" == this.wxValue;
             }, t.share = function(t, e, o, n) {
                 var i = this;
-                this.isPlatform(a.wx) ? h.default.shareMethod({
+                m.default.isPlatform(m.Platform.wx) ? d.default.shareMethod({
                     success: function() {
                         o && o();
                     },
@@ -14549,7 +15385,15 @@ window.__require = function t(e, o, n) {
                             i.reportShareBehavior(t, e, o);
                         }
                     }
-                }) : this.isPlatform(a.qq) ? h.default.shareMethod({
+                }) : m.default.isPlatform(m.Platform.qq) ? d.default.shareMethod({
+                    success: function() {
+                        o && o();
+                    },
+                    fail: function() {
+                        n && n();
+                    },
+                    complete: function() {}
+                }) : m.default.isPlatform(m.Platform.ks) ? d.default.shareMethod({
                     success: function() {
                         o && o();
                     },
@@ -14559,7 +15403,7 @@ window.__require = function t(e, o, n) {
                     complete: function() {}
                 }) : o && o();
             }, t.createCanvas = function() {
-                if (this.isPlatform(a.wx)) {
+                if (m.default.isPlatform(m.Platform.wx)) {
                     var t = canvas.toTempFilePathSync({
                         x: 0,
                         y: 0,
@@ -14571,7 +15415,7 @@ window.__require = function t(e, o, n) {
                         quality: "1.0"
                     });
                     this.wxSave(t);
-                } else if (this.isPlatform(a.tt)) {
+                } else if (m.default.isPlatform(m.Platform.tt)) {
                     var e = canvas.toTempFilePathSync({
                         x: 0,
                         y: 0,
@@ -14656,25 +15500,37 @@ window.__require = function t(e, o, n) {
                     });
                 } catch (n) {}
             }, t.watchAdVideo = function(t) {
-                var e = t.id, o = t.tag, n = t.success, i = t.fail, r = t.nofit;
+                var e = t.id, o = t.tag, n = t.success, i = t.fail, a = t.nofit;
                 if (0 != this._canShowRewardedVideoAd) if (cc.sys.isBrowser) n && n(); else if ("" != e) {
-                    if (!m.default.getInstance().isNoneShareVideoMapOption()) {
+                    if (!f.default.getInstance().isNoneShareVideoMapOption()) {
                         cc.log("[sdk] watch ad video", o);
-                        var c = this;
-                        if (this.isPlatform(a.android)) l.default.showRewardVideoAd(e, n, i); else if (this.isPlatform(a.wx)) {
-                            var s = this.preloadVideoAd(e, n, i, r, !0).video;
-                            s.show().then(function() {
-                                return s.show(), c.reportRewardBehavior(1, e, s), !0;
+                        var r = this;
+                        if (m.default.isPlatform(m.Platform.android)) s.default.showRewardVideoAd(e, n, i); else if (m.default.isPlatform(m.Platform.wx)) {
+                            var c = this.preloadVideoAd(e, n, i, a, !0).video;
+                            c.show().then(function() {
+                                return c.show(), r.reportRewardBehavior(1, e, c), !0;
                             }).catch(function(t) {
-                                if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), s.load().then(function() {
-                                    console.log("手动加载成功"), s.show();
+                                if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), c.load().then(function() {
+                                    console.log("手动加载成功"), c.show();
                                 }), "can't invoke load() while video-ad is showed" != t.errMsg) return i && i(t), 
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (this.isPlatform(a.tt)) {
+                        } else if (m.default.isPlatform(m.Platform.tt)) {
                             console.log("[字节sdk]");
-                            var u = this.preloadVideoAd(e, n, i, r, !0).video;
+                            var l = this.preloadVideoAd(e, n, i, a, !0).video;
+                            l.show().then(function() {
+                                return console.log("[sdk] 激励视频广告显示成功"), !0;
+                            }).catch(function(t) {
+                                if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), l.load().then(function() {
+                                    console.log("手动加载成功"), l.show();
+                                }), "can't invoke load() while video-ad is showed" != t.errMsg) return i && i(t), 
+                                !1;
+                                console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
+                            });
+                        } else if (m.default.isPlatform(m.Platform.oppo)) {
+                            console.log("[oppo sdk]");
+                            var u = this.preloadVideoAd(e, n, i, a, !0).video;
                             u.show().then(function() {
                                 return console.log("[sdk] 激励视频广告显示成功"), !0;
                             }).catch(function(t) {
@@ -14684,9 +15540,9 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (this.isPlatform(a.oppo)) {
-                            console.log("[oppo sdk]");
-                            var p = this.preloadVideoAd(e, n, i, r, !0).video;
+                        } else if (m.default.isPlatform(m.Platform.vivo)) {
+                            console.log("[vivo sdk]");
+                            var p = this.preloadVideoAd(e, n, i, a, !0).video;
                             p.show().then(function() {
                                 return console.log("[sdk] 激励视频广告显示成功"), !0;
                             }).catch(function(t) {
@@ -14696,11 +15552,10 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (this.isPlatform(a.vivo)) {
-                            console.log("[vivo sdk]");
-                            var d = this.preloadVideoAd(e, n, i, r, !0).video;
+                        } else if (m.default.isPlatform(m.Platform.qq)) {
+                            var d = this.preloadVideoAd(e, n, i, a, !0).video;
                             d.show().then(function() {
-                                return console.log("[sdk] 激励视频广告显示成功"), !0;
+                                return d.show(), !0;
                             }).catch(function(t) {
                                 if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), d.load().then(function() {
                                     console.log("手动加载成功"), d.show();
@@ -14708,10 +15563,10 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (this.isPlatform(a.qq)) {
-                            var h = this.preloadVideoAd(e, n, i, r, !0).video;
+                        } else if (m.default.isPlatform(m.Platform.ks)) {
+                            var h = this.preloadVideoAd(e, n, i, a, !0).video;
                             h.show().then(function() {
-                                return h.show(), !0;
+                                return !0;
                             }).catch(function(t) {
                                 if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), h.load().then(function() {
                                     console.log("手动加载成功"), h.show();
@@ -14725,19 +15580,19 @@ window.__require = function t(e, o, n) {
                     n && n();
                 } else n && n();
             }, t.showInterstitialAd = function(t) {
-                this.isPlatform(a.wx) ? r.default.showInterstitialAd() : this.isPlatform(a.qq) ? f.default.showInterstitialAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? c.default.showInterstitialAd() : this.isPlatform(a.android) && l.default.showInterstitialAd(t.tag);
+                m.default.isPlatform(m.Platform.wx) ? a.default.showInterstitialAd() : m.default.isPlatform(m.Platform.qq) ? h.default.showInterstitialAd() : m.default.isPlatform(m.Platform.ks) ? g.default.showInterstitialAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? r.default.showInterstitialAd() : m.default.isPlatform(m.Platform.android) && s.default.showInterstitialAd(t.tag);
             }, t.showFullScreenAd = function(t) {
-                this.isPlatform(a.android) && l.default.showFullScreenAd(t);
+                m.default.isPlatform(m.Platform.android) && s.default.showFullScreenAd(t);
             }, t.showBigImageAd = function(t) {
-                this.isPlatform(a.android) && l.default.showBigImageAd(t);
+                m.default.isPlatform(m.Platform.android) && s.default.showBigImageAd(t);
             }, t.hideBigImageAd = function(t) {
-                this.isPlatform(a.android) && l.default.hideBigImageAd(t);
+                m.default.isPlatform(m.Platform.android) && s.default.hideBigImageAd(t);
             }, t.showBannerAd = function() {
-                this.isPlatform(a.wx) ? r.default.showBannerAd() : this.isPlatform(a.qq) ? f.default.showBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && c.default.showBannerAd();
+                m.default.isPlatform(m.Platform.wx) ? a.default.showBannerAd() : m.default.isPlatform(m.Platform.qq) ? h.default.showBannerAd() : m.default.isPlatform(m.Platform.ks) ? g.default.showBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && r.default.showBannerAd();
             }, t.hideBannerAd = function() {
-                this.isPlatform(a.wx) ? r.default.hideBannerAd() : this.isPlatform(a.qq) ? f.default.hideBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && c.default.hideBannerAd();
+                m.default.isPlatform(m.Platform.wx) ? a.default.hideBannerAd() : m.default.isPlatform(m.Platform.qq) ? h.default.hideBannerAd() : m.default.isPlatform(m.Platform.ks) ? g.default.hideBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && r.default.hideBannerAd();
             }, t.showToast = function(t) {
-                this.isPlatform(a.wx) ? r.default.showToast(t) : this.isPlatform(a.qq) ? f.default.showToast(t) : (cc.sys.platform, 
+                m.default.isPlatform(m.Platform.wx) ? a.default.showToast(t) : m.default.isPlatform(m.Platform.qq) ? h.default.showToast(t) : m.default.isPlatform(m.Platform.ks) ? g.default.showToast(t) : (cc.sys.platform, 
                 cc.sys.BYTEDANCE_GAME);
             }, t.getDeviceId = function() {
                 return "";
@@ -14781,51 +15636,23 @@ window.__require = function t(e, o, n) {
                     t.iv || t.signature ? e(!0) : e(!1);
                 }), l;
             }, t.rankScoreUpdate = function(t, e, o) {
-                this.isPlatform(a.wx) ? r.default.wxRankScoreUpdate(t, e, o) : this.isPlatform(a.qq) && f.default.qqRankScoreUpdate(t, e, o);
+                m.default.isPlatform(m.Platform.wx) ? a.default.wxRankScoreUpdate(t, e, o) : m.default.isPlatform(m.Platform.qq) && h.default.qqRankScoreUpdate(t, e, o);
             }, t.rankScoreRemove = function(t) {
-                this.isPlatform(a.wx) ? r.default.wxRankScoreRemove(t) : this.isPlatform(a.qq) && f.default.qqRankScoreRemove(t);
+                m.default.isPlatform(m.Platform.wx) ? a.default.wxRankScoreRemove(t) : m.default.isPlatform(m.Platform.qq) && h.default.qqRankScoreRemove(t);
             }, t.showSubContext = function(t, e, o, n) {
-                this.isPlatform(a.wx) ? r.default.wxShowSubContext(t, e, o, n) : this.isPlatform(a.qq) && f.default.qqShowSubContext(t, e, o, n);
+                m.default.isPlatform(m.Platform.wx) ? a.default.wxShowSubContext(t, e, o, n) : m.default.isPlatform(m.Platform.qq) && h.default.qqShowSubContext(t, e, o, n);
             }, t.getAppVersion = function() {
                 return "";
             }, t.isPrivacyUser = function() {
-                return !!(t.isPlatform(a.android) || t.isPlatform(a.oppo) || t.isPlatform(a.vivo) || t.isPlatform(a.ios) || t.isPlatform(a.qq));
-            }, t.isPlatform = function(t) {
-                switch (t) {
-                  case a.android:
-                    return !(!cc.sys.isNative || cc.sys.os != cc.sys.OS_ANDROID);
-
-                  case a.ios:
-                    return !(!cc.sys.isNative || cc.sys.os != cc.sys.OS_IOS);
-
-                  case a.wx:
-                    return cc.sys.platform == cc.sys.WECHAT_GAME && !window.qq;
-
-                  case a.tt:
-                    return cc.sys.platform == cc.sys.BYTEDANCE_GAME;
-
-                  case a.oppo:
-                    return cc.sys.platform == cc.sys.OPPO_GAME;
-
-                  case a.vivo:
-                    return cc.sys.platform == cc.sys.VIVO_GAME;
-
-                  case a.qq:
-                    return !(cc.sys.platform != cc.sys.WECHAT_GAME || !window.qq);
-
-                  case a.web:
-                    return cc.sys.isBrowser;
-                }
-                return !1;
-            }, t.getPlatform = function() {
-                return cc.sys.isNative && cc.sys.os == cc.sys.OS_ANDROID ? a.android : cc.sys.isNative && cc.sys.os == cc.sys.OS_IOS ? a.ios : cc.sys.platform == cc.sys.WECHAT_GAME ? window.qq ? a.qq : a.wx : a.web;
+                return m.default.isPlatform(m.Platform.android) || m.default.isPlatform(m.Platform.oppo) || m.default.isPlatform(m.Platform.vivo) || m.default.isPlatform(m.Platform.ios) || m.default.isPlatform(m.Platform.qq) || m.default.isPlatform(m.Platform.ks), 
+                !0;
             }, t.createUserInfoButton = function(t) {
                 return qq.createUserInfoButton ? qq.createUserInfoButton(t) : (cc.log("[sdk] createUserInfoButton"), 
                 null);
-            }, t._shareNum = 0, t._shareCount = 0, t._canShowRewardedVideoAd = !0, t.host = g.host, 
+            }, t._shareNum = 0, t._shareCount = 0, t._canShowRewardedVideoAd = !0, t.host = y.host, 
             t.wxValue = "", t.videoAdMap = {}, t;
         }();
-        o.default = y, y.checkUpdateManager(), cc._RF.pop();
+        o.default = v, v.checkUpdateManager(), cc._RF.pop();
     }, {
         "../manager/GameManager": "GameManager",
         "../public/data-env": "data-env",
@@ -14833,10 +15660,12 @@ window.__require = function t(e, o, n) {
         "./http": "http",
         "./native/android-sdk": "android-sdk",
         "./native/audio": "audio",
+        "./native/ks-sdk": "ks-sdk",
         "./native/qq-sdk": "qq-sdk",
         "./native/share": "share",
         "./native/tt-sdk": "tt-sdk",
-        "./native/wx-sdk": "wx-sdk"
+        "./native/wx-sdk": "wx-sdk",
+        "./platform-utils": "platform-utils"
     } ],
     selectLevelPop: [ function(t, e, o) {
         "use strict";
@@ -15050,7 +15879,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../../i18n/gd_language"), c = t("../../i18n/i18n"), s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/enumConfig"), p = t("../common/native/audio"), d = t("../common/native/qq-sdk"), h = t("../common/native/wx-sdk"), f = t("../common/sdk"), m = t("../manager/GameManager"), g = t("../manager/report-common"), y = t("../utils/uma/uma-sdk"), v = cc._decorator, b = v.ccclass, _ = v.property, N = function(t) {
+        var r = t("../../i18n/gd_language"), c = t("../../i18n/i18n"), s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/enumConfig"), p = t("../common/native/audio"), d = t("../common/native/qq-sdk"), h = t("../common/native/share"), f = t("../common/native/wx-sdk"), m = t("../common/platform-utils"), g = t("../manager/GameManager"), y = t("../manager/report-common"), v = t("../utils/uma/uma-sdk"), b = cc._decorator, _ = b.ccclass, N = b.property, w = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.mask = null, e.popNode = null, e.userIdLabel = null, e.titleLabel = null, 
@@ -15070,8 +15899,7 @@ window.__require = function t(e, o, n) {
                 s.default.addbtnTouchCancelScale(this.returnMainBtn), s.default.addbtnTouchStartScale(this.shareBtn), 
                 s.default.addbtnTouchEndScale(this.shareBtn, this.shareBtnFunc.bind(this)), s.default.addbtnTouchCancelScale(this.shareBtn), 
                 s.default.addTargetTouchUpInside(this.userNode, this.userNodeFunc.bind(this)), s.default.addTargetTouchUpInside(this.privacyNode, this.privacyNodeFunc.bind(this)), 
-                this.setupFonts(), f.default.isPrivacyUser() ? (this.userNode.active = !0, this.privacyNode.active = !0) : (this.userNode.active = !1, 
-                this.privacyNode.active = !1);
+                this.setupFonts(), this.userNode.active = !0, this.privacyNode.active = !0;
             }, e.prototype.userNodeFunc = function() {
                 console.log("用户协议"), cc.game.emit("showPop", {
                     popName: "privacyUserPop",
@@ -15096,12 +15924,11 @@ window.__require = function t(e, o, n) {
                     opacity: 255
                 }).start());
             }, e.prototype.showSetupPop = function(t) {
-                this.node.active = !0, this.showPopData = t, this.returnMainBtn.active = !1, this.shareBtn.active = !1;
-                var e = l.default.getUserData();
-                e.userID.length ? (this.userIdLabel.string = "UID: " + e.userID, this.userIdLabel.node.active = !0) : this.userIdLabel.node.active = !1, 
+                this.node.active = !0, this.showPopData = t, this.returnMainBtn.active = !1, this.shareBtn.active = !1, 
+                l.default.getUserData().userID.length ? (this.userIdLabel.string = "", this.userIdLabel.node.active = !0) : this.userIdLabel.node.active = !1, 
                 2 == t.setupType ? this.returnMainBtn.active = !0 : 1 == t.setupType && (this.shareBtn.active = !0, 
-                l.default.isPlatform(l.GDPlatform.wx) ? (this.shareLabel.getComponent(cc.Label).string = "官方微博", 
-                s.default.changeSpriteFrame(this.shareVideo, "rewardIcon/reward_weibo_icon.png")) : l.default.isPlatform(l.GDPlatform.oppo) || l.default.isPlatform(l.GDPlatform.oppo) ? this.shareBtn.active = !1 : l.default.isPlatform(l.GDPlatform.ios) && (this.shareBtn.active = !1)), 
+                m.default.isPlatform(m.Platform.wx) ? (this.shareLabel.getComponent(cc.Label).string = "官方微博", 
+                s.default.changeSpriteFrame(this.shareVideo, "rewardIcon/reward_weibo_icon.png")) : m.default.isPlatform(m.Platform.oppo) || m.default.isPlatform(m.Platform.oppo) ? this.shareBtn.active = !1 : m.default.isPlatform(m.Platform.ios) ? this.shareBtn.active = !1 : m.default.isPlatform(m.Platform.ks) && (this.shareLabel.getComponent(cc.Label).string = "分享")), 
                 cc.tween(this.popNode).set({
                     scale: 0,
                     opacity: 0
@@ -15132,7 +15959,7 @@ window.__require = function t(e, o, n) {
                 }).start()) : (this.musicBg.stopAllActions(), cc.tween(this.musicBg).delay(.1).to(.2, {
                     opacity: 255
                 }).start()), this.setupData.musicStatus = -this.setupData.musicStatus, l.default.saveUserSetupData(this.setupData), 
-                p.default.playBGM(), 1 == this.setupData.musicStatus ? p.default.playBGM() : g.default.reportTACommon("music_close", {});
+                p.default.playBGM(), 1 == this.setupData.musicStatus ? p.default.playBGM() : y.default.reportTACommon("music_close", {});
             }, e.prototype.setShockFunc = function() {
                 1 == this.setupData.shockStatus ? (this.shockBg.stopAllActions(), cc.tween(this.shockBg).to(.2, {
                     opacity: 0
@@ -15147,9 +15974,13 @@ window.__require = function t(e, o, n) {
                     opacity: 255
                 }).start()), t = -t, l.default.setItem(u.STORAGEKEY.BULLETSWITCH, t), cc.game.emit(u.EMITKEY.BULLETSTATE);
             }, e.prototype.shareBtnFunc = function() {
-                l.default.isPlatform(l.GDPlatform.tt) ? cc.game.emit(u.EMITKEY.TTSHARERECORD) : l.default.isPlatform(l.GDPlatform.wx) ? h.default.weiBoJump() : l.default.isPlatform(l.GDPlatform.qq) && d.default.qqOpenPage();
+                m.default.isPlatform(m.Platform.tt) ? cc.game.emit(u.EMITKEY.TTSHARERECORD) : m.default.isPlatform(m.Platform.wx) ? f.default.weiBoJump() : m.default.isPlatform(m.Platform.qq) ? d.default.qqOpenPage() : m.default.isPlatform(m.Platform.ks) && h.default.shareMethod({
+                    success: function() {},
+                    fail: function() {},
+                    complete: function() {}
+                });
             }, e.prototype.returnMainFunc = function() {
-                if (m.default.getInstance().gameType == u.GAMETYPE.GAMELEVEL) {
+                if (g.default.getInstance().gameType == u.GAMETYPE.GAMELEVEL) {
                     if (l.default.getSprintRewardData().winNum > 0) {
                         var t = {
                             popName: "sprintRewardPop",
@@ -15160,7 +15991,7 @@ window.__require = function t(e, o, n) {
                         };
                         cc.game.emit("showPop", t);
                     }
-                    m.default.getInstance().cookieDict.cookieCurCount > 0 && (t = {
+                    g.default.getInstance().cookieDict.cookieCurCount > 0 && (t = {
                         popName: "loseCookiePop",
                         showPopData: {
                             popCallbackCollect: null,
@@ -15168,7 +15999,7 @@ window.__require = function t(e, o, n) {
                         }
                     }, cc.game.emit("showPop", t));
                 }
-                var e = 0 == m.default.getInstance().sheepMark.resurgenceCount ? 0 : 1;
+                var e = 0 == g.default.getInstance().sheepMark.resurgenceCount ? 0 : 1;
                 console.log("展示失去爱心弹框");
                 var o = {
                     popName: "loseLovePop",
@@ -15179,22 +16010,22 @@ window.__require = function t(e, o, n) {
                 };
                 cc.game.emit("showPop", o), this.node.active = !1;
             }, e.prototype.contactFunc = function() {
-                console.log("联系客服"), y.default.trackEvent("setting_service");
-            }, a([ _(cc.Node) ], e.prototype, "mask", void 0), a([ _(cc.Node) ], e.prototype, "popNode", void 0), 
-            a([ _(cc.Label) ], e.prototype, "userIdLabel", void 0), a([ _(cc.Label) ], e.prototype, "titleLabel", void 0), 
-            a([ _(cc.Label) ], e.prototype, "soundLabel", void 0), a([ _(cc.Label) ], e.prototype, "musicLabel", void 0), 
-            a([ _(cc.Label) ], e.prototype, "shakeLabel", void 0), a([ _(cc.Label) ], e.prototype, "backLabel", void 0), 
-            a([ _(cc.Node) ], e.prototype, "closeBtn", void 0), a([ _(cc.Node) ], e.prototype, "returnMainBtn", void 0), 
-            a([ _(cc.Node) ], e.prototype, "shareBtn", void 0), a([ _(cc.Node) ], e.prototype, "shareVideo", void 0), 
-            a([ _(cc.Node) ], e.prototype, "shareLabel", void 0), a([ _(cc.Node) ], e.prototype, "effectBtn", void 0), 
-            a([ _(cc.Node) ], e.prototype, "effectBg", void 0), a([ _(cc.Node) ], e.prototype, "musicBtn", void 0), 
-            a([ _(cc.Node) ], e.prototype, "musicBg", void 0), a([ _(cc.Node) ], e.prototype, "shockBtn", void 0), 
-            a([ _(cc.Node) ], e.prototype, "shockBg", void 0), a([ _(cc.Node) ], e.prototype, "bulletBtn", void 0), 
-            a([ _(cc.Node) ], e.prototype, "bulletBg", void 0), a([ _(cc.SpriteFrame) ], e.prototype, "whiteCycle", void 0), 
-            a([ _(cc.SpriteFrame) ], e.prototype, "greenCycle", void 0), a([ _(cc.Node) ], e.prototype, "userNode", void 0), 
-            a([ _(cc.Node) ], e.prototype, "privacyNode", void 0), a([ b ], e);
+                console.log("联系客服"), v.default.trackEvent("setting_service");
+            }, a([ N(cc.Node) ], e.prototype, "mask", void 0), a([ N(cc.Node) ], e.prototype, "popNode", void 0), 
+            a([ N(cc.Label) ], e.prototype, "userIdLabel", void 0), a([ N(cc.Label) ], e.prototype, "titleLabel", void 0), 
+            a([ N(cc.Label) ], e.prototype, "soundLabel", void 0), a([ N(cc.Label) ], e.prototype, "musicLabel", void 0), 
+            a([ N(cc.Label) ], e.prototype, "shakeLabel", void 0), a([ N(cc.Label) ], e.prototype, "backLabel", void 0), 
+            a([ N(cc.Node) ], e.prototype, "closeBtn", void 0), a([ N(cc.Node) ], e.prototype, "returnMainBtn", void 0), 
+            a([ N(cc.Node) ], e.prototype, "shareBtn", void 0), a([ N(cc.Node) ], e.prototype, "shareVideo", void 0), 
+            a([ N(cc.Node) ], e.prototype, "shareLabel", void 0), a([ N(cc.Node) ], e.prototype, "effectBtn", void 0), 
+            a([ N(cc.Node) ], e.prototype, "effectBg", void 0), a([ N(cc.Node) ], e.prototype, "musicBtn", void 0), 
+            a([ N(cc.Node) ], e.prototype, "musicBg", void 0), a([ N(cc.Node) ], e.prototype, "shockBtn", void 0), 
+            a([ N(cc.Node) ], e.prototype, "shockBg", void 0), a([ N(cc.Node) ], e.prototype, "bulletBtn", void 0), 
+            a([ N(cc.Node) ], e.prototype, "bulletBg", void 0), a([ N(cc.SpriteFrame) ], e.prototype, "whiteCycle", void 0), 
+            a([ N(cc.SpriteFrame) ], e.prototype, "greenCycle", void 0), a([ N(cc.Node) ], e.prototype, "userNode", void 0), 
+            a([ N(cc.Node) ], e.prototype, "privacyNode", void 0), a([ _ ], e);
         }(cc.Component);
-        o.default = N, cc._RF.pop();
+        o.default = w, cc._RF.pop();
     }, {
         "../../i18n/gd_language": "gd_language",
         "../../i18n/i18n": "i18n",
@@ -15203,8 +16034,9 @@ window.__require = function t(e, o, n) {
         "../common/enumConfig": "enumConfig",
         "../common/native/audio": "audio",
         "../common/native/qq-sdk": "qq-sdk",
+        "../common/native/share": "share",
         "../common/native/wx-sdk": "wx-sdk",
-        "../common/sdk": "sdk",
+        "../common/platform-utils": "platform-utils",
         "../manager/GameManager": "GameManager",
         "../manager/report-common": "report-common",
         "../utils/uma/uma-sdk": "uma-sdk"
@@ -15234,7 +16066,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/native/share"), u = t("../common/native/tt-sdk"), p = cc._decorator, d = p.ccclass, h = p.property, f = function(t) {
+        var r = t("../common/CcJsFunc"), c = t("../common/enumConfig"), s = t("../common/native/share"), l = t("../common/native/tt-sdk"), u = t("../common/platform-utils"), p = cc._decorator, d = p.ccclass, h = p.property, f = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.popNode = null, e.shareNodeVideo = null, e.shareNodeUrl = null, e.closeVideoBtn = null, 
@@ -15251,17 +16083,17 @@ window.__require = function t(e, o, n) {
             }, e.prototype.closeVideoBtnFunc = function() {
                 this.node.active = !1;
             }, e.prototype.shareVideoBtnFunc = function() {
-                cc.game.emit(s.EMITKEY.TTSHARERECORD);
+                cc.game.emit(c.EMITKEY.TTSHARERECORD);
             }, e.prototype.exitVideoBtnFunc = function() {
                 this.node.active = !1;
             }, e.prototype.closeUrlBtnFunc = function() {
                 this.node.active = !1;
             }, e.prototype.shareUrlBtnFunc = function() {
                 var t = this, e = this;
-                c.default.isPlatform(c.GDPlatform.tt) ? u.default.shareTemplate(function(o) {
+                u.default.isPlatform(u.Platform.tt) ? l.default.shareTemplate(function(o) {
                     console.log("shareTemplate = ", o), o && (e.node.active = !1), t.popData && t.popData.shareCb && (e.popData.shareCb(o), 
                     e.node.active = !1);
-                }) : c.default.isPlatform(c.GDPlatform.wx) ? l.default.shareMethod({
+                }) : u.default.isPlatform(u.Platform.wx) ? s.default.shareMethod({
                     success: function() {},
                     fail: function() {},
                     complete: function() {}
@@ -15280,7 +16112,7 @@ window.__require = function t(e, o, n) {
                     easing: cc.easing.quadOut
                 }).to(.2, {
                     scale: 1
-                }).start(), c.default.isPlatform(c.GDPlatform.tt) ? 1 == t.type ? this.shareNodeVideo.active = !0 : 2 == t.type && (this.shareNodeUrl.active = !0) : (c.default.isPlatform(c.GDPlatform.wx), 
+                }).start(), u.default.isPlatform(u.Platform.tt) ? 1 == t.type ? this.shareNodeVideo.active = !0 : 2 == t.type && (this.shareNodeUrl.active = !0) : (u.default.isPlatform(u.Platform.wx), 
                 this.shareNodeUrl.active = !0);
             }, a([ h(cc.Node) ], e.prototype, "popNode", void 0), a([ h(cc.Node) ], e.prototype, "shareNodeVideo", void 0), 
             a([ h(cc.Node) ], e.prototype, "shareNodeUrl", void 0), a([ h(cc.Node) ], e.prototype, "closeVideoBtn", void 0), 
@@ -15291,30 +16123,30 @@ window.__require = function t(e, o, n) {
         o.default = f, cc._RF.pop();
     }, {
         "../common/CcJsFunc": "CcJsFunc",
-        "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
         "../common/native/share": "share",
-        "../common/native/tt-sdk": "tt-sdk"
+        "../common/native/tt-sdk": "tt-sdk",
+        "../common/platform-utils": "platform-utils"
     } ],
     share: [ function(t, e, o) {
         "use strict";
         cc._RF.push(e, "cc74eL1jO5JXILJM8B5nOu3", "share"), Object.defineProperty(o, "__esModule", {
             value: !0
         }), o.ShareType = void 0;
-        var n = t("../sdk");
+        var n = t("../platform-utils"), i = t("../sdk");
         (function(t) {
             t.share = "share", t.addFriend = "addFriend", t.getReward = "getReward";
         })(o.ShareType || (o.ShareType = {}));
-        var i = function() {
+        var a = function() {
             function t() {}
             return t.init = function() {
-                n.default.setOnShow(function() {}), n.default.setOnShow(function() {});
+                i.default.setOnShow(function() {}), i.default.setOnShow(function() {});
                 var t = this.getShareParams(), e = {
                     title: t.title,
                     imageUrl: t.imageUrl,
                     query: "1"
                 };
-                n.default.setOnShareAppMessage(e);
+                i.default.setOnShareAppMessage(e);
             }, t.getRewardShare = function(t) {
                 var e = this.getShareParams(), o = {
                     title: e.title,
@@ -15348,27 +16180,27 @@ window.__require = function t(e, o, n) {
             }, t.initiativeShare = function(t, e) {
                 if (n.default.isPlatform(n.Platform.web)) return t.success && t.success(!0), void (t.complete && t.complete(!1));
                 var o = !0;
-                n.default.isPlatform(n.Platform.qq) && (o = !1);
-                var i = new Date().getTime(), a = !0;
-                1 == t.validate ? (n.default.isPlatform(n.Platform.qq) && (o = !1), e ? (console.log("分享 111"), 
-                n.default.setOnShowOnce(function() {
-                    n.default.isPlatform(n.Platform.qq) || (a ? (console.log("分享 222 result = ", o, "startTime = ", i), 
-                    0 == o ? (t.fail && t.fail(!0), t.complete && t.complete(!1), console.log("分享 333")) : (i = new Date().getTime(), 
-                    console.log("分享 444 result = ", o, "startTime = ", i), a = !1, t.success && t.success(!0), 
+                (n.default.isPlatform(n.Platform.qq) || n.default.isPlatform(n.Platform.ks)) && (o = !1);
+                var a = new Date().getTime(), r = !0;
+                1 == t.validate ? ((n.default.isPlatform(n.Platform.qq) || n.default.isPlatform(n.Platform.ks)) && (o = !1), 
+                e ? (console.log("分享 111"), i.default.setOnShowOnce(function() {
+                    n.default.isPlatform(n.Platform.qq) || n.default.isPlatform(n.Platform.ks) || (r ? (console.log("分享 222 result = ", o, "startTime = ", a), 
+                    0 == o ? (t.fail && t.fail(!0), t.complete && t.complete(!1), console.log("分享 333")) : (a = new Date().getTime(), 
+                    console.log("分享 444 result = ", o, "startTime = ", a), r = !1, t.success && t.success(!0), 
                     t.complete && t.complete(!0))) : console.log("多次进入后台 ###### "));
-                })) : (console.log("分享 555"), n.default.setOnShow(function() {
+                })) : (console.log("分享 555"), i.default.setOnShow(function() {
                     0 == o ? (t.fail && t.fail(!0), t.complete && t.complete(!1)) : (t.success && t.success(!0), 
                     t.complete && t.complete(!0));
                 }))) : (t.success(!0), t.complete && t.complete(!0));
-                var r = "";
-                t.query && (r = t.query), n.default.isPlatform(n.Platform.wx) ? wx.shareAppMessage({
+                var c = "";
+                t.query && (c = t.query), n.default.isPlatform(n.Platform.wx) ? wx.shareAppMessage({
                     title: t.title,
                     imageUrl: t.imageUrl,
-                    query: r
-                }) : n.default.isPlatform(n.Platform.qq) && qq.shareAppMessage({
+                    query: c
+                }) : n.default.isPlatform(n.Platform.qq) ? qq.shareAppMessage({
                     title: t.title,
                     imageUrl: t.imageUrl,
-                    query: r,
+                    query: c,
                     success: function() {
                         t.success(!0);
                     },
@@ -15378,6 +16210,10 @@ window.__require = function t(e, o, n) {
                     complete: function(t) {
                         console.log("qq分享完成", t);
                     }
+                }) : n.default.isPlatform(n.Platform.ks) && ks.shareAppMessage({
+                    title: t.title,
+                    imageUrl: t.imageUrl,
+                    query: c
                 });
             }, t.getShareParams = function() {
                 var t = [ {
@@ -15423,8 +16259,9 @@ window.__require = function t(e, o, n) {
                 return t[Math.floor(Math.random() * t.length)];
             }, t.shareId = 0, t.parsedId = "", t;
         }();
-        o.default = i, cc._RF.pop();
+        o.default = a, cc._RF.pop();
     }, {
+        "../platform-utils": "platform-utils",
         "../sdk": "sdk"
     } ],
     "sheep-card": [ function(t, e, o) {
@@ -15464,8 +16301,8 @@ window.__require = function t(e, o, n) {
                 e = this.bluebgNode) : 3 == t.type && (this.graybgNode.active = !0, e = this.graybgNode), 
                 e) {
                     var n = e.getChildByName("num-label").getComponent(cc.Label), i = e.getChildByName("count-label").getComponent(cc.Label), a = e.getChildByName("name-label").getComponent(cc.Label);
-                    if (n.string = "第 " + t.num + " 名", i.string = t.item.winScore + " 羊", a.string = t.item.name + "羊队", 
-                    o) {
+                    if (t.item && (n.string = "第 " + t.num + " 名", i.string = (t.item.winScore ? t.item.winScore : 0) + " 羊", 
+                    a.string = t.item.name + "羊队"), o) {
                         var r = e.getChildByName("flash_1"), c = e.getChildByName("flash_2");
                         this.playAnimationFloat(r, 255), this.playAnimationFloat(c, -255);
                     }
@@ -15616,7 +16453,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var c = t("../../script/common/CcJsFunc"), s = t("../../script/common/dataTs"), l = t("../../script/common/enumConfig"), u = t("../../script/common/spine"), p = t("../../script/manager/DateManager"), d = t("../../script/manager/GameManager"), h = t("../../script/manager/data-manager"), f = t("./sheep-card"), m = t("./sheep-flock-icon"), g = t("../common/ui-dynamic-scroll-list/ui-dynamic-template-item"), y = cc._decorator, v = y.ccclass, b = y.property, _ = function(t) {
+        var c = t("../../script/common/CcJsFunc"), s = t("../../script/common/dataTs"), l = t("../../script/common/enumConfig"), u = t("../../script/common/spine"), p = t("../../script/manager/DateManager"), d = t("../../script/manager/GameManager"), h = t("../../script/manager/data-manager"), f = t("./sheep-card"), m = t("./sheep-flock-icon"), g = t("../common/ui-dynamic-scroll-list/ui-dynamic-template-item"), y = t("../common/platform-utils"), v = cc._decorator, b = v.ccclass, _ = v.property, N = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.sheepSp = null, e.sheepNode = null, e.sheepCard = null, e.sheepCardNode = null, 
@@ -15652,7 +16489,7 @@ window.__require = function t(e, o, n) {
                     t.sheepUserNode.getChildByName("flashSp").opacity = 255, t.sheepUserNode.getChildByName("flashSp").getComponent(u.default).play("3Ray1", 1, function() {
                         t.sheepUserNode.getChildByName("flashSp").opacity = 0;
                     }), t.scheduleOnce(function() {
-                        s.default.isPlatform(s.GDPlatform.tt) ? t.showSharePop() : s.default.isPlatform(s.GDPlatform.web) && t.showWxSharePop();
+                        y.default.isPlatform(y.Platform.tt) ? t.showSharePop() : y.default.isPlatform(y.Platform.web) && t.showWxSharePop();
                     }, .5), t.sheepUserNode.getChildByName("sheepSp").getComponent(u.default).play("Jump2", 0);
                 }), d.default.getInstance().game_over = 0) : (this.sheepIconNode.x = this.userPosItem.x, 
                 this.sheepIconNode.y = this.userPosItem.y + 20, this.sheepIconNode.getComponent(m.default).showData(this.userRankInfo)));
@@ -15776,31 +16613,31 @@ window.__require = function t(e, o, n) {
             }, e.prototype.setUpSheepNode = function(t, e, o, n) {
                 var i = this;
                 t.getChildByName("flashSp").opacity = 0, t.getChildByName("sheepSp").getComponent(u.default).loadSpine(e, function() {
-                    var a = t.getChildByName("sheepSp").getComponent(u.default), r = "Jump2";
+                    var a = t.getChildByName("sheepSp").getComponent(u.default), r = "Jump3";
                     "sheep/Dead1" == e ? (o.fail || (o.fail = 1), r = "Dead" + h.default.getDeadNum(o.fail)) : a.setNewSkin(n), 
                     i.spineAminList.push({
                         spineSpine: a,
                         animationName: r
                     });
                 });
-            }, a([ b({
+            }, a([ _({
                 type: cc.Node,
                 tooltip: "羊"
-            }) ], e.prototype, "sheepSp", void 0), a([ b({
+            }) ], e.prototype, "sheepSp", void 0), a([ _({
                 type: cc.Node,
                 tooltip: "名次牌子"
-            }) ], e.prototype, "sheepCard", void 0), a([ b({
+            }) ], e.prototype, "sheepCard", void 0), a([ _({
                 type: cc.Node,
                 tooltip: "卡片"
-            }) ], e.prototype, "sheepIcon", void 0), a([ b({
+            }) ], e.prototype, "sheepIcon", void 0), a([ _({
                 type: cc.Node,
                 tooltip: "男头像"
-            }) ], e.prototype, "manSheepHeader", void 0), a([ b({
+            }) ], e.prototype, "manSheepHeader", void 0), a([ _({
                 type: cc.Node,
                 tooltip: "女头像"
-            }) ], e.prototype, "womanSheepheader", void 0), a([ v ], e);
+            }) ], e.prototype, "womanSheepheader", void 0), a([ b ], e);
         }(g.default);
-        o.default = _, cc._RF.pop();
+        o.default = N, cc._RF.pop();
     }, {
         "../../script/common/CcJsFunc": "CcJsFunc",
         "../../script/common/dataTs": "dataTs",
@@ -15809,6 +16646,7 @@ window.__require = function t(e, o, n) {
         "../../script/manager/DateManager": "DateManager",
         "../../script/manager/GameManager": "GameManager",
         "../../script/manager/data-manager": "data-manager",
+        "../common/platform-utils": "platform-utils",
         "../common/ui-dynamic-scroll-list/ui-dynamic-template-item": "ui-dynamic-template-item",
         "./sheep-card": "sheep-card",
         "./sheep-flock-icon": "sheep-flock-icon"
@@ -16289,19 +17127,19 @@ window.__require = function t(e, o, n) {
                     f.length = 0, m.length = 0;
                     for (var y = t.mSpline.GetCurves(), v = i, b = 0, _ = 0; _ < y.length; ++_) {
                         for (var N = y[_].samples, w = 0 == _ ? 0 : 1; w < N.length; w++) {
-                            var C = N[w];
-                            if (c.math.approx(v, C.distanceInCurve, .01)) v += g; else if (v < C.distanceInCurve) do {
-                                var P = N[w - 1].distanceInCurve, k = (v - P) / (C.distanceInCurve - P), S = a.CurveSample.Lerp(N[w - 1], C, k);
+                            var P = N[w];
+                            if (c.math.approx(v, P.distanceInCurve, .01)) v += g; else if (v < P.distanceInCurve) do {
+                                var C = N[w - 1].distanceInCurve, k = (v - C) / (P.distanceInCurve - C), S = a.CurveSample.Lerp(N[w - 1], P, k);
                                 f.push(S), m.push(b + S.distanceInCurve), v += g;
-                            } while (v < C.distanceInCurve);
-                            f.push(C), m.push(b + C.distanceInCurve);
+                            } while (v < P.distanceInCurve);
+                            f.push(P), m.push(b + P.distanceInCurve);
                         }
                         v -= y[_].Length, b += y[_].Length;
                     }
-                    var T = f.length - 1;
-                    T > h && (console.warn("Spline(" + t.name + ")的四边形数量(" + T + ")超过了允许的最大值(" + h + "), 自动截断, Spline 曲线会显示不完整"), 
-                    f.length = h), this.verticesCount = 4 * T, this.indicesCount = 6 * T;
-                    var O = t.node.width, A = t.node.getWorldMatrix(new s()), D = .5 * O, I = this._renderData._flexBuffer;
+                    var O = f.length - 1;
+                    O > h && (console.warn("Spline(" + t.name + ")的四边形数量(" + O + ")超过了允许的最大值(" + h + "), 自动截断, Spline 曲线会显示不完整"), 
+                    f.length = h), this.verticesCount = 4 * O, this.indicesCount = 6 * O;
+                    var T = t.node.width, A = t.node.getWorldMatrix(new s()), D = .5 * T, I = this._renderData._flexBuffer;
                     I.reserve(this.verticesCount, this.indicesCount) && this._updateIndices(), I.used(this.verticesCount, this.indicesCount);
                     var E = this._renderData.vDatas[0], L = this._renderData.uintVDatas[0], M = 0, B = null === (e = t.spriteFrame) || void 0 === e ? void 0 : e.uvSliced, R = m[m.length - 1], F = R > n.height ? 1 : n.height / R, x = R * F, j = x - u;
                     j < i && (j = i);
@@ -16314,20 +17152,20 @@ window.__require = function t(e, o, n) {
                         return a = e(a), c.math.lerp(B[8].v, B[4].v, a);
                     }, q = function(t) {
                         return t < .001 ? 1 : t;
-                    }, Y = function(t) {
+                    }, V = function(t) {
                         return t > .9999 ? 0 : t;
-                    }, V = 0, W = f.length - 1; V < W; V++) {
-                        C = f[V + 1], r.cross(d, cc.v3(0, 0, 1), C.tangent);
-                        var J = D * C.scale.x;
-                        for (r.multiplyScalar(d, d, J), r.subtract(l[0], C.location, d), r.add(l[1], C.location, d), 
-                        C = f[V], r.cross(d, cc.v3(0, 0, 1), C.tangent), J = D * C.scale.x, r.multiplyScalar(d, d, J), 
-                        r.subtract(l[2], C.location, d), r.add(l[3], C.location, d), p[0].v = H(V + 1, q), 
-                        p[0].u = B[1].u, p[1].v = p[0].v, p[1].u = B[2].u, p[2].v = H(V, Y), p[2].u = B[13].u, 
+                    }, Y = 0, W = f.length - 1; Y < W; Y++) {
+                        P = f[Y + 1], r.cross(d, cc.v3(0, 0, 1), P.tangent);
+                        var K = D * P.scale.x;
+                        for (r.multiplyScalar(d, d, K), r.subtract(l[0], P.location, d), r.add(l[1], P.location, d), 
+                        P = f[Y], r.cross(d, cc.v3(0, 0, 1), P.tangent), K = D * P.scale.x, r.multiplyScalar(d, d, K), 
+                        r.subtract(l[2], P.location, d), r.add(l[3], P.location, d), p[0].v = H(Y + 1, q), 
+                        p[0].u = B[1].u, p[1].v = p[0].v, p[1].u = B[2].u, p[2].v = H(Y, V), p[2].u = B[13].u, 
                         p[3].v = p[2].v, p[3].u = B[14].u, _ = 0; _ < 4; _++) {
-                            var K = l[_];
-                            r.transformMat4(K, K, A);
+                            var J = l[_];
+                            r.transformMat4(J, J, A);
                             var z = 5 * _;
-                            E[M + z] = K.x, E[M + z + 1] = K.y, E[M + z + 2] = p[_].u, E[M + z + 3] = p[_].v, 
+                            E[M + z] = J.x, E[M + z + 1] = J.y, E[M + z + 2] = p[_].u, E[M + z + 3] = p[_].v, 
                             L[M + z + 4] = G;
                         }
                         M += 20;
@@ -18127,7 +18965,7 @@ window.__require = function t(e, o, n) {
                 a.config.appHide && (t = {}, r.extend(t, a.config.properties), r.isFunction(a.config.callback) && r.extend(t, a.config.callback("appHide")), 
                 a.taInstance._internalTrack("ta_mg_hide", t));
             });
-        }, C = function() {
+        }, P = function() {
             function t(e, o, i) {
                 n(this, t), this.api = e, this.config = o, this._config = i;
             }
@@ -18260,7 +19098,7 @@ window.__require = function t(e, o, n) {
                     }
                 }
             } ]), t;
-        }(), P = function() {
+        }(), C = function() {
             function t() {
                 n(this, t);
             }
@@ -18292,9 +19130,9 @@ window.__require = function t(e, o, n) {
                     if (cc.sys.platform === t.BAIDU_GAME || cc.sys.platform === t.BAIDU_MIN_GAME) return b._createInstance("baidu_mg");
                     if (cc.sys.platform === t.VIVO_GAME || cc.sys.platform === t.VIVO_MINI_GAME) return N.createInstance();
                     if (cc.sys.platform === t.QQ_PLAY) return b._createInstance("qq_mg");
-                    if (cc.sys.platform === t.OPPO_GAME || cc.sys.platform === t.OPPO_MINI_GAME) return C._createInstance("oppo");
-                    if (cc.sys.platform === t.HUAWEI_GAME || cc.sys.platform === t.HUAWEI_QUICK_GAME) return C._createInstance("huawei");
-                    if (cc.sys.platform === t.XIAOMI_GAME || cc.sys.platform === t.XIAOMI_QUICK_GAME) return C._createInstance("xiaomi");
+                    if (cc.sys.platform === t.OPPO_GAME || cc.sys.platform === t.OPPO_MINI_GAME) return P._createInstance("oppo");
+                    if (cc.sys.platform === t.HUAWEI_GAME || cc.sys.platform === t.HUAWEI_QUICK_GAME) return P._createInstance("huawei");
+                    if (cc.sys.platform === t.XIAOMI_GAME || cc.sys.platform === t.XIAOMI_QUICK_GAME) return P._createInstance("xiaomi");
                     if (cc.sys.platform === t.BYTEDANCE_GAME || cc.sys.platform === t.BYTEDANCE_MINI_GAME) return b._createInstance("tt_mg");
                     var e = g.createInstance();
                     return e._sysCallback = function() {
@@ -18334,7 +19172,7 @@ window.__require = function t(e, o, n) {
             return a(t, null, [ {
                 key: "_getCurrentPlatform",
                 value: function() {
-                    return this.currentPlatform || (this.currentPlatform = P.createInstance());
+                    return this.currentPlatform || (this.currentPlatform = C.createInstance());
                 }
             }, {
                 key: "getConfig",
@@ -18392,7 +19230,7 @@ window.__require = function t(e, o, n) {
                     this._getCurrentPlatform().showToast(t);
                 }
             } ]), t;
-        }(), S = /^[a-zA-Z][a-zA-Z0-9_]{0,49}$/, T = function() {
+        }(), S = /^[a-zA-Z][a-zA-Z0-9_]{0,49}$/, O = function() {
             function t() {
                 n(this, t);
             }
@@ -18459,7 +19297,7 @@ window.__require = function t(e, o, n) {
                     return !0;
                 }
             } ]), t;
-        }(), O = function() {
+        }(), T = function() {
             function t(e, o, i, a, c) {
                 n(this, t), this.data = e, this.serverUrl = o, this.callback = c, this.tryCount = r.isNumber(i) ? i : 1, 
                 this.timeout = r.isNumber(a) ? a : 3e3, this.taClassName = "HttpTask";
@@ -18595,7 +19433,7 @@ window.__require = function t(e, o, n) {
                     }) : "debugOnly" === o.debugMode ? new A(t, e, o.maxRetries, o.sendTimeout, 1, o.deviceId, function(t) {
                         i.isRunning = !1, r.isFunction(o.callback) && o.callback(t), i._runNext(), !1 === i.showDebug && (0 !== t.code && 1 !== t.code && 2 !== t.code || (i.showDebug = !0, 
                         r.isFunction(k.showDebugToast) && k.showDebugToast("The current mode is debugOnly")));
-                    }) : new O(JSON.stringify(t), e, o.maxRetries, o.sendTimeout, function(t) {
+                    }) : new T(JSON.stringify(t), e, o.maxRetries, o.sendTimeout, function(t) {
                         i.isRunning = !1, r.isFunction(o.callback) && o.callback(t), i._runNext();
                     }), !0 === n ? (this.items.push(e), this._runNext()) : e.run();
                 }
@@ -18613,7 +19451,7 @@ window.__require = function t(e, o, n) {
                             r["#app_id"] === n && e.serverUrl === a.serverUrl ? o.data = o.data.concat(r.data) : this.items.push(a);
                         }
                         var c = new Date().getTime();
-                        o["#flush_time"] = c, new O(JSON.stringify(o), e.serverUrl, e.tryCount, e.timeout, e.callback).run();
+                        o["#flush_time"] = c, new T(JSON.stringify(o), e.serverUrl, e.tryCount, e.timeout, e.callback).run();
                     }
                 }
             } ]), t;
@@ -18914,7 +19752,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o, n) {
                     var i;
                     this._hasDisabled() || (this._isObjectParams(t) && (t = (i = t).eventName, e = i.properties, 
-                    o = i.time, n = i.onComplete), T.event(t) && T.properties(e) || !this.config.strict ? this._internalTrack(t, e, o, n) : r.isFunction(n) && n({
+                    o = i.time, n = i.onComplete), O.event(t) && O.properties(e) || !this.config.strict ? this._internalTrack(t, e, o, n) : r.isFunction(n) && n({
                         code: -1,
                         msg: "invalid parameters"
                     }));
@@ -18923,7 +19761,7 @@ window.__require = function t(e, o, n) {
                 key: "trackUpdate",
                 value: function(t) {
                     var e;
-                    this._hasDisabled() || (t && t.eventId && (T.event(t.eventName) && T.properties(t.properties) || !this.config.strict) ? (e = r.isDate(t.time) ? t.time : new Date(), 
+                    this._hasDisabled() || (t && t.eventId && (O.event(t.eventName) && O.properties(t.properties) || !this.config.strict) ? (e = r.isDate(t.time) ? t.time : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "track_update",
                         eventName: t.eventName,
@@ -18940,7 +19778,7 @@ window.__require = function t(e, o, n) {
                 key: "trackOverwrite",
                 value: function(t) {
                     var e;
-                    this._hasDisabled() || (t && t.eventId && (T.event(t.eventName) && T.properties(t.properties) || !this.config.strict) ? (e = r.isDate(t.time) ? t.time : new Date(), 
+                    this._hasDisabled() || (t && t.eventId && (O.event(t.eventName) && O.properties(t.properties) || !this.config.strict) ? (e = r.isDate(t.time) ? t.time : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "track_overwrite",
                         eventName: t.eventName,
@@ -18957,7 +19795,7 @@ window.__require = function t(e, o, n) {
                 key: "trackFirstEvent",
                 value: function(t) {
                     var e;
-                    this._hasDisabled() || (t && t.eventName && (T.event(t.eventName) && T.properties(t.properties) || !this.config.strict) ? (e = r.isDate(t.time) ? t.time : new Date(), 
+                    this._hasDisabled() || (t && t.eventName && (O.event(t.eventName) && O.properties(t.properties) || !this.config.strict) ? (e = r.isDate(t.time) ? t.time : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "track",
                         eventName: t.eventName,
@@ -18985,7 +19823,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o) {
                     var n;
                     this._hasDisabled() || (this._isObjectParams(t) && (t = (n = t).properties, e = n.time, 
-                    o = n.onComplete), T.propertiesMust(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
+                    o = n.onComplete), O.propertiesMust(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "user_set",
                         properties: t,
@@ -19001,7 +19839,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o) {
                     var n;
                     this._hasDisabled() || (this._isObjectParams(t) && (t = (n = t).properties, e = n.time, 
-                    o = n.onComplete), T.propertiesMust(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
+                    o = n.onComplete), O.propertiesMust(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "user_setOnce",
                         properties: t,
@@ -19017,7 +19855,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o) {
                     var n;
                     this._hasDisabled() || (this._isObjectParams(n) && (t = n.property, e = n.time, 
-                    o = n.onComplete), T.propertyName(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
+                    o = n.onComplete), O.propertyName(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
                     this._isReady() ? ((n = {})[t] = 0, this._sendRequest({
                         type: "user_unset",
                         properties: n,
@@ -19043,7 +19881,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o) {
                     var n;
                     this._hasDisabled() || (this._isObjectParams(t) && (t = (n = t).properties, e = n.time, 
-                    o = n.onComplete), T.userAddProperties(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
+                    o = n.onComplete), O.userAddProperties(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "user_add",
                         properties: t,
@@ -19059,7 +19897,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o) {
                     var n;
                     this._hasDisabled() || (this._isObjectParams(t) && (t = (n = t).properties, e = n.time, 
-                    o = n.onComplete), T.userAppendProperties(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
+                    o = n.onComplete), O.userAppendProperties(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "user_append",
                         properties: t,
@@ -19075,7 +19913,7 @@ window.__require = function t(e, o, n) {
                 value: function(t, e, o) {
                     var n;
                     this._hasDisabled() || (this._isObjectParams(t) && (t = (n = t).properties, e = n.time, 
-                    o = n.onComplete), T.userAppendProperties(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
+                    o = n.onComplete), O.userAppendProperties(t) || !this.config.strict ? (e = r.isDate(e) ? e : new Date(), 
                     this._isReady() ? this._sendRequest({
                         type: "user_uniq_append",
                         properties: t,
@@ -19125,7 +19963,7 @@ window.__require = function t(e, o, n) {
             }, {
                 key: "setSuperProperties",
                 value: function(t) {
-                    this._hasDisabled() || (T.propertiesMust(t) || !this.config.strict ? this.store.setSuperProperties(t) : m.warn("setSuperProperties parameter must be a valid property value"));
+                    this._hasDisabled() || (O.propertiesMust(t) || !this.config.strict ? this.store.setSuperProperties(t) : m.warn("setSuperProperties parameter must be a valid property value"));
                 }
             }, {
                 key: "clearSuperProperties",
@@ -19171,12 +20009,12 @@ window.__require = function t(e, o, n) {
             }, {
                 key: "setDynamicSuperProperties",
                 value: function(t) {
-                    this._hasDisabled() || ("function" == typeof t ? T.properties(t()) || !this.config.strict ? this.dynamicProperties = t : m.warn("A dynamic public property must return a valid property value") : m.warn("setDynamicSuperProperties parameter must be a function type"));
+                    this._hasDisabled() || ("function" == typeof t ? O.properties(t()) || !this.config.strict ? this.dynamicProperties = t : m.warn("A dynamic public property must return a valid property value") : m.warn("setDynamicSuperProperties parameter must be a function type"));
                 }
             }, {
                 key: "timeEvent",
                 value: function(t, e) {
-                    this._hasDisabled() || (e = r.isDate(e) ? e : new Date(), this._isReady() ? T.event(t) || !this.config.strict ? this.store.setEventTimer(t, e.getTime()) : m.warn("calling timeEvent failed due to invalid eventName: " + t) : this._queue.push([ "timeEvent", [ t, e ] ]));
+                    this._hasDisabled() || (e = r.isDate(e) ? e : new Date(), this._isReady() ? O.event(t) || !this.config.strict ? this.store.setEventTimer(t, e.getTime()) : m.warn("calling timeEvent failed due to invalid eventName: " + t) : this._queue.push([ "timeEvent", [ t, e ] ]));
                 }
             }, {
                 key: "getDeviceId",
@@ -19973,7 +20811,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var s = t("../../api/api-sheep"), l = t("../../common/CcJsFunc"), u = t("../../common/dataTs"), p = t("../../common/spine"), d = t("../../manager/data-manager"), h = t("../../manager/GameManager"), f = t("../../module/ScrollMsg"), m = t("../../../pre/module/item/topic-sheep-node"), g = t("../../../pre/module/item/topic-header-node"), y = t("../../../pre/module/item/topic-card-node"), v = t("../../common/enumConfig"), b = t("../../manager/report-common"), _ = cc._decorator, N = _.ccclass, w = _.property, C = function(t) {
+        var s = t("../../api/api-sheep"), l = t("../../common/CcJsFunc"), u = t("../../common/dataTs"), p = t("../../common/spine"), d = t("../../manager/data-manager"), h = t("../../manager/GameManager"), f = t("../../module/ScrollMsg"), m = t("../../../pre/module/item/topic-sheep-node"), g = t("../../../pre/module/item/topic-header-node"), y = t("../../../pre/module/item/topic-card-node"), v = t("../../common/enumConfig"), b = t("../../manager/report-common"), _ = cc._decorator, N = _.ccclass, w = _.property, P = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.topicUI = null, e.tombScrollPrefabs = null, e.tombScroll = null, e.tombScrollMsg = null, 
@@ -20217,7 +21055,7 @@ window.__require = function t(e, o, n) {
                 tooltip: "头像"
             }) ], e.prototype, "headerNode", void 0), a([ N ], e);
         }(cc.Component);
-        o.default = C, cc._RF.pop();
+        o.default = P, cc._RF.pop();
     }, {
         "../../../pre/module/item/topic-card-node": "topic-card-node",
         "../../../pre/module/item/topic-header-node": "topic-header-node",
@@ -20257,7 +21095,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../../../script/api/api-sheep"), c = t("../../../script/common/CcJsFunc"), s = t("../../../script/common/dataTs"), l = t("../../../script/common/spine"), u = t("../../../script/manager/data-manager"), p = cc._decorator, d = p.ccclass, h = p.property, f = function(t) {
+        var r = t("../../../script/api/api-sheep"), c = t("../../../script/common/CcJsFunc"), s = t("../../../script/common/platform-utils"), l = t("../../../script/common/spine"), u = t("../../../script/manager/data-manager"), p = cc._decorator, d = p.ccclass, h = p.property, f = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.flashNode = null, e.sheepSp = null, e.clickNode = null, e.userID = 0, e.clickCallback = null, 
@@ -20276,7 +21114,7 @@ window.__require = function t(e, o, n) {
                 var t = this;
                 this.node.active = !0, this.sheepSp.getComponent(l.default).play("Drop1", 1, function() {
                     t.flashNode.active = !0, t.flashNode.getComponent(l.default).play("3Ray1", 1, function() {
-                        t.flashNode.active = !1, s.default.isPlatform(s.GDPlatform.tt) && t.showSharePop();
+                        t.flashNode.active = !1, s.default.isPlatform(s.Platform.tt) && t.showSharePop();
                     }), t.sheepSp.getComponent(l.default).play("Jump3", 0);
                 });
             }, e.prototype.showSharePop = function() {
@@ -20308,7 +21146,7 @@ window.__require = function t(e, o, n) {
     }, {
         "../../../script/api/api-sheep": "api-sheep",
         "../../../script/common/CcJsFunc": "CcJsFunc",
-        "../../../script/common/dataTs": "dataTs",
+        "../../../script/common/platform-utils": "platform-utils",
         "../../../script/common/spine": "spine",
         "../../../script/manager/data-manager": "data-manager"
     } ],
@@ -20561,7 +21399,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../api/api-sheep"), c = t("../common/CcJsFunc"), s = t("../common/dataTs"), l = t("../common/enumConfig"), u = t("../common/sdk"), p = t("../common/spine"), d = t("../common/util"), h = t("../manager/data-manager"), f = t("../manager/DateManager"), m = t("../manager/GameManager"), g = cc._decorator, y = g.ccclass, v = g.property, b = function(t) {
+        var r = t("../api/api-sheep"), c = t("../common/CcJsFunc"), s = t("../common/dataTs"), l = t("../common/enumConfig"), u = t("../common/platform-utils"), p = t("../common/sdk"), d = t("../common/spine"), h = t("../common/util"), f = t("../manager/data-manager"), m = t("../manager/DateManager"), g = t("../manager/GameManager"), y = cc._decorator, v = y.ccclass, b = y.property, _ = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.popNode = null, e.titleNode = null, e.closeBtn = null, e.yellowNode = null, 
@@ -20581,8 +21419,8 @@ window.__require = function t(e, o, n) {
             }, e.prototype.redNodeFunc = function() {
                 this.topicType = 2, console.log("topicType = ", this.topicType), this.popData && 1 == this.popData.type || this.exchangeUI(!1);
             }, e.prototype.exchangeUI = function(t, e) {
-                if (void 0 === e && (e = !1), this.noChooseBtn.active = !1, h.default.topicModel && h.default.topicModel.name) {
-                    var o = h.default.topicModel.name.split("#");
+                if (void 0 === e && (e = !1), this.noChooseBtn.active = !1, f.default.topicModel && f.default.topicModel.name) {
+                    var o = f.default.topicModel.name.split("#");
                     if (!(o.length < 2)) if (this.yellowBtn.active = !0, this.redBtn.active = !0, t) {
                         this.chooseLabel.string = "加入" + o[0] + "羊", this.yellowNode.getChildByName("choose").active = !0, 
                         this.redNode.getChildByName("choose").active = !1, this.yellowBtn.getChildByName("name").color = new cc.Color().fromHEX("#FBE547"), 
@@ -20605,20 +21443,20 @@ window.__require = function t(e, o, n) {
                         scale: 1.5
                     }).to(.2, {
                         scale: 1
-                    }).start(), !h.default.topicModel) return void cc.game.emit(l.EMITKEY.SHOWMAINTIPS, "请选择你的阵营");
-                    h.default.topicModel.tomb < h.default.topicModel.taoist ? this.topicType = 1 : h.default.topicModel.tomb > h.default.topicModel.taoist ? this.topicType = 2 : this.topicType = c.default.randomNum(1, 2);
+                    }).start(), !f.default.topicModel) return void cc.game.emit(l.EMITKEY.SHOWMAINTIPS, "请选择你的阵营");
+                    f.default.topicModel.tomb < f.default.topicModel.taoist ? this.topicType = 1 : f.default.topicModel.tomb > f.default.topicModel.taoist ? this.topicType = 2 : this.topicType = c.default.randomNum(1, 2);
                 }
-                if (1 != h.default.todayIsWin()) {
+                if (1 != f.default.todayIsWin()) {
                     var t = this;
-                    if (u.default.isPlatform(u.Platform.wx) && m.default.getInstance().isSharedMapOption()) {
+                    if (u.default.isPlatform(u.Platform.wx) && g.default.getInstance().isSharedMapOption()) {
                         var e = s.default.GetVedioID(), o = s.default.getUserData().openid;
-                        if (u.default.wxIsPolicy() && u.default.wxIsPolicyShare()) return void u.default.share(o, e, function() {
+                        if (p.default.wxIsPolicy() && p.default.wxIsPolicyShare()) return void p.default.share(o, e, function() {
                             t.addTopicMethod();
                         }, function() {
                             cc.game.emit(l.EMITKEY.SHOWMAINTIPS, "分享失败，请分享微信群与好友PK");
                         });
                     }
-                    u.default.watchAdVideo({
+                    p.default.watchAdVideo({
                         id: s.default.GetVedioID(),
                         success: function() {
                             console.log("视频播放成功 ###### "), t.addTopicMethod();
@@ -20643,16 +21481,16 @@ window.__require = function t(e, o, n) {
             }, e.prototype.showPop = function(t) {
                 this.node.active = !0, this.popData = t, this.topicType = 0, this.yellowBtn.active = !0, 
                 this.redBtn.active = !0;
-                var e = h.default.todayIsWin();
+                var e = f.default.todayIsWin();
                 if (this.chooseVideo.active = 1 != e, u.default.isPlatform(u.Platform.ios) && (this.chooseVideo.active = !1), 
-                s.default.isPlatform(s.GDPlatform.wx) && (u.default.wxIsPolicy() && u.default.wxIsPolicyShare() && m.default.getInstance().isSharedMapOption() ? c.default.changeSpriteFrame(this.chooseVideo, "rewardIcon/reward_share_white.png") : c.default.changeSpriteFrame(this.chooseVideo, "rewardIcon/reward_video_white.png")), 
-                m.default.getInstance().isNoneShareVideoMapOption() ? this.chooseVideo.active = !1 : this.chooseVideo.active = !0, 
-                h.default.topicModel && h.default.topicModel.name) {
-                    var o = h.default.topicModel.name.split("#");
+                u.default.isPlatform(u.Platform.wx) && (p.default.wxIsPolicy() && p.default.wxIsPolicyShare() && g.default.getInstance().isSharedMapOption() ? c.default.changeSpriteFrame(this.chooseVideo, "rewardIcon/reward_share_white.png") : c.default.changeSpriteFrame(this.chooseVideo, "rewardIcon/reward_video_white.png")), 
+                g.default.getInstance().isNoneShareVideoMapOption() ? this.chooseVideo.active = !1 : this.chooseVideo.active = !0, 
+                f.default.topicModel && f.default.topicModel.name) {
+                    var o = f.default.topicModel.name.split("#");
                     o.length >= 2 && (this.tombName.string = o[0], this.taoistName.string = o[1]);
-                    var n = h.default.getTopicAnimation(h.default.topicModel.id, !0, !1);
+                    var n = f.default.getTopicAnimation(f.default.topicModel.id, !0, !1);
                     this.playTomb(n.spName, n.skin, "Jump1");
-                    var i = h.default.getTopicAnimation(h.default.topicModel.id, !1, !0);
+                    var i = f.default.getTopicAnimation(f.default.topicModel.id, !1, !0);
                     this.playTaoist(i.spName, i.skin, "Jump1");
                 }
                 this.yellowNode.getChildByName("choose").active = !1, this.redNode.getChildByName("choose").active = !1, 
@@ -20672,94 +21510,95 @@ window.__require = function t(e, o, n) {
                 this.yellowBtn.getChildByName("name").getComponent(cc.Label).string = "选择", this.redBtn.getChildByName("name").getComponent(cc.Label).string = "选择", 
                 this.titleNode.getComponent(cc.Label).string = "选择羊队") : 1 == t.type && (this.chooseBtn.active = !1, 
                 this.giveupBtn.active = !1, this.titleNode.getComponent(cc.Label).string = "今日话题", 
-                h.default.topicModel && h.default.topicModel.info && (1 == h.default.topicModel.info.type ? this.exchangeUI(!0, !0) : this.exchangeUI(!1, !0))), 
+                f.default.topicModel && f.default.topicModel.info && (1 == f.default.topicModel.info.type ? this.exchangeUI(!0, !0) : this.exchangeUI(!1, !0))), 
                 this.updateTimeFunc();
             }, e.prototype.playTomb = function(t, e, o) {
                 var n = this;
-                this.tombSP.getComponent(p.default).loadSpine(t, function() {
-                    n.tombSP.getComponent(p.default).setNewSkin(e), n.tombSP.getComponent(p.default).play(o, 0);
+                this.tombSP.getComponent(d.default).loadSpine(t, function() {
+                    n.tombSP.getComponent(d.default).setNewSkin(e), n.tombSP.getComponent(d.default).play(o, 0);
                 });
             }, e.prototype.playTaoist = function(t, e, o) {
                 var n = this;
-                this.taoistSP.getComponent(p.default).loadSpine(t, function() {
-                    n.taoistSP.getComponent(p.default).setNewSkin(e), n.taoistSP.getComponent(p.default).play(o, 0);
+                this.taoistSP.getComponent(d.default).loadSpine(t, function() {
+                    n.taoistSP.getComponent(d.default).setNewSkin(e), n.taoistSP.getComponent(d.default).play(o, 0);
                 });
             }, e.prototype.update = function(t) {
                 this.updateTime += t, this.updateTime >= 1 && (this.updateTime = 0, this.updateTimeFunc());
             }, e.prototype.updateTimeFunc = function() {
-                var t = f.default.format(l.CALENDARNAMES[8], new Date()).split(" ");
+                var t = m.default.format(l.CALENDARNAMES[8], new Date()).split(" ");
                 if (!(t.length < 2)) {
                     var e = t[1].split(":");
                     if (!(e.length < 3)) {
                         var o = 3600 * (24 - Number(e[0]) - 1) + 60 * (60 - Number(e[1]) - 1) + (60 - Number(e[2]));
                         if (this.timeNode.activeInHierarchy) {
-                            var n = d.default.formatTime(1e3 * o), i = (n[1] < 10 ? "0" + n[1] : n[1]) + " 小时 " + (n[2] < 10 ? "0" + n[2] : n[2]) + " 分 " + (n[3] < 10 ? "0" + n[3] : n[3]) + " 秒";
+                            var n = h.default.formatTime(1e3 * o), i = (n[1] < 10 ? "0" + n[1] : n[1]) + " 小时 " + (n[2] < 10 ? "0" + n[2] : n[2]) + " 分 " + (n[3] < 10 ? "0" + n[3] : n[3]) + " 秒";
                             this.timeLabel.string = i;
                         }
                     }
                 }
-            }, a([ v({
+            }, a([ b({
                 type: cc.Node,
                 tooltip: "弹框"
-            }) ], e.prototype, "popNode", void 0), a([ v({
+            }) ], e.prototype, "popNode", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "标题"
-            }) ], e.prototype, "titleNode", void 0), a([ v({
+            }) ], e.prototype, "titleNode", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "关闭按钮"
-            }) ], e.prototype, "closeBtn", void 0), a([ v({
+            }) ], e.prototype, "closeBtn", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "羊base"
-            }) ], e.prototype, "yellowNode", void 0), a([ v({
+            }) ], e.prototype, "yellowNode", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "羊base"
-            }) ], e.prototype, "redNode", void 0), a([ v({
+            }) ], e.prototype, "redNode", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "选择"
-            }) ], e.prototype, "yellowBtn", void 0), a([ v({
+            }) ], e.prototype, "yellowBtn", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "选择"
-            }) ], e.prototype, "redBtn", void 0), a([ v({
+            }) ], e.prototype, "redBtn", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "剩余时间"
-            }) ], e.prototype, "timeNode", void 0), a([ v({
+            }) ], e.prototype, "timeNode", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "选择"
-            }) ], e.prototype, "chooseBtn", void 0), a([ v({
+            }) ], e.prototype, "chooseBtn", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "视频"
-            }) ], e.prototype, "chooseVideo", void 0), a([ v({
+            }) ], e.prototype, "chooseVideo", void 0), a([ b({
                 type: cc.Label,
                 tooltip: "描述"
-            }) ], e.prototype, "chooseLabel", void 0), a([ v({
+            }) ], e.prototype, "chooseLabel", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "未选择"
-            }) ], e.prototype, "noChooseBtn", void 0), a([ v({
+            }) ], e.prototype, "noChooseBtn", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "放弃"
-            }) ], e.prototype, "giveupBtn", void 0), a([ v({
+            }) ], e.prototype, "giveupBtn", void 0), a([ b({
                 type: cc.Label,
                 tooltip: "阵营名字"
-            }) ], e.prototype, "tombName", void 0), a([ v({
+            }) ], e.prototype, "tombName", void 0), a([ b({
                 type: cc.Label,
                 tooltip: "阵营名字"
-            }) ], e.prototype, "taoistName", void 0), a([ v({
+            }) ], e.prototype, "taoistName", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "阵营动画"
-            }) ], e.prototype, "tombSP", void 0), a([ v({
+            }) ], e.prototype, "tombSP", void 0), a([ b({
                 type: cc.Node,
                 tooltip: "阵营动画"
-            }) ], e.prototype, "taoistSP", void 0), a([ v({
+            }) ], e.prototype, "taoistSP", void 0), a([ b({
                 type: cc.Label,
                 tooltip: "倒计时"
-            }) ], e.prototype, "timeLabel", void 0), a([ y ], e);
+            }) ], e.prototype, "timeLabel", void 0), a([ v ], e);
         }(cc.Component);
-        o.default = b, cc._RF.pop();
+        o.default = _, cc._RF.pop();
     }, {
         "../api/api-sheep": "api-sheep",
         "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
+        "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../common/spine": "spine",
         "../common/util": "util",
@@ -20881,7 +21720,7 @@ window.__require = function t(e, o, n) {
                 this.contentDesc.string = "在话题战                  中，加入" + t.name + "阵营并获胜后获得。";
             }, e.prototype.getName = function(t) {
                 return this.contentDesc.node.active = !0, this.contentTeam.node.active = !0, this.contentDefault.node.active = !1, 
-                8 == t || 9 == t ? "僵尸vs道士" : 10 == t || 11 == t ? "狼人vs吸血鬼" : 12 == t || 13 == t ? "黑羊vs白羊" : 41 == t || 42 == t ? "五仁vs莲蓉" : 43 == t || 44 == t ? "学生vs老师" : 45 == t || 46 == t ? "嫦娥vs玉兔" : 47 == t || 48 == t ? "学童vs夫子" : (this.contentDesc.node.active = !1, 
+                8 == t || 9 == t ? "文羊vs武羊" : 10 == t || 11 == t ? "狼人vs吸血鬼" : 12 == t || 13 == t ? "黑羊vs白羊" : 41 == t || 42 == t ? "五仁vs莲蓉" : 43 == t || 44 == t ? "学生vs老师" : 45 == t || 46 == t ? "嫦娥vs玉兔" : 47 == t || 48 == t ? "学童vs夫子" : (this.contentDesc.node.active = !1, 
                 this.contentTeam.node.active = !1, this.contentDefault.node.active = !0, this.contentDefault.string = 1 == t ? "默认装扮。我只是一只孤独的美羊羊。" : "常规模式通关，或话题PK中所选阵营获胜后获得。", 
                 "");
             }, e.prototype.bubbleSort = function(t) {
@@ -21540,6 +22379,285 @@ window.__require = function t(e, o, n) {
                 });
             };
         }, cc._RF.pop();
+    }, {} ],
+    "ui-button": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "52fddRn/rRFQ7VLEvPxdEbc", "ui-button");
+        var n, i = this && this.__extends || (n = function(t, e) {
+            return (n = Object.setPrototypeOf || {
+                __proto__: []
+            } instanceof Array && function(t, e) {
+                t.__proto__ = e;
+            } || function(t, e) {
+                for (var o in e) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
+            })(t, e);
+        }, function(t, e) {
+            function o() {
+                this.constructor = t;
+            }
+            n(t, e), t.prototype = null === e ? Object.create(e) : (o.prototype = e.prototype, 
+            new o());
+        }), a = this && this.__decorate || function(t, e, o, n) {
+            var i, a = arguments.length, r = a < 3 ? e : null === n ? n = Object.getOwnPropertyDescriptor(e, o) : n;
+            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) r = Reflect.decorate(t, e, o, n); else for (var c = t.length - 1; c >= 0; c--) (i = t[c]) && (r = (a < 3 ? i(r) : a > 3 ? i(e, o, r) : i(e, o)) || r);
+            return a > 3 && r && Object.defineProperty(e, o, r), r;
+        }, r = this && this.__awaiter || function(t, e, o, n) {
+            return new (o || (o = Promise))(function(i, a) {
+                function r(t) {
+                    try {
+                        s(n.next(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function c(t) {
+                    try {
+                        s(n.throw(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function s(t) {
+                    var e;
+                    t.done ? i(t.value) : (e = t.value, e instanceof o ? e : new o(function(t) {
+                        t(e);
+                    })).then(r, c);
+                }
+                s((n = n.apply(t, e || [])).next());
+            });
+        }, c = this && this.__generator || function(t, e) {
+            var o, n, i, a, r = {
+                label: 0,
+                sent: function() {
+                    if (1 & i[0]) throw i[1];
+                    return i[1];
+                },
+                trys: [],
+                ops: []
+            };
+            return a = {
+                next: c(0),
+                throw: c(1),
+                return: c(2)
+            }, "function" == typeof Symbol && (a[Symbol.iterator] = function() {
+                return this;
+            }), a;
+            function c(t) {
+                return function(e) {
+                    return s([ t, e ]);
+                };
+            }
+            function s(a) {
+                if (o) throw new TypeError("Generator is already executing.");
+                for (;r; ) try {
+                    if (o = 1, n && (i = 2 & a[0] ? n.return : a[0] ? n.throw || ((i = n.return) && i.call(n), 
+                    0) : n.next) && !(i = i.call(n, a[1])).done) return i;
+                    switch (n = 0, i && (a = [ 2 & a[0], i.value ]), a[0]) {
+                      case 0:
+                      case 1:
+                        i = a;
+                        break;
+
+                      case 4:
+                        return r.label++, {
+                            value: a[1],
+                            done: !1
+                        };
+
+                      case 5:
+                        r.label++, n = a[1], a = [ 0 ];
+                        continue;
+
+                      case 7:
+                        a = r.ops.pop(), r.trys.pop();
+                        continue;
+
+                      default:
+                        if (!(i = (i = r.trys).length > 0 && i[i.length - 1]) && (6 === a[0] || 2 === a[0])) {
+                            r = 0;
+                            continue;
+                        }
+                        if (3 === a[0] && (!i || a[1] > i[0] && a[1] < i[3])) {
+                            r.label = a[1];
+                            break;
+                        }
+                        if (6 === a[0] && r.label < i[1]) {
+                            r.label = i[1], i = a;
+                            break;
+                        }
+                        if (i && r.label < i[2]) {
+                            r.label = i[2], r.ops.push(a);
+                            break;
+                        }
+                        i[2] && r.ops.pop(), r.trys.pop();
+                        continue;
+                    }
+                    a = e.call(t, r);
+                } catch (c) {
+                    c = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(c);
+                    a = [ 6, c ], n = 0;
+                } finally {
+                    o = i = 0;
+                }
+                if (5 & a[0]) throw a[1];
+                return {
+                    value: a[0] ? a[1] : void 0,
+                    done: !0
+                };
+            }
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var s = cc._decorator, l = s.ccclass, u = s.property, p = s.menu, d = function(t) {
+            function e() {
+                var e = null !== t && t.apply(this, arguments) || this;
+                return e.animationNode = null, e.defaultAnim = !0, e.eventsThrough = !1, e.playing = !1, 
+                e.grayMaterial = null, e.clickScale = .9, e.isVibration = !0, e.clickSound = !0, 
+                e.normalMat = null, e._sprite = null, e.cancelEvent = null, e.startEvent = null, 
+                e._enableState = !0, e._cd = 0, e._lastClickTime = 0, e;
+            }
+            return i(e, t), Object.defineProperty(e.prototype, "enableState", {
+                get: function() {
+                    return this._enableState;
+                },
+                enumerable: !1,
+                configurable: !0
+            }), e.prototype.onLoad = function() {
+                this.bindTap(this.node, this.click, this, this.eventsThrough), this.eventsThrough && this.node._touchListener.setSwallowTouches(!1), 
+                this._sprite = this.getComponent(cc.Sprite), this._sprite && (this.normalMat = this._sprite.getMaterial(0));
+            }, e.prototype.onClick = function(t, e) {
+                void 0 === e && (e = 0), this._cd = e, t && (this.callBack = t);
+            }, e.prototype.setState = function(t) {
+                this._sprite && this.grayMaterial && t != this.enableState && (this._enableState = t, 
+                t ? this._sprite.setMaterial(0, this.normalMat) : this._sprite.setMaterial(0, this.grayMaterial));
+            }, e.prototype.onClickStart = function() {}, e.prototype.clickAnimationStart = function() {
+                return r(this, void 0, Promise, function() {
+                    var t, e = this;
+                    return c(this, function() {
+                        return this.clickSound, this.defaultAnim ? (this.onClickStart && this.onClickStart(), 
+                        t = this.node, this.animationNode && (t = this.animationNode), [ 2, new Promise(function(o) {
+                            e.playing = !0, cc.tween(t).to(.1, {
+                                scale: e.clickScale
+                            }).call(function() {
+                                o();
+                            }).start();
+                        }) ]) : [ 2 ];
+                    });
+                });
+            }, e.prototype.clickAnimationEnd = function() {
+                return r(this, void 0, Promise, function() {
+                    var t, e = this;
+                    return c(this, function() {
+                        return this.defaultAnim ? (t = this.node, this.animationNode && (t = this.animationNode), 
+                        [ 2, new Promise(function(o) {
+                            cc.tween(t).to(.1, {
+                                scale: 1
+                            }).call(function() {
+                                o(), e.playing = !1;
+                            }).start();
+                        }) ]) : [ 2 ];
+                    });
+                });
+            }, e.prototype.transverseHide = function(t) {
+                return r(this, void 0, Promise, function() {
+                    return c(this, function() {
+                        return [ 2, new Promise(function(e) {
+                            cc.tween(t).to(.5, {
+                                scaleX: 0,
+                                opacity: 0
+                            }, {
+                                easing: cc.easing.backIn
+                            }).call(function() {
+                                t.active = !1, e();
+                            }).start();
+                        }) ];
+                    });
+                });
+            }, e.prototype.transverseShow = function(t) {
+                return r(this, void 0, Promise, function() {
+                    return c(this, function() {
+                        return [ 2, new Promise(function(e) {
+                            t.active = !0, cc.tween(t).to(.5, {
+                                scaleX: 1,
+                                opacity: 255
+                            }, {
+                                easing: cc.easing.backOut
+                            }).call(function() {
+                                e();
+                            }).start();
+                        }) ];
+                    });
+                });
+            }, e.prototype.vibration = function() {
+                this.isVibration;
+            }, e.prototype.click = function(t, e) {
+                this.clickAnimationEnd();
+                var o = Date.now();
+                o - this._lastClickTime < this._cd || (this._lastClickTime = o, 0 != e && this.callBack && this.callBack());
+            }, e.prototype.bindTap = function(t, e, o, n) {
+                var i = function(i) {
+                    var a = i.touch._point, r = i.touch._startPoint, c = t.getComponent(cc.Button);
+                    r && Math.abs(a.x - r.x) < 15 && Math.abs(a.y - r.y) < 15 ? c && !c.interactable || (e && e.call(o || this, i), 
+                    n || i.stopPropagation()) : c && !c.interactable || e && e.call(o || this, !0);
+                };
+                return this.cancelEvent = this.clickAnimationEnd.bind(this), this.startEvent = this.clickAnimationStart.bind(this), 
+                t.off(cc.Node.EventType.TOUCH_END), t.off(cc.Node.EventType.TOUCH_START), t.off(cc.Node.EventType.TOUCH_CANCEL), 
+                t.on(cc.Node.EventType.TOUCH_END, i), t.on(cc.Node.EventType.TOUCH_START, this.startEvent), 
+                t.on(cc.Node.EventType.TOUCH_CANCEL, this.cancelEvent), i;
+            }, a([ u({
+                type: cc.Node,
+                tooltip: "动画节点"
+            }) ], e.prototype, "animationNode", void 0), a([ u({
+                tooltip: "是否开启默认点击动画"
+            }) ], e.prototype, "defaultAnim", void 0), a([ u({
+                tooltip: "是否开启事件穿透 默认不穿透"
+            }) ], e.prototype, "eventsThrough", void 0), a([ u({
+                type: cc.Material,
+                tooltip: "置灰材质"
+            }) ], e.prototype, "grayMaterial", void 0), a([ u({
+                tooltip: "点击缩放",
+                visible: function() {
+                    return this.defaultAnim;
+                }
+            }) ], e.prototype, "clickScale", void 0), a([ l, p("SDK/ui/button") ], e);
+        }(cc.Component);
+        o.default = d, cc._RF.pop();
+    }, {} ],
+    "ui-dialog": [ function(t, e, o) {
+        "use strict";
+        cc._RF.push(e, "d9787571MtDyrntPFDyUnrt", "ui-dialog");
+        var n, i = this && this.__extends || (n = function(t, e) {
+            return (n = Object.setPrototypeOf || {
+                __proto__: []
+            } instanceof Array && function(t, e) {
+                t.__proto__ = e;
+            } || function(t, e) {
+                for (var o in e) Object.prototype.hasOwnProperty.call(e, o) && (t[o] = e[o]);
+            })(t, e);
+        }, function(t, e) {
+            function o() {
+                this.constructor = t;
+            }
+            n(t, e), t.prototype = null === e ? Object.create(e) : (o.prototype = e.prototype, 
+            new o());
+        }), a = this && this.__decorate || function(t, e, o, n) {
+            var i, a = arguments.length, r = a < 3 ? e : null === n ? n = Object.getOwnPropertyDescriptor(e, o) : n;
+            if ("object" == typeof Reflect && "function" == typeof Reflect.decorate) r = Reflect.decorate(t, e, o, n); else for (var c = t.length - 1; c >= 0; c--) (i = t[c]) && (r = (a < 3 ? i(r) : a > 3 ? i(e, o, r) : i(e, o)) || r);
+            return a > 3 && r && Object.defineProperty(e, o, r), r;
+        };
+        Object.defineProperty(o, "__esModule", {
+            value: !0
+        });
+        var r = cc._decorator, c = r.ccclass, s = (r.property, r.executeInEditMode), l = function(t) {
+            function e() {
+                return null !== t && t.apply(this, arguments) || this;
+            }
+            return i(e, t), e.prototype.init = function() {}, a([ c, s ], e);
+        }(cc.Component);
+        o.default = l, cc._RF.pop();
     }, {} ],
     "ui-dynamic-template-item": [ function(t, e, o) {
         "use strict";
@@ -22792,7 +23910,7 @@ window.__require = function t(e, o, n) {
                 var t = cc.instantiate(this.mapEditorNode.getComponent(r.default).newLevelDataObj);
                 console.log("data:", t);
                 var e = [ t ];
-                this.editorGameLayer.getComponent(d.default).initLevelLayer(e);
+                this.editorGameLayer.getComponent(d.default).initLevelLayer(e), this.mapEditorNode.active = !1;
             }, e.prototype.backOffFun = function() {
                 console.log("回退组块");
             }, e.prototype.initLevelData = function(t) {
@@ -22833,7 +23951,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var i = t("../../common/dataTs"), a = t("../../common/enumConfig"), r = t("../../common/sdk"), c = t("../../manager/DateManager"), s = cc._decorator, l = s.ccclass, u = (s.property, 
+        var i = t("../../common/dataTs"), a = t("../../common/enumConfig"), r = t("../../common/platform-utils"), c = t("../../manager/DateManager"), s = cc._decorator, l = s.ccclass, u = (s.property, 
         function() {
             function t() {}
             return t.setUserid = function() {
@@ -22852,7 +23970,7 @@ window.__require = function t(e, o, n) {
     }, {
         "../../common/dataTs": "dataTs",
         "../../common/enumConfig": "enumConfig",
-        "../../common/sdk": "sdk",
+        "../../common/platform-utils": "platform-utils",
         "../../manager/DateManager": "DateManager"
     } ],
     "unlock-build-pop": [ function(t, e, o) {
@@ -24075,9 +25193,9 @@ window.__require = function t(e, o, n) {
         var a = t("../sdk"), r = function() {
             function t() {}
             return t.init = function() {
-                this._isWx && (wx.onInteractiveStorageModified(function(t) {
+                this._isWx && (wx.onInteractiveStorageModified && wx.onInteractiveStorageModified(function(t) {
                     cc.log("onInteractiveStorageModified", t);
-                }), wx.onShareMessageToFriend(function(t) {
+                }), wx.onShareMessageToFriend && wx.onShareMessageToFriend(function(t) {
                     cc.log("wx.shareMessageToFriend", t);
                     var e = t.success ? "分享成功" : "分享失败";
                     wx.showToast({
@@ -24099,7 +25217,7 @@ window.__require = function t(e, o, n) {
                     top: 200
                 })), this.authorize(), console.info("-- 开启转发 --"), this.registerShowHide());
             }, t.checkUpdateManager = function() {
-                if (this._isWx) {
+                if (this._isWx && wx.getUpdateManager) {
                     var t = wx.getUpdateManager();
                     t.onCheckForUpdate(function(t) {
                         console.info("[app update]", t.hasUpdate);
@@ -24247,7 +25365,7 @@ window.__require = function t(e, o, n) {
                     h: n
                 });
             }, t.onShareAppMessage = function(t) {
-                wx.showShareMenu({
+                wx.showShareMenu && (wx.showShareMenu({
                     withShareTicket: !0
                 }), wx.onShareAppMessage(function() {
                     return {
@@ -24261,7 +25379,7 @@ window.__require = function t(e, o, n) {
                         imageUrl: "",
                         query: "a=1&b=2"
                     };
-                });
+                }));
             }, t.onShareAppMessageQuery = function() {
                 return wx.getEnterOptionsSync().query;
             }, t.wxShare = function(t, e) {
@@ -24470,6 +25588,7 @@ window.__require = function t(e, o, n) {
                 return 2.3283064365386963e-10 * t[0] + 2.220446049250313e-16 * (t[1] >>> 12);
             }, t._instance = null, t;
         }();
-        o.XorShift = n, window.xorShift = n.instance, cc._RF.pop();
+        o.XorShift = n, n.instance.setSeed([ 589667220, 4047304004, 62666966, 3333988324 ]), 
+        cc._RF.pop();
     }, {} ]
-}, {}, [ "gd_language", "i18n", "BulletPrefab", "brickPrefab", "collectPrefab", "prop-prefab", "wallpaperPrefab", "brickSubPrefab", "collectSubPrefab", "wallpaperSubPrefab", "blockPrefab", "catClawPrefabs", "clothesPrefab", "cookiePrefab", "cookieRewardNode", "flying-item-pop-coin", "flying-item-pop-fish", "rewardPrefab", "blockEditorPrefab", "setBloackNumPrefab", "topic-card-node", "topic-header-node", "topic-sheep-node", "PrivacyPolicy", "calendar-item", "cat-house-progress", "main-cookie-reward", "topic-rank", "topic-ui-layer", "topic-ui", "ApiTool", "api-sheep", "fontTipsLayer", "transitionsLayer", "CcJsFunc", "ad", "config", "dataModel", "dataTs", "enumConfig", "http", "key-map", "mask", "maskLayer", "android-sdk", "audio", "native-bridge", "native-def", "native-event", "qq-sdk", "share", "tt-sdk", "wx-sdk", "sdk", "spine", "ui-dynamic-template-item", "ui-scroll-base", "ui-scroll-base1", "ui-scroll-card", "ui-scroll-grid", "ui-scroll-list", "ui-scroll-list1", "ui-scroll-top-list", "ui-scroll-top-list1", "util", "CoinEmitter", "CoinEmitterByTime", "SpriteWithMask", "SpriteWithMaskAssembler", "cubic-bezier-curve", "curve-sample", "export-helper", "export", "mesh-vertex", "spline-node", "spline", "typed-event", "player-head-atlas", "reward-emitter", "snake-ctrl-point", "snake-sprite-assembler", "spline-sprite", "chessboard", "crushArea", "game-top-ui", "gameLayer", "gameUiLayer", "moveOutArea", "loadCanvas", "loadLayer", "catNode", "houseLayer", "main-loading-layer", "main-rank", "main-tabbar", "mainCanvas", "mainCultivateLayer", "mainLayer", "mainUiLayer", "page-house", "page-main", "topUiLayer", "upgrade-tip", "wardrobeLayer", "DateManager", "GameManager", "PoolManager", "data-manager", "popManager", "report-common", "blockArea", "editorGameLayer", "editorGameUiLayer", "editorPopCommon", "editorTips", "mapArea", "mapEditor", "newLevelPop", "saveAsPop", "selectLevelPop", "setBlockNumPop", "uiControler", "ScrollMsg", "bullet-screen", "sheep-card", "sheep-flock-icon", "sheep-flock-top", "sheep-flock", "long", "proto", "protobuf.min", "ChooseAddressPop", "FriendRankPop", "PersonalPop", "PrivacyUserPop", "TodayRankPop", "bullet-screen-pop", "challengeSucPop", "failPop", "getLovePop", "getPropPop", "giftLayerAnimate", "loseCookiePop", "loseLovePop", "nextLevelPop", "noLimitPop", "nothingPop", "picturePop", "AddressItem", "brickSv", "collectSv", "sheepRankItem", "sprintRewardBar", "wallpaperSv", "setupPop", "shareNodePop", "sheep-rank-pop", "show-daily-pop", "show-reward-pop", "sprintRewardPop", "stagePop", "topicChoosePop", "topicCollectPop", "topicJoinedPop", "topicLastWinPop", "topicNewPop", "unlock-build-pop", "unlock-build", "upgradePop", "winPop", "wxPublicAccount", "data-env", "data-type", "network-tool", "thinkingdata.mg.cocoscreator.min", "FriendSubContextView", "TodaySubContextView", "bullet-item", "xorshift", "register-head-image", "str-utils", "uma-sdk" ]);
+}, {}, [ "gd_language", "i18n", "BulletPrefab", "brickPrefab", "collectPrefab", "prop-prefab", "wallpaperPrefab", "brickSubPrefab", "collectSubPrefab", "wallpaperSubPrefab", "blockPrefab", "catClawPrefabs", "clothesPrefab", "cookiePrefab", "cookieRewardNode", "flying-item-pop-coin", "flying-item-pop-fish", "rewardPrefab", "blockEditorPrefab", "setBloackNumPrefab", "topic-card-node", "topic-header-node", "topic-sheep-node", "PrivacyPolicy", "calendar-item", "cat-house-progress", "main-cookie-reward", "topic-rank", "topic-ui-layer", "topic-ui", "ApiTool", "api-sheep", "login-api", "fontTipsLayer", "transitionsLayer", "CcJsFunc", "ad", "config", "dataModel", "dataTs", "ui-dialog", "enumConfig", "http", "key-map", "mask", "maskLayer", "android-sdk", "audio", "ks-sdk", "native-bridge", "native-def", "native-event", "qq-sdk", "share", "tt-sdk", "wx-sdk", "platform-utils", "sdk", "spine", "ui-button", "ui-dynamic-template-item", "ui-scroll-base", "ui-scroll-base1", "ui-scroll-card", "ui-scroll-grid", "ui-scroll-list", "ui-scroll-list1", "ui-scroll-top-list", "ui-scroll-top-list1", "util", "res-config", "CoinEmitter", "CoinEmitterByTime", "SpriteWithMask", "SpriteWithMaskAssembler", "cubic-bezier-curve", "curve-sample", "export-helper", "export", "mesh-vertex", "spline-node", "spline", "typed-event", "player-head-atlas", "reward-emitter", "snake-ctrl-point", "snake-sprite-assembler", "spline-sprite", "chessboard", "crushArea", "game-top-ui", "gameLayer", "gameUiLayer", "moveOutArea", "loadCanvas", "loadLayer", "play-play-btn", "catNode", "houseLayer", "main-loading-layer", "main-rank", "main-tabbar", "mainCanvas", "mainCultivateLayer", "mainLayer", "mainUiLayer", "page-house", "page-main", "topUiLayer", "upgrade-tip", "wardrobeLayer", "DateManager", "GameManager", "PoolManager", "data-manager", "pop-manager-new", "popManager", "report-common", "blockArea", "editorGameLayer", "editorGameUiLayer", "editorPopCommon", "editorTips", "mapArea", "mapEditor", "newLevelPop", "saveAsPop", "selectLevelPop", "setBlockNumPop", "uiControler", "ScrollMsg", "bullet-screen", "sheep-card", "sheep-flock-icon", "sheep-flock-top", "sheep-flock", "long", "proto", "protobuf.min", "ChooseAddressPop", "FriendRankPop", "PersonalPop", "PrivacyUserPop", "TodayRankPop", "bullet-screen-pop", "challengeSucPop", "failPop", "getLovePop", "getPropPop", "giftLayerAnimate", "loseCookiePop", "loseLovePop", "nextLevelPop", "noLimitPop", "nothingPop", "picturePop", "playPlayPop", "playPlayPopItem", "AddressItem", "brickSv", "collectSv", "sheepRankItem", "sprintRewardBar", "wallpaperSv", "setupPop", "shareNodePop", "sheep-rank-pop", "show-daily-pop", "show-reward-pop", "sprintRewardPop", "stagePop", "topicChoosePop", "topicCollectPop", "topicJoinedPop", "topicLastWinPop", "topicNewPop", "unlock-build-pop", "unlock-build", "upgradePop", "winPop", "wxPublicAccount", "data-env", "data-type", "network-tool", "thinkingdata.mg.cocoscreator.min", "FriendSubContextView", "TodaySubContextView", "bullet-item", "xorshift", "register-head-image", "str-utils", "uma-sdk" ]);

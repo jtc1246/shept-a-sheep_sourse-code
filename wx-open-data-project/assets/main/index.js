@@ -87,7 +87,8 @@ window.__require = function e(t, n, o) {
                         score: a.moonCount,
                         update_time: Date.now() / 1e3
                     },
-                    state: a.state
+                    state: a.state,
+                    score: a.score
                 };
                 wx.setUserCloudStorage({
                     KVDataList: [ {
@@ -161,7 +162,6 @@ window.__require = function e(t, n, o) {
                 wx.getFriendCloudStorage({
                     keyList: [ this.scoreName ],
                     success: function success(n) {
-                        console.log("好友数据", n);
                         var a, r, _i, c = [];
                         a = n.data, r = function r(e, n) {
                             return t.getValue(e, t.scoreName).wxgame.score >= t.getValue(n, t.scoreName).wxgame.score;
@@ -199,7 +199,7 @@ window.__require = function e(t, n, o) {
                                 openid: n.openid
                             };
                             s.push(i), n.nickname == e.nickName && e.updateUserInfo(i);
-                        }), console.log(JSON.stringify(s)), t.container.destroyAllChildren(), s.forEach(function(e) {
+                        }), t.container.destroyAllChildren(), s.forEach(function(e) {
                             var n = cc.instantiate(t.pre);
                             n.getComponent(o.default).init(e), t.container.addChild(n);
                         }));
@@ -237,11 +237,11 @@ window.__require = function e(t, n, o) {
                         n = {
                             uid: r.uid || 0,
                             gender: r.gender || 0,
-                            moonCount: r.wxgame.score || 0,
+                            moonCount: r.score || 0,
                             vip: r.vip || 0,
                             note: r.note || 0,
                             wxgame: {
-                                score: r.wxgame.score || 0,
+                                score: r.score || 0,
                                 update_time: r.wxgame.update_time || 0
                             }
                         };
@@ -441,7 +441,6 @@ window.__require = function e(t, n, o) {
                 wx.getFriendCloudStorage({
                     keyList: [ this.scoreName ],
                     success: function success(n) {
-                        console.log("好友数据", n);
                         var o, a, _r, i = [];
                         o = n.data, a = function a(e, n) {
                             return t.getValue(e, t.scoreName).wxgame.score >= t.getValue(n, t.scoreName).wxgame.score;
@@ -478,9 +477,7 @@ window.__require = function e(t, n, o) {
                                 isMe: a,
                                 openid: n.openid,
                                 state: r.state
-                            };
-                            console.log("state = ", i.state, "moonCount = ", i.moonCount, "ts = ", r.wxgame.update_time);
-                            var s = e.isToday(r.wxgame.update_time);
+                            }, s = e.isToday(r.wxgame.update_time);
                             i.moonCount > 0 && s && c.push(i), n.nickname == e.nickName && e.updateUserInfo(i);
                         }), t.container.removeAllChildren(), e.angle = 240, e.radius = 200, c.forEach(function(e, n) {
                             t.setSheep(e, n);
@@ -554,8 +551,7 @@ window.__require = function e(t, n, o) {
                     e || n.pp_url === t && (n.spriteFrame = o);
                 });
             }, t.prototype.isToday = function(e) {
-                var t = this.formatTs(e), n = this.format("yyyy-mm-dd", new Date());
-                return console.log(t, " # ", n, " # ", e), t == n;
+                return this.formatTs(e) == this.format("yyyy-mm-dd", new Date());
             }, t.prototype.formatTs = function(e) {
                 var t = new Date(1e3 * parseInt(e)), n = t.getFullYear(), o = t.getMonth() + 1 < 10 ? "0" + (t.getMonth() + 1) : t.getMonth() + 1, a = t.getDate() < 10 ? "0" + t.getDate() : t.getDate();
                 return t.getHours(), t.getHours(), t.getMinutes(), t.getMinutes(), t.getSeconds(), 
