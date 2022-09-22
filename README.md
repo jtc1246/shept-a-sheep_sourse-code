@@ -8,6 +8,6 @@
 
 反编译工具：[https://blog.csdn.net/Xm3333691/article/details/120312160](https://blog.csdn.net/Xm3333691/article/details/120312160)，[https://wwn.lanzouj.com/i7opW0bnop4d](https://wwn.lanzouj.com/i7opW0bnop4d) 密码:71g7。文件储存位置（安卓）：/data/data/com.tencent.mm/MicroMsg/{{user哈希值}}/appbrand/pkg/，（[https://www.jianshu.com/p/0617ee1ce641](https://www.jianshu.com/p/0617ee1ce641)）。
 
-当前版本获取时间：2022.9.21 23:00 左右
+当前版本获取时间：2022.9.22 9:50 左右
 
 欢迎大家讨论各方块图形生成方式及通关策略。
