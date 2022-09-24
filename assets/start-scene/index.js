@@ -1451,10 +1451,10 @@ window.__require = function t(e, o, n) {
             }, t.prototype.resetOp = function() {
                 this.operationList.length = 0;
             }, t.prototype.addOp = function(t, e) {
-                void 0 === e && (e = -100);
+                void 0 === e && (e = 0);
                 var o = {
                     id: t,
-                    time: Date.now()
+                    color: e
                 };
                 this.operationList.push(o);
             }, t.setGameType = function(e) {
@@ -1524,7 +1524,8 @@ window.__require = function t(e, o, n) {
                     e && e.data && t.setupSubviews(e.data);
                 });
             }, e.prototype.setupSubviews = function(t) {
-                if (this.nickName.string = t.nick_name || "", this.idLabel.string = "", t.register_time) {
+                if (this.nickName.string = t.nick_name || "", this.idLabel.string = "ID:" + t.uid, 
+                t.register_time) {
                     var e = (f = h.default.getInstance().formatTs(t.register_time))[0] + "年" + f[1] + "月" + f[2] + "日";
                     this.registerLabel.string = "于" + e + "诞生";
                 } else this.registerLabel.string = "";
@@ -2355,7 +2356,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/sdk"), u = t("../../script/manager/data-manager"), p = t("../net/protobuf/proto"), d = t("../manager/GameManager"), h = t("../common/platform-utils"), f = function(t) {
+        var c = t("../common/dataTs"), s = t("../common/enumConfig"), l = t("../common/sdk"), u = t("../../script/manager/data-manager"), p = t("../net/protobuf/proto"), d = t("../manager/GameManager"), h = t("../common/platform-utils"), f = t("../common/native/native-bridge"), m = t("../common/native/native-def"), g = function(t) {
             function e() {
                 return null !== t && t.apply(this, arguments) || this;
             }
@@ -2573,14 +2574,14 @@ window.__require = function t(e, o, n) {
                             ks.getUserInfo({
                                 desc: "用于完善个人资料",
                                 success: function(o) {
-                                    var n = o.userInfo, i = n.nickName, a = n.userHead, r = n.gender;
-                                    u.default.user.avatar = a, u.default.user.nickName = i, u.default.user.gender = r, 
+                                    var n = o.userName, i = o.userHead, a = o.gender;
+                                    u.default.user.avatar = i, u.default.user.nickName = n, u.default.user.gender = a, 
                                     l.default.post({
                                         url: "/sheep/v1/game/update_user",
                                         data: {
-                                            nick_name: i,
-                                            avatar: a,
-                                            gender: r
+                                            nick_name: n,
+                                            avatar: i,
+                                            gender: "M" == a ? 1 : 2
                                         },
                                         success: function() {
                                             t();
@@ -2849,13 +2850,72 @@ window.__require = function t(e, o, n) {
                     },
                     fail: function() {}
                 });
+            }, e.leitingLogin = function(t) {
+                return a(this, void 0, Promise, function() {
+                    var e, o, n, i = this;
+                    return r(this, function(a) {
+                        switch (a.label) {
+                          case 0:
+                            return console.log("[api] leitingLogin"), u.default.user.channel = t.channelNo, 
+                            u.default.user.userId = t.userId, u.default.user.avatarThird = t.thirdImageUrl, 
+                            [ 4, l.default.post({
+                                url: "/sheep/v1/user/login_lt",
+                                data: {
+                                    user_id: t.userId,
+                                    game: t.game,
+                                    channel_no: t.channelNo,
+                                    token: t.token,
+                                    nick_name: t.userName,
+                                    ver: u.default.version,
+                                    andrid_id: f.default.deviceInfo.androidId,
+                                    imei: f.default.deviceInfo.imei,
+                                    oaid: f.default.deviceInfo.oaid,
+                                    mac: f.default.deviceInfo.mac,
+                                    terminal_info: f.default.deviceInfo.terminInfo,
+                                    os_version: f.default.deviceInfo.osVer,
+                                    app_version: u.default.version
+                                },
+                                success: function(t) {
+                                    i.setUserData(t);
+                                }
+                            }) ];
+
+                          case 1:
+                            return e = a.sent(), console.log("[api] leitingLogin res:", JSON.stringify(e)), 
+                            o = {
+                                userId: f.default.loginInfo.userId,
+                                loginMode: "1",
+                                loginType: "1",
+                                newAccount: e.data.is_register ? "1" : "2",
+                                creditAccount: "2",
+                                roleName: e.data.nick_name,
+                                roleId: e.data.uid + "",
+                                roleLevel: "",
+                                serverName: e.data.server_name,
+                                serverId: e.data.server_id,
+                                type: m.reportType.Loginout,
+                                media: f.default.media
+                            }, f.default.leitingReport("af_login", JSON.stringify(o)), e.data.is_register && (n = {
+                                userId: f.default.loginInfo.userId,
+                                roleId: e.data.uid + "",
+                                roleName: e.data.nick_name,
+                                serverName: e.data.server_name,
+                                serverId: e.data.server_id,
+                                type: m.reportType.CreateRole,
+                                media: f.default.media
+                            }, f.default.leitingReport("af_character", JSON.stringify(n))), [ 2, e.err_code ];
+                        }
+                    });
+                });
             }, e.rankUserInfoTick = 0, e.gameOverTick = 0, e;
         }(cc.Component);
-        o.default = f, cc._RF.pop();
+        o.default = g, cc._RF.pop();
     }, {
         "../../script/manager/data-manager": "data-manager",
         "../common/dataTs": "dataTs",
         "../common/enumConfig": "enumConfig",
+        "../common/native/native-bridge": "native-bridge",
+        "../common/native/native-def": "native-def",
         "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../manager/GameManager": "GameManager",
@@ -4037,7 +4097,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../../pre/main/blockPrefab"), c = t("../common/CcJsFunc"), s = t("../common/dataTs"), l = t("../common/enumConfig"), u = t("../common/native/audio"), p = t("../manager/GameManager"), d = t("./crushArea"), h = cc._decorator, f = h.ccclass, m = h.property, g = function(t) {
+        var r = t("../../pre/main/blockPrefab"), c = t("../common/CcJsFunc"), s = t("../common/dataTs"), l = t("../common/enumConfig"), u = t("../common/native/audio"), p = t("../manager/GameManager"), d = t("../tools/random/xorshift"), h = t("./crushArea"), f = cc._decorator, m = f.ccclass, g = f.property, y = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.blockPrefab = null, e.blockArea = null, e.crushAreaNode = null, e.gameTopNode = null, 
@@ -4055,14 +4115,16 @@ window.__require = function t(e, o, n) {
             }, e.prototype.init = function(t, e) {
                 this.node.scale = 1, console.log("init ###### ", t.widthNum, t.heightNum, this.node.scale), 
                 this.parentComp = e, this.nowLevelData = t, this.blockArea.removeAllChildren(), 
-                this.levelID = t.levelID, this.createBlockTypeObj(), this.rewardBlockInit(t, !1), 
+                this.levelID = t.levelID, this.resetSeed(), this.createBlockTypeObj(), this.rewardBlockInit(t, !1), 
                 this.initBlockNodeLayer(!0), cc.game.emit(l.EMITKEY.SHOWMASKLAYER, 3), this.refreshIndex();
+            }, e.prototype.resetSeed = function() {
+                d.XorShift.instance.setSeed(p.default.getInstance().seed), d.XorShift.instance.random();
             }, e.prototype.initNextLevelMap = function(t, e) {
                 p.default.getInstance().resetOp(), this.node.scale = 1, console.log("init ###### ", t.widthNum, t.heightNum, this.node.scale), 
                 this.parentComp = e, this.nowLevelData = t, this.blockArea.x = cc.winSize.width, 
-                this.blockArea.removeAllChildren(), this.createBlockTypeObj(), this.rewardBlockInit(t, !0), 
-                this.initBlockNodeLayer(!1), cc.game.emit(l.EMITKEY.SHOWMASKLAYER, 3), this.refreshIndex(), 
-                cc.tween(this.blockArea).to(1, {
+                this.blockArea.removeAllChildren(), this.resetSeed(), this.createBlockTypeObj(), 
+                this.rewardBlockInit(t, !0), this.initBlockNodeLayer(!1), cc.game.emit(l.EMITKEY.SHOWMASKLAYER, 3), 
+                this.refreshIndex(), cc.tween(this.blockArea).to(1, {
                     x: -360,
                     y: 0
                 }, {
@@ -4111,10 +4173,17 @@ window.__require = function t(e, o, n) {
                 return o;
             }, e.prototype.createBlockTypeObj = function() {
                 var t = this.nowLevelData.blockTypeData;
-                for (var e in this.blockTypeArr = [], this.nowLevelBlockObj = {}, t) for (var o = 3 * t[e], n = 0; n < o; n++) this.blockTypeArr.push(e);
-                console.log("PUSH=> block ", this.blockTypeArr.length), this.blockTypeArr = c.default.shuffle(this.blockTypeArr), 
-                p.default.blacksInfo.blockCurCount = this.blockTypeArr.length, p.default.blacksInfo.blockAllCount = this.blockTypeArr.length, 
-                console.log("blockCurCount = " + p.default.blacksInfo.blockCurCount + " blockAllCount = " + p.default.blacksInfo.blockAllCount);
+                this.blockTypeArr = [], this.nowLevelBlockObj = {};
+                for (var e = Object.keys(t).map(function(e) {
+                    return {
+                        cardType: parseInt(e),
+                        cardNum: parseInt(t[e])
+                    };
+                }).sort(function(t, e) {
+                    return t.cardType - e.cardType;
+                }), o = 0; o < e.length; o++) for (var n = 3 * e[o].cardNum, i = 0; i < n; i++) this.blockTypeArr.push(e[o].cardType);
+                this.blockTypeArr = c.default.shuffle(this.blockTypeArr), p.default.blacksInfo.blockCurCount = this.blockTypeArr.length, 
+                p.default.blacksInfo.blockAllCount = this.blockTypeArr.length;
             }, e.prototype.initBlockNodeLayer = function(t) {
                 p.default.getInstance().cookieDict.cookieCurCount = 0;
                 var e = this.nowLevelData.levelData, o = 0;
@@ -4194,8 +4263,8 @@ window.__require = function t(e, o, n) {
                 }
                 return !0;
             }, e.prototype.removeCardNode = function(t) {
-                if (!(this.crushAreaNode.getComponent(d.default).getCrushBlockNum() >= 7)) {
-                    p.default.getInstance().addOp(t.cardDataObj.cardId), this.crushAreaNode.setSiblingIndex(10), 
+                if (!(this.crushAreaNode.getComponent(h.default).getCrushBlockNum() >= 7)) {
+                    p.default.getInstance().addOp(t.cardDataObj.cardId, t.cardDataObj.type), this.crushAreaNode.setSiblingIndex(10), 
                     this.crushAreaArgs && this.crushAreaArgs.setSiblingIndex(10);
                     var e = t.cardDataObj;
                     this.nowLevelBlockObj[e.layerNum][e.rowNum][e.rolNum] && delete this.nowLevelBlockObj[e.layerNum][e.rowNum][e.rolNum], 
@@ -4233,12 +4302,12 @@ window.__require = function t(e, o, n) {
                 this.nowLevelBlockObj[e.layerNum] ? this.nowLevelBlockObj[e.layerNum][e.rowNum] ? this.nowLevelBlockObj[e.layerNum][e.rowNum][e.rolNum] = t : (this.nowLevelBlockObj[e.layerNum][e.rowNum] = {}, 
                 this.nowLevelBlockObj[e.layerNum][e.rowNum][e.rolNum] = t) : (this.nowLevelBlockObj[e.layerNum] = {}, 
                 this.nowLevelBlockObj[e.layerNum][e.rowNum] = {}, this.nowLevelBlockObj[e.layerNum][e.rowNum][e.rolNum] = t);
-            }, a([ m(cc.Prefab) ], e.prototype, "blockPrefab", void 0), a([ m(cc.Node) ], e.prototype, "blockArea", void 0), 
-            a([ m(cc.Node) ], e.prototype, "crushAreaNode", void 0), a([ m(cc.Node) ], e.prototype, "gameTopNode", void 0), 
-            a([ m(cc.Node) ], e.prototype, "moveOutArea", void 0), a([ m(cc.Prefab) ], e.prototype, "cookieGetParticle", void 0), 
-            a([ m(cc.Node) ], e.prototype, "crushAreaArgs", void 0), a([ f ], e);
+            }, a([ g(cc.Prefab) ], e.prototype, "blockPrefab", void 0), a([ g(cc.Node) ], e.prototype, "blockArea", void 0), 
+            a([ g(cc.Node) ], e.prototype, "crushAreaNode", void 0), a([ g(cc.Node) ], e.prototype, "gameTopNode", void 0), 
+            a([ g(cc.Node) ], e.prototype, "moveOutArea", void 0), a([ g(cc.Prefab) ], e.prototype, "cookieGetParticle", void 0), 
+            a([ g(cc.Node) ], e.prototype, "crushAreaArgs", void 0), a([ m ], e);
         }(cc.Component);
-        o.default = g, cc._RF.pop();
+        o.default = y, cc._RF.pop();
     }, {
         "../../pre/main/blockPrefab": "blockPrefab",
         "../common/CcJsFunc": "CcJsFunc",
@@ -4246,6 +4315,7 @@ window.__require = function t(e, o, n) {
         "../common/enumConfig": "enumConfig",
         "../common/native/audio": "audio",
         "../manager/GameManager": "GameManager",
+        "../tools/random/xorshift": "xorshift",
         "./crushArea": "crushArea"
     } ],
     clothesPrefab: [ function(t, e, o) {
@@ -4776,7 +4846,7 @@ window.__require = function t(e, o, n) {
                 this.gameOverStatus || (this.gameOverStatus = !0, cc.game.emit(r.EMITKEY.HIDEMASKLAYER, 10), 
                 this.parentComp.gameOverFunc());
             }, e.prototype.rebornGameFunc = function() {
-                this.gameOverStatus = !1, this.moveOutBlock(), l.default.getInstance().addOp(-r.PropType.relive);
+                this.gameOverStatus = !1, this.moveOutBlock(), l.default.getInstance().addOp(-r.PropType.relive, -r.PropType.relive);
             }, e.prototype.getNewPosit = function(t) {
                 for (var e = this.crushArray.length - 1; e >= 0; e--) if (this.crushArray[e].cardDataObj.type == t.cardDataObj.type) return e + 1;
                 return this.crushArray.length;
@@ -4964,56 +5034,67 @@ window.__require = function t(e, o, n) {
             local: {
                 evn: n.ENV.local,
                 host: "http://192.168.31.86:8080",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "local_"
             },
             beta: {
                 evn: n.ENV.beta,
                 host: "https://beta-come-up.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "beta_"
             },
             online: {
                 evn: n.ENV.online,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_"
             },
             onlineWx: {
                 evn: n.ENV.onlineWx,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_wx_"
             },
             leiTing: {
                 evn: n.ENV.leiTing,
-                host: "http://maowgameos1.leiting.com:8080",
+                host: "https://yanlgygameos.ltgamesglobal.net",
+                cfgHost: "https://yanlgydlos.ltgamesglobal.net/patch/release/map/",
                 reportPrefix: ""
             },
             onlineOppo: {
                 evn: n.ENV.onlineOppo,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_oppo_"
             },
             onlineVivo: {
                 evn: n.ENV.onlineVivo,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_vivo_"
             },
             onlineIos: {
                 evn: n.ENV.onlineVivo,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_ios_"
             },
             online4399: {
                 evn: n.ENV.online4399,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_4399_"
             },
             onlineQq: {
                 evn: n.ENV.onlineQq,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_qq_"
             },
             onlineKs: {
                 evn: n.ENV.onlineKs,
                 host: "https://cat-match.easygame2021.com",
+                cfgHost: "https://cat-match-static.easygame2021.com/maps/",
                 reportPrefix: "sheep_ks_"
             }
         };
@@ -5148,7 +5229,7 @@ window.__require = function t(e, o, n) {
                         prop_random: 2
                     }
                 };
-            }, e.user = {
+            }, e.version = "1.0.0", e.user = {
                 uid: 0,
                 levelNum: 0,
                 openId: "",
@@ -5168,7 +5249,8 @@ window.__require = function t(e, o, n) {
                 serverName: "",
                 serverId: "",
                 channel: "",
-                userId: ""
+                userId: "",
+                avatarThird: ""
             }, e.rankUserInfo = null, e.region = null, e.cacheTime = 60, e.topicModel = null, 
             e.topicRankInfo = null, e.bulletsWin = [ {
                 content: "终于排上了",
@@ -5264,12 +5346,14 @@ window.__require = function t(e, o, n) {
         "use strict";
         cc._RF.push(e, "8cbe9Sgf2lHObO7pL4MBQTS", "data-type"), Object.defineProperty(o, "__esModule", {
             value: !0
-        }), o.ENV = void 0, function(t) {
+        }), o.SceneName = o.ENV = void 0, function(t) {
             t.local = "local", t.beta = "beta", t.online = "online", t.onlineWx = "onlineWx", 
             t.leiTing = "leiTing", t.onlineOppo = "onlineOppo", t.onlineVivo = "onlineVivo", 
             t.onlineIos = "onlineIos", t.online4399 = "online4399", t.onlineQq = "onlineQq", 
             t.onlineKs = "onlineKs";
-        }(o.ENV || (o.ENV = {})), cc._RF.pop();
+        }(o.ENV || (o.ENV = {})), function(t) {
+            t.main = "main", t.game = "game";
+        }(o.SceneName || (o.SceneName = {})), cc._RF.pop();
     }, {} ],
     dataModel: [ function(t, e, o) {
         "use strict";
@@ -5282,10 +5366,10 @@ window.__require = function t(e, o, n) {
         cc._RF.push(e, "2b52b5mP0hOv4ijR3rDmmai", "dataTs"), Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var n = t("../manager/GameManager"), i = t("../manager/report-common"), a = t("../tools/random/xorshift"), r = t("./CcJsFunc"), c = t("./enumConfig"), s = t("./native/native-bridge"), l = t("./native/native-def"), u = t("./platform-utils"), p = t("./sdk"), d = function() {
+        var n = t("../manager/GameManager"), i = t("../manager/report-common"), a = t("./CcJsFunc"), r = t("./enumConfig"), c = t("./native/native-bridge"), s = t("./native/native-def"), l = t("./platform-utils"), u = t("./sdk"), p = function() {
             function t() {}
             return t.GetVedioID = function() {
-                return u.default.isPlatform(u.Platform.wx) ? this.WXVedioID : u.default.isPlatform(u.Platform.tt) ? this.TTVedioID : u.default.isPlatform(u.Platform.android) ? this.AndroidVedioID : u.default.isPlatform(u.Platform.oppo) ? this.OppoVedioID : u.default.isPlatform(u.Platform.vivo) ? this.VivoVedioID : u.default.isPlatform(u.Platform.qq) ? this.QQVedioID : u.default.isPlatform(u.Platform.ks) ? this.ksAdID : "";
+                return l.default.isPlatform(l.Platform.wx) ? this.WXVedioID : l.default.isPlatform(l.Platform.tt) ? this.TTVedioID : l.default.isPlatform(l.Platform.android) ? this.AndroidVedioID : l.default.isPlatform(l.Platform.oppo) ? this.OppoVedioID : l.default.isPlatform(l.Platform.vivo) ? this.VivoVedioID : l.default.isPlatform(l.Platform.qq) ? this.QQVedioID : l.default.isPlatform(l.Platform.ks) ? this.ksAdID : "";
             }, t.getGameConfigData = function() {
                 return this.gameConfigData;
             }, t.initData = function(e) {
@@ -5293,29 +5377,29 @@ window.__require = function t(e, o, n) {
                 if (cc.sys.localStorage.getItem(this.localKeyName)) r = this.getUserData(); else {
                     this.registerUserData();
                     var a = this.getUserData().userID;
-                    if (s.default.callNative(l.NativeFun.publicParamsInfo, {
+                    if (c.default.callNative(s.NativeFun.publicParamsInfo, {
                         userId: a
-                    }), i.default.reportTACommon("register", {}), s.default.deviceInfo) {
+                    }), i.default.reportTACommon("register", {}), c.default.deviceInfo) {
                         console.log("AF af_register打点");
-                        var r = t.getUserData(), c = {
-                            androidid: s.default.deviceInfo.androidId,
+                        var r = t.getUserData(), l = {
+                            androidid: c.default.deviceInfo.androidId,
                             chennal: "310001",
                             gameCode: "59",
                             userId: r.userID,
                             type: 3
                         };
-                        s.default.leitingReport("af_register", c), console.log("AF af_character打点");
+                        c.default.leitingReport("af_register", l), console.log("AF af_character打点");
                         var u = {
-                            androidid: s.default.deviceInfo.androidId,
+                            androidid: c.default.deviceInfo.androidId,
                             chennal: "310001",
                             gameCode: "59",
                             userId: r.userID,
                             type: 3,
-                            roleId: s.default.deviceInfo.gaid,
+                            roleId: c.default.deviceInfo.gaid,
                             serviceName: "海外测试服",
                             serviceId: "1"
                         };
-                        s.default.leitingReport("af_character", u);
+                        c.default.leitingReport("af_character", u);
                     }
                 }
                 var p = 2;
@@ -5326,8 +5410,8 @@ window.__require = function t(e, o, n) {
                 });
             }, t.registerUserData = function() {
                 if (!cc.sys.localStorage.getItem(this.localKeyName)) {
-                    this.gameUserLocalData = this.registerData, u.default.isPlatform(u.Platform.android) ? s.default.loginInfo && s.default.loginInfo.userId ? this.gameUserLocalData.userData.userID = s.default.loginInfo.userId : this.gameUserLocalData.userData.userID = r.default.randomCharNum() : u.default.isPlatform(u.Platform.tt) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.wx) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.qq) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.ks) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.web) ? (this.gameUserLocalData.userData.userID = "", 
-                    this.gameUserLocalData.userData.token = "") : u.default.isPlatform(u.Platform.oppo) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.vivo) ? this.gameUserLocalData.userData.userID = "" : u.default.isPlatform(u.Platform.ios) ? this.gameUserLocalData.userData.userID = "" : this.gameUserLocalData.userData.userID = r.default.randomCharNum(), 
+                    this.gameUserLocalData = this.registerData, l.default.isPlatform(l.Platform.android) ? c.default.loginInfo && c.default.loginInfo.userId ? this.gameUserLocalData.userData.userID = c.default.loginInfo.userId : this.gameUserLocalData.userData.userID = a.default.randomCharNum() : l.default.isPlatform(l.Platform.tt) ? this.gameUserLocalData.userData.userID = "" : l.default.isPlatform(l.Platform.wx) ? this.gameUserLocalData.userData.userID = "" : l.default.isPlatform(l.Platform.qq) ? this.gameUserLocalData.userData.userID = "" : l.default.isPlatform(l.Platform.ks) ? this.gameUserLocalData.userData.userID = "" : l.default.isPlatform(l.Platform.web) ? (this.gameUserLocalData.userData.userID = "", 
+                    this.gameUserLocalData.userData.token = "") : l.default.isPlatform(l.Platform.oppo) ? this.gameUserLocalData.userData.userID = "" : l.default.isPlatform(l.Platform.vivo) ? this.gameUserLocalData.userData.userID = "" : l.default.isPlatform(l.Platform.ios) ? this.gameUserLocalData.userData.userID = "" : this.gameUserLocalData.userData.userID = a.default.randomCharNum(), 
                     this.gameUserLocalData.userData.registerTime = Date.now() + "";
                     var t = JSON.stringify(this.gameUserLocalData);
                     cc.sys.localStorage.setItem(this.localKeyName, t), console.log("[PUSH] 注册用户 ######"), 
@@ -5369,7 +5453,7 @@ window.__require = function t(e, o, n) {
                 var t = cc.sys.localStorage.getItem(this.localKeyName);
                 return this.gameUserLocalData = JSON.parse(t), this.gameUserLocalData.userData;
             }, t.clearToken = function() {
-                if (!u.default.isPlatform(u.Platform.web)) {
+                if (!l.default.isPlatform(l.Platform.web)) {
                     var e = t.getUserData();
                     e.token = "", t.saveUserData(e);
                 }
@@ -5392,13 +5476,13 @@ window.__require = function t(e, o, n) {
                     moonCount: t,
                     score: t
                 };
-                p.default.rankScoreUpdate(c.ShownType.friendRank, JSON.stringify(e), c.RefreshType.add);
+                u.default.rankScoreUpdate(r.ShownType.friendRank, JSON.stringify(e), r.RefreshType.add);
             }, t.updateTodayCount = function(t, e) {
                 var o = {
                     moonCount: t,
                     state: e
                 };
-                p.default.rankScoreUpdate(c.ShownType.todayRank, JSON.stringify(o), c.RefreshType.add);
+                u.default.rankScoreUpdate(r.ShownType.todayRank, JSON.stringify(o), r.RefreshType.add);
             }, t.getDailyWinCount = function() {
                 var e = t.getUserData();
                 if (e.dailyData) {
@@ -5417,18 +5501,18 @@ window.__require = function t(e, o, n) {
             }, t.gameLevelWin = function(t, e) {
                 e || (console.log("获取刚完成关卡的奖励数据, 随机获取填充 ###"), e = this.getRewardBoxData(this.gameUserLocalData.userData.playLevelId));
                 var o = Number(e.everLevelRewardObj.coin), i = Number(e.everLevelRewardObj.fish);
-                if (n.default.getInstance().gameType == c.GAMETYPE.GAMELEVEL ? (o = Number(o), i = Number(i), 
-                this.gameUserLocalData.userData.playLevelId++) : n.default.getInstance().gameType == c.GAMETYPE.GAMEDAILY && (o = 2 * Number(o), 
+                if (n.default.getInstance().gameType == r.GAMETYPE.GAMELEVEL ? (o = Number(o), i = Number(i), 
+                this.gameUserLocalData.userData.playLevelId++) : n.default.getInstance().gameType == r.GAMETYPE.GAMEDAILY && (o = 2 * Number(o), 
                 i = 2 * Number(i)), this.gameUserLocalData.userData.coin += o, this.gameUserLocalData.userData.fish += i, 
                 this.gameUserLocalData.userData.coin, n.default.getInstance().moneyDict.coin = o += Number(n.default.getInstance().moneyDict.coin), 
                 n.default.getInstance().moneyDict.fish = i += Number(n.default.getInstance().moneyDict.fish), 
                 e.levelNewNum == e.levelNumMax) {
                     console.log("添加宝箱奖励");
                     for (var a = 0; a < e.boxReward.length; a++) {
-                        var r = e.boxReward[a].propType;
-                        "reward_coin" == r ? (this.gameUserLocalData.userData.coin += e.boxReward[a].num, 
-                        this.gameUserLocalData.userData.coin, e.boxReward[a].num) : (this.gameUserLocalData.userData[r] += e.boxReward[a].num, 
-                        this.gameUserLocalData.userData[r]);
+                        var c = e.boxReward[a].propType;
+                        "reward_coin" == c ? (this.gameUserLocalData.userData.coin += e.boxReward[a].num, 
+                        this.gameUserLocalData.userData.coin, e.boxReward[a].num) : (this.gameUserLocalData.userData[c] += e.boxReward[a].num, 
+                        this.gameUserLocalData.userData[c]);
                     }
                 }
                 this.addLoveCount(1);
@@ -5545,8 +5629,8 @@ window.__require = function t(e, o, n) {
                 for (var n = t.getGameConfigData().baseConfigData.catClothesData["cat_" + e], i = 0; i < n.length; i++) if (n[i].clothesID == o) return n[i];
                 return null;
             }, t.getSprintRewardData = function() {
-                if (cc.sys.localStorage.getItem(c.STORAGEKEY.SPRINTREWARDKEY)) {
-                    var t = cc.sys.localStorage.getItem(c.STORAGEKEY.SPRINTREWARDKEY);
+                if (cc.sys.localStorage.getItem(r.STORAGEKEY.SPRINTREWARDKEY)) {
+                    var t = cc.sys.localStorage.getItem(r.STORAGEKEY.SPRINTREWARDKEY);
                     return JSON.parse(t);
                 }
                 var e = {
@@ -5556,21 +5640,21 @@ window.__require = function t(e, o, n) {
                     pastTime: Date.now(),
                     isGameEd: 0
                 }, o = JSON.stringify(e);
-                return cc.sys.localStorage.setItem(c.STORAGEKEY.SPRINTREWARDKEY, o), e;
+                return cc.sys.localStorage.setItem(r.STORAGEKEY.SPRINTREWARDKEY, o), e;
             }, t.setSprintRewardData = function(t) {
                 var e = JSON.stringify(t);
-                cc.sys.localStorage.setItem(c.STORAGEKEY.SPRINTREWARDKEY, e);
+                cc.sys.localStorage.setItem(r.STORAGEKEY.SPRINTREWARDKEY, e);
             }, t.updateSprintRewardTime = function() {
-                var t = this.getSprintRewardData(), e = t.pastTime, o = 1e3 * this.gameConfigData.baseConfigData.sprintRewardTime, i = Number(Date.now()) - e, a = Math.floor(i / o), r = 0;
+                var t = this.getSprintRewardData(), e = t.pastTime, o = 1e3 * this.gameConfigData.baseConfigData.sprintRewardTime, i = Number(Date.now()) - e, a = Math.floor(i / o), c = 0;
                 return a >= 1 ? (t.pastTime = Date.now(), this.resetSprintReward(t), n.default.getInstance().sprintMark = !1, 
-                cc.game.emit(c.EMITKEY.MAINUPDATEUI)) : r = o - (i - a * o), r;
+                cc.game.emit(r.EMITKEY.MAINUPDATEUI)) : c = o - (i - a * o), c;
             }, t.resetSprintReward = function(t) {
-                n.default.getInstance().gameType == c.GAMETYPE.GAMELEVEL && (t ? console.log("活动结束中断连胜 ######") : (t = this.getSprintRewardData(), 
+                n.default.getInstance().gameType == r.GAMETYPE.GAMELEVEL && (t ? console.log("活动结束中断连胜 ######") : (t = this.getSprintRewardData(), 
                 console.log("普通玩法中断连胜 ######")), t.winNum = 0, t.winBox = 0, t.rewardProgress = 0, 
                 t.isGameEd = 0, this.setSprintRewardData(t));
             }, t.getCookieRewardData = function() {
-                if (cc.sys.localStorage.getItem(c.STORAGEKEY.COOKIECOLLECTIONKEY)) {
-                    var t = cc.sys.localStorage.getItem(c.STORAGEKEY.COOKIECOLLECTIONKEY);
+                if (cc.sys.localStorage.getItem(r.STORAGEKEY.COOKIECOLLECTIONKEY)) {
+                    var t = cc.sys.localStorage.getItem(r.STORAGEKEY.COOKIECOLLECTIONKEY);
                     return JSON.parse(t);
                 }
                 var e = {
@@ -5578,14 +5662,14 @@ window.__require = function t(e, o, n) {
                     pastTime: Date.now(),
                     progress: 0
                 }, o = JSON.stringify(e);
-                return cc.sys.localStorage.setItem(c.STORAGEKEY.COOKIECOLLECTIONKEY, o), e;
+                return cc.sys.localStorage.setItem(r.STORAGEKEY.COOKIECOLLECTIONKEY, o), e;
             }, t.setCookieRewardData = function(t) {
                 var e = JSON.stringify(t);
-                cc.sys.localStorage.setItem(c.STORAGEKEY.COOKIECOLLECTIONKEY, e);
+                cc.sys.localStorage.setItem(r.STORAGEKEY.COOKIECOLLECTIONKEY, e);
             }, t.updateCookieRewardTime = function() {
                 var t = this.getCookieRewardData(), e = t.pastTime, o = 1e3 * this.gameConfigData.baseConfigData.cookieRewardTime, n = Number(Date.now()) - e, i = Math.floor(n / o), a = 0;
                 return i >= 1 ? (t.pastTime = Date.now(), t.cookieNum = 0, t.progress = 0, this.setCookieRewardData(t), 
-                cc.game.emit(c.EMITKEY.MAINUPDATEUI)) : a = o - (n - i * o), a;
+                cc.game.emit(r.EMITKEY.MAINUPDATEUI)) : a = o - (n - i * o), a;
             }, t.setItem = function(t, e, o) {
                 (!o || o <= 0) && (o = -1);
                 var n = {
@@ -5606,17 +5690,17 @@ window.__require = function t(e, o, n) {
             }, t.removeItem = function(t) {
                 cc.sys.localStorage.removeItem(t);
             }, t.getSheepClothesData = function() {
-                var e = cc.sys.localStorage.getItem(c.STORAGEKEY.SHEEPCLOTHESDATA), o = t.gameConfigData.baseConfigData;
+                var e = cc.sys.localStorage.getItem(r.STORAGEKEY.SHEEPCLOTHESDATA), o = t.gameConfigData.baseConfigData;
                 if (!e) return o && o.sheepClothesData && this.setSheepClothesData(o.sheepClothesData), 
                 console.log("本地没有羊皮肤数据，进行缓存 ###### "), o.sheepClothesData;
                 var n = JSON.parse(e);
                 if (o.sheepClothesData.length > n.length) for (var i = 0; i < o.sheepClothesData.length; i++) {
-                    for (var a = o.sheepClothesData[i], r = !1, s = 0; s < n.length; s++) if ("Sheeps" == (l = n[s]).spName && l.spSkin.indexOf("skin_") < 0 && (l.spSkin = "skin_" + l.spSkin), 
+                    for (var a = o.sheepClothesData[i], c = !1, s = 0; s < n.length; s++) if ("Sheeps" == (l = n[s]).spName && l.spSkin.indexOf("skin_") < 0 && (l.spSkin = "skin_" + l.spSkin), 
                     a.clothesId == l.clothesId) {
-                        r = !0;
+                        c = !0;
                         break;
                     }
-                    0 == r && n.push(a);
+                    0 == c && n.push(a);
                 } else if (o.sheepClothesData.length == n.length) for (i = 0; i < o.sheepClothesData.length; i++) for (a = o.sheepClothesData[i], 
                 s = 0; s < n.length; s++) {
                     var l = n[s];
@@ -5625,10 +5709,10 @@ window.__require = function t(e, o, n) {
                 return this.setSheepClothesData(n), n;
             }, t.setSheepClothesData = function(t) {
                 var e = JSON.stringify(t);
-                cc.sys.localStorage.setItem(c.STORAGEKEY.SHEEPCLOTHESDATA, e);
+                cc.sys.localStorage.setItem(r.STORAGEKEY.SHEEPCLOTHESDATA, e);
             }, t.setLevelMapData = function(t, e) {
                 var o = JSON.stringify(e);
-                p.default.post({
+                u.default.post({
                     url: "/admin/game_map/upsert",
                     data: {
                         map_id: t,
@@ -5640,10 +5724,10 @@ window.__require = function t(e, o, n) {
                 });
             }, t.loadMapDataFromLocalStorageOrNetWork = function(e) {
                 return new Promise(function(o, n) {
-                    var i = c.STORAGEKEY.GAMEMAP + e, a = t.getItem(i);
+                    var i = r.STORAGEKEY.GAMEMAP + e, a = t.getItem(i);
                     if (a) o(a); else {
-                        var r = "https://cat-match-static.easygame2021.com/maps/" + e + ".txt";
-                        cc.assetManager.loadRemote(r, {
+                        var c = "https://cat-match-static.easygame2021.com/maps/" + e + ".txt";
+                        cc.assetManager.loadRemote(c, {
                             ext: ".txt"
                         }, function(e, a) {
                             e ? n() : (t.setItem(i, a.text, 604800), o(a.text));
@@ -5651,15 +5735,18 @@ window.__require = function t(e, o, n) {
                     }
                 });
             }, t.getTodayMap = function(t, e) {
-                p.default.get({
+                u.default.get({
                     url: "/sheep/v1/game/map_info_ex",
                     params: {
                         matchType: t
                     },
                     success: function(t) {
-                        0 == t.err_code ? (console.log("++开始配置", t), n.default.getInstance().mapMd5s = t.data.map_md5, 
-                        n.default.getInstance().seed = t.data.map_seed, a.XorShift.instance.setSeed(t.data.map_seed), 
-                        a.XorShift.instance.random(), e && e()) : cc.game.emit("showTips", "读取地图失败");
+                        if (0 == t.err_code) {
+                            console.log("++开始配置", t);
+                            var o = n.default.getInstance();
+                            o.mapMd5s = t.data.map_md5, o.seed = t.data.map_seed, o.matchSeed2 = t.data.map_seed_2, 
+                            e && e();
+                        } else cc.game.emit("showTips", "读取地图失败");
                     }
                 });
             }, t.getLevelMapData = function(e, o) {
@@ -5683,7 +5770,7 @@ window.__require = function t(e, o, n) {
             }, t.localKeyName = "gameUserLocalData", t.VERSION = "1_0_1", t.GAMEVERSION = "", 
             t.WXVedioID = "adunit-e64f338bb42a2cf3", t.TTVedioID = "2h8vke2e0oo3771fk4", t.AndroidVedioID = "", 
             t.OppoVedioID = "623096", t.VivoVedioID = "0bdbd3191938407b8751a51610a84451", t.QQVedioID = "1de3ab25d5d6112a602465ea00c191f9", 
-            t.ksAdID = "2300003267_01", t.langCode = c.LangEnum.zhCN, t.gameConfigData = {
+            t.ksAdID = "2300003267_01", t.langCode = r.LangEnum.zhCN, t.gameConfigData = {
                 baseConfigData: null,
                 levelConfigData: null
             }, t.gameUserLocalData = {
@@ -5744,11 +5831,10 @@ window.__require = function t(e, o, n) {
                 }
             }, t;
         }();
-        o.default = d, cc._RF.pop();
+        o.default = p, cc._RF.pop();
     }, {
         "../manager/GameManager": "GameManager",
         "../manager/report-common": "report-common",
-        "../tools/random/xorshift": "xorshift",
         "./CcJsFunc": "CcJsFunc",
         "./enumConfig": "enumConfig",
         "./native/native-bridge": "native-bridge",
@@ -7033,7 +7119,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/native/audio"), l = t("../main/mainLayer"), u = t("./chessboard"), p = t("./crushArea"), d = t("./gameUiLayer"), h = t("./moveOutArea"), f = t("../common/spine"), m = t("../common/enumConfig"), g = t("../manager/GameManager"), y = t("../manager/DateManager"), v = t("../utils/uma/uma-sdk"), b = t("../../i18n/i18n"), _ = t("../../i18n/gd_language"), N = t("../common/native/native-bridge"), w = t("../manager/report-common"), P = t("../manager/data-manager"), C = t("../api/api-sheep"), k = t("../net/protobuf/proto"), S = t("../common/util"), O = cc._decorator, T = O.ccclass, A = O.property, D = function(t) {
+        var r = t("../common/CcJsFunc"), c = t("../common/dataTs"), s = t("../common/native/audio"), l = t("../main/mainLayer"), u = t("./chessboard"), p = t("./crushArea"), d = t("./gameUiLayer"), h = t("./moveOutArea"), f = t("../common/spine"), m = t("../common/enumConfig"), g = t("../manager/GameManager"), y = t("../manager/DateManager"), v = t("../utils/uma/uma-sdk"), b = t("../../i18n/i18n"), _ = t("../../i18n/gd_language"), N = t("../common/native/native-bridge"), w = t("../manager/report-common"), P = t("../manager/data-manager"), C = t("../api/api-sheep"), k = t("../net/protobuf/proto"), S = t("../common/util"), O = cc._decorator, T = O.ccclass, A = O.property, I = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.mainLayer = null, e.bgLayer = null, e.chessboard = null, e.crushArea = null, 
@@ -7187,32 +7273,35 @@ window.__require = function t(e, o, n) {
                         break;
                     }
                 }
-                for (var u = g.default.getInstance().operationList, p = [], d = 0, h = 0; h < u.length; h++) p.push({
-                    chessIndex: u[h].id,
-                    timeTag: 0 == d ? 0 : u[h].time - d
-                }), d = u[h].time;
-                for (var f = {
+                for (var u = g.default.getInstance().operationList, p = [], d = 0; d < u.length; d++) p.push({
+                    chessIndex: u[d].id,
+                    timeTag: u[d].color
+                });
+                for (var h = {
                     gameType: g.default.getInstance().gameType,
                     stepInfoList: p
-                }, y = k.protocol.MatchPlayInfo.create(f), v = k.protocol.MatchPlayInfo.encode(y).finish(), b = "", _ = 0; _ < v.length; _++) b += String.fromCharCode(v[_]);
-                var N = {
+                }, f = k.protocol.MatchPlayInfo.create(h), y = k.protocol.MatchPlayInfo.encode(f).finish(), v = "", b = 0; b < y.length; b++) v += String.fromCharCode(y[b]);
+                console.log("==> MatchPlayInfo base64: " + S.default.base64_encode(v));
+                var _ = {
                     rank_score: 1,
                     rank_state: t,
                     rank_time: this.countdown,
                     rank_role: o,
                     skin: r,
-                    MatchPlayInfo: S.default.base64_encode(b)
+                    MatchPlayInfo: S.default.base64_encode(v),
+                    MapSeed2: g.default.getInstance().matchSeed2,
+                    Version: "0.0.1"
                 };
                 if (0 == this.checkIsTodayWin()) return console.log("checkIsTodayWin  gameover ######## false"), 
                 cc.game.emit(m.EMITKEY.SHOWMAINTIPS, "每日关卡已更新, 快去挑战今日关卡吧"), void setTimeout(function() {
                     e.showMainLayer(), cc.game.emit(m.EMITKEY.SHOWMODULE, m.MODULETYPE.COMMON);
                 }, 1500);
-                if (g.default.getInstance().gameType == m.GAMETYPE.GAMEDAILY) {
+                if (g.default.getInstance().gameType = 3, P.default.rankUserInfo.state = 0, g.default.getInstance().gameType == m.GAMETYPE.GAMEDAILY) {
                     if (P.default.rankUserInfo && 1 == P.default.rankUserInfo.state) return;
-                    C.default.gameOver(N, function() {
+                    C.default.gameOver(_, function() {
                         cc.game.emit(m.EMITKEY.GAMEOVERSUCCESS), C.default.requestRankUserInfo();
                     });
-                } else g.default.getInstance().gameType == m.GAMETYPE.GAMETOPIC && C.default.topicGameOver(N, function() {
+                } else g.default.getInstance().gameType == m.GAMETYPE.GAMETOPIC && C.default.topicGameOver(_, function() {
                     cc.game.emit(m.EMITKEY.GAMEOVERSUCCESS);
                 });
             }, e.prototype.checkIsTodayWin = function() {
@@ -7345,7 +7434,7 @@ window.__require = function t(e, o, n) {
             a([ A(cc.Node) ], e.prototype, "gameTopUi", void 0), a([ A(cc.Node) ], e.prototype, "gameWin", void 0), 
             a([ A(cc.Node) ], e.prototype, "gameNext", void 0), a([ T ], e);
         }(cc.Component);
-        o.default = D, cc._RF.pop();
+        o.default = I, cc._RF.pop();
     }, {
         "../../i18n/gd_language": "gd_language",
         "../../i18n/i18n": "i18n",
@@ -7511,7 +7600,7 @@ window.__require = function t(e, o, n) {
                 if (!this.isMoving) if (this.removeMask.activeInHierarchy) cc.game.emit(s.EMITKEY.SHOWMAINTIPS, "每关只能使用一次哦"); else if (this.userData.prop_remove >= 1) {
                     if (this.crushArea.getComponent(f.default).moveOutBlock()) {
                         l.default.playAudioMusic("audio/sound/moveOut.mp3", !1), this.userData.prop_remove--, 
-                        d.default.getInstance().addOp(-s.PropType.remove), d.default.getInstance().reportProperty.remove_use++, 
+                        d.default.getInstance().addOp(-s.PropType.remove, -s.PropType.remove), d.default.getInstance().reportProperty.remove_use++, 
                         d.default.getInstance().sheepMark.propRemoveCount++, 0 == d.default.getInstance().reportProperty.remove_ad && console.log("使用初始道具 ###### propRemove");
                         var t = N.default.getTAUserInfo();
                         t.item_name = "移出道具", v.default.reportTACommon("prop_initial", t), c.default.saveUserData(this.userData), 
@@ -7524,7 +7613,7 @@ window.__require = function t(e, o, n) {
                 if (this.cancelMask.activeInHierarchy) cc.game.emit(s.EMITKEY.SHOWMAINTIPS, "每关只能使用一次哦"); else if (this.userData.prop_cancel >= 1) {
                     if (this.crushArea.getComponent(f.default).cancelOneStep()) {
                         l.default.playAudioMusic("audio/sound/moveOut.mp3", !1), this.userData.prop_cancel--, 
-                        d.default.getInstance().addOp(-s.PropType.cancel), d.default.getInstance().reportProperty.cancel_use++, 
+                        d.default.getInstance().addOp(-s.PropType.cancel, -s.PropType.cancel), d.default.getInstance().reportProperty.cancel_use++, 
                         d.default.getInstance().sheepMark.propCancelCount++, 0 == d.default.getInstance().reportProperty.cancel_ad && console.log("使用初始道具 ###### propCancel");
                         var t = N.default.getTAUserInfo();
                         t.item_name = "撤销道具", v.default.reportTACommon("prop_initial", t), c.default.saveUserData(this.userData), 
@@ -7538,7 +7627,7 @@ window.__require = function t(e, o, n) {
                     var t = this.chessboardNode.getComponent(h.default).updateBlockArea();
                     if (console.log("isOk ###### ", t), t) {
                         l.default.playAudioMusic("audio/sound/random.mp3", !1), this.userData.prop_random--, 
-                        d.default.getInstance().addOp(-s.PropType.random), d.default.getInstance().reportProperty.random_use++, 
+                        d.default.getInstance().addOp(-s.PropType.random, -s.PropType.random), d.default.getInstance().reportProperty.random_use++, 
                         d.default.getInstance().sheepMark.propRandomCount++, 0 == d.default.getInstance().reportProperty.random_ad && console.log("使用初始道具 ###### propRandom");
                         var e = N.default.getTAUserInfo();
                         e.item_name = "洗牌道具", v.default.reportTACommon("prop_initial", e), c.default.saveUserData(this.userData), 
@@ -7561,11 +7650,12 @@ window.__require = function t(e, o, n) {
                 } else cc.game.emit("showMainTips", b.default.instance.trans(_.GDLanguage.coin_inadequate));
             }, e.prototype.freeCallBackFunc = function(t) {
                 var e = this;
-                if (this.getPropType = t, console.log("type = " + t), w.default.isPlatform(w.Platform.wx) && d.default.getInstance().isSharedMapOption()) {
+                if (this.getPropType = t, console.log("type = " + t), (w.default.isPlatform(w.Platform.wx) || w.default.isPlatform(w.Platform.qq)) && d.default.getInstance().isSharedMapOption()) {
                     var o = N.default.getPropData(), n = 0;
                     if (d.default.getInstance().gameType == s.GAMETYPE.GAMEDAILY ? 1 == t ? n = o.daily.prop_remove : 2 == t ? n = o.daily.prop_cancel : 3 == t && (n = o.daily.prop_random) : d.default.getInstance().gameType == s.GAMETYPE.GAMETOPIC && (1 == t ? n = o.topic.prop_remove : 2 == t ? n = o.topic.prop_cancel : 3 == t && (n = o.topic.prop_random)), 
                     u.default.wxIsPolicy() && u.default.wxIsPolicyShare()) return void e.shareTTAction(t);
                     if (n > 0 && 0 == u.default.wxIsPolicy()) return void e.shareTTAction(t);
+                    if (n > 0) return void e.shareTTAction(t);
                 }
                 var i = c.default.GetVedioID();
                 u.default.watchAdVideo({
@@ -9050,7 +9140,7 @@ window.__require = function t(e, o, n) {
         var a = t("../platform-utils"), r = function() {
             function t() {}
             return t.init = function() {
-                this._isKs && (this.authorize(), console.info("-- 开启转发 --"), this.registerShowHide());
+                this._isKs && (console.info("-- 开启转发 --"), this.registerShowHide());
             }, t.registerShowHide = function() {
                 return n(this, void 0, Promise, function() {
                     var t = this;
@@ -9077,8 +9167,8 @@ window.__require = function t(e, o, n) {
                     return i(this, function() {
                         return ks.authorize({
                             scope: "scope.userLocation",
-                            success: function(t) {
-                                cc.log("authorize success:", t);
+                            success: function() {
+                                cc.log("authorize success:");
                             },
                             fail: function(t) {
                                 cc.log("authorize fail:", t);
@@ -9086,10 +9176,54 @@ window.__require = function t(e, o, n) {
                         }), [ 2 ];
                     });
                 });
-            }, t.authorize = function() {
+            }, t.checkAuthorize = function(t) {
+                return n(this, void 0, Promise, function() {
+                    var e = this;
+                    return i(this, function() {
+                        return [ 2, new Promise(function(o) {
+                            ks.getSetting({
+                                success: function(a) {
+                                    return n(e, void 0, void 0, function() {
+                                        var e, n;
+                                        return i(this, function(i) {
+                                            switch (i.label) {
+                                              case 0:
+                                                return (null === (n = null === (e = null == a ? void 0 : a.result) || void 0 === e ? void 0 : e.scope) || void 0 === n ? void 0 : n.userInfo) ? (t && t(!0), 
+                                                o(), [ 3, 3 ]) : [ 3, 1 ];
+
+                                              case 1:
+                                                return [ 4, this.authorize(t) ];
+
+                                              case 2:
+                                                i.sent(), o(), i.label = 3;
+
+                                              case 3:
+                                                return [ 2 ];
+                                            }
+                                        });
+                                    });
+                                },
+                                fail: function(e) {
+                                    t && t(!1), o(), console.log("check fail:", e);
+                                }
+                            });
+                        }) ];
+                    });
+                });
+            }, t.authorize = function(t) {
                 return n(this, void 0, Promise, function() {
                     return i(this, function() {
-                        return [ 2 ];
+                        return [ 2, new Promise(function(e) {
+                            ks.authorize({
+                                scope: "scope.userInfo",
+                                success: function() {
+                                    t && t(!0), e(), console.log("authorize success:");
+                                },
+                                fail: function(o) {
+                                    t && t(!1), e(), console.log("authorize fail:", o);
+                                }
+                            });
+                        }) ];
                     });
                 });
             }, t.weiBoJump = function() {
@@ -9450,14 +9584,14 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         }), cc.macro.CLEANUP_IMAGE_CACHE = !1, cc.dynamicAtlasManager.enabled = !0;
-        var s = t("../../i18n/i18n"), l = t("../api/login-api"), u = t("../common/CcJsFunc"), p = t("../common/dataTs"), d = t("../common/native/share"), h = t("../common/spine"), f = t("../effect/player-head-atlas"), m = t("../manager/GameManager"), g = t("../manager/report-common"), y = t("../pop/PrivacyUserPop"), v = t("../tools/register-head-image"), b = cc._decorator, _ = b.ccclass, N = b.property, w = function(t) {
+        var s = t("../../i18n/i18n"), l = t("../api/login-api"), u = t("../common/CcJsFunc"), p = t("../common/dataTs"), d = t("../common/native/native-event"), h = t("../common/native/share"), f = t("../common/platform-utils"), m = t("../common/spine"), g = t("../effect/player-head-atlas"), y = t("../manager/GameManager"), v = t("../manager/report-common"), b = t("../pop/PrivacyUserPop"), _ = t("../tools/register-head-image"), N = cc._decorator, w = N.ccclass, P = N.property, C = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.bgLayer = null, e.loadProgressBar = null, e.descNode = null, e.userNode = null, 
                 e.privacyNode = null, e.chooseNode = null, e.chooseBg = null, e.beginNode = null, 
-                e.tipsNode = null, e.arrowBgBase = null, e.userNodeBase = null, e.privacyUserPop = null, 
-                e.progressCurrent = 0, e.progressAll = 100, e.mProgressTarget = 0, e.sceneLoadEd = !1, 
-                e.mPromise18N = void 0, e.mPromiseGameSceneLoad = void 0, e.mPromiseLoadJson = void 0, 
+                e.tipsNode = null, e.arrowBgBase = null, e.userNodeBase = null, e.ageNode = null, 
+                e.privacyUserPop = null, e.progressCurrent = 0, e.progressAll = 100, e.mProgressTarget = 0, 
+                e.sceneLoadEd = !1, e.mPromise18N = void 0, e.mPromiseGameSceneLoad = void 0, e.mPromiseLoadJson = void 0, 
                 e;
             }
             return i(e, t), e.prototype.update = function(t) {
@@ -9469,44 +9603,46 @@ window.__require = function t(e, o, n) {
                     t > this.loadProgressBar.progress && (this.loadProgressBar.progress = t);
                 } else this.loadProgressBar.progress = 1;
             }, e.prototype.start = function() {
-                this.loadMainScene(), this.bgLayer.getChildByName("sp").getComponent(h.default).play("2Grass", 0), 
-                this.privacyUserPop.active = !1, this.showDescBegin(!1), m.default.getInstance().initData(), 
-                d.default.init(), this.loadCfg(), f.default.instance.init(2048, 2048, 100), v.registerHeadImgLoader(), 
+                this.ageNode.active = !1, this.loadMainScene(), this.bgLayer.getChildByName("sp").getComponent(m.default).play("2Grass", 0), 
+                this.privacyUserPop.active = !1, this.showDescBegin(!1), y.default.getInstance().initData(), 
+                h.default.init(), this.loadCfg(), g.default.instance.init(2048, 2048, 100), _.registerHeadImgLoader(), 
                 u.default.addbtnTouchOriginEndScale(this.userNode, this.userNodeFunc.bind(this)), 
                 u.default.addbtnTouchOriginEndScale(this.privacyNode, this.privacyNodeFunc.bind(this)), 
                 u.default.addbtnTouchOriginEndScale(this.chooseBg, this.chooseBgFunc.bind(this)), 
                 u.default.addTargetTouchUpInside(this.beginNode, this.beginNodeFunc.bind(this)), 
-                this.tipsNode.active = !1;
+                this.tipsNode.active = !1, cc.game.on(d.NativeEvent.LeitingLoginInfo, this.isLogins, this);
             }, e.prototype.showDescBegin = function(t) {
-                t ? (this.beginNode.active = !0, this.arrowBgBase.active = !0, this.userNodeBase.active = !0, 
-                this.chooseNode.active = !1) : (this.beginNode.active = !1, this.arrowBgBase.active = !1, 
-                this.userNodeBase.active = !1, this.chooseNode.active = !0);
+                t ? (this.beginNode.active = !0, this.userNodeBase.active = f.default.isPrivacyUser(), 
+                this.chooseNode.active = !1) : (this.beginNode.active = !1, this.userNodeBase.active = !1, 
+                this.chooseNode.active = !0);
             }, e.prototype.userNodeFunc = function() {
-                console.log("用户协议"), this.privacyUserPop.getComponent(y.default).showPop({
+                console.log("用户协议"), this.privacyUserPop.getComponent(b.default).showPop({
                     type: "user"
                 });
             }, e.prototype.privacyNodeFunc = function() {
-                console.log("隐私政策"), this.privacyUserPop.getComponent(y.default).showPop({
+                console.log("隐私政策"), this.privacyUserPop.getComponent(b.default).showPop({
                     type: "privacy"
                 });
             }, e.prototype.chooseBgFunc = function() {
                 this.chooseNode.active = !this.chooseNode.active, console.log("选择 = ", this.chooseNode.activeInHierarchy);
             }, e.prototype.beginNodeFunc = function() {
                 var t = this;
-                if (console.log("开始游戏 = ", this.chooseNode.activeInHierarchy), !this.chooseNode.activeInHierarchy) return this.tipsNode.active = !0, 
+                if (console.log("开始游戏 = ", this.chooseNode.activeInHierarchy), f.default.isPrivacyUser() && !this.chooseNode.activeInHierarchy) return this.tipsNode.active = !0, 
                 void setTimeout(function() {
                     t.tipsNode.active = !1;
                 }, 2e3);
                 this.isLogins();
             }, e.prototype.isLogins = function() {
                 return r(this, void 0, Promise, function() {
-                    return c(this, function(t) {
-                        switch (t.label) {
+                    var t;
+                    return c(this, function(e) {
+                        switch (e.label) {
                           case 0:
                             return [ 4, l.LoginApi.beginLogin() ];
 
                           case 1:
-                            return 0 == t.sent() ? [ 2 ] : (this.showDescBegin(!1), this.loadScene(), [ 2 ]);
+                            return t = e.sent(), console.log("登录完成", t), 0 == t ? [ 2 ] : (this.showDescBegin(!1), 
+                            this.loadScene(), [ 2 ]);
                         }
                     });
                 });
@@ -9521,7 +9657,7 @@ window.__require = function t(e, o, n) {
                 return r(this, void 0, Promise, function() {
                     var t = this;
                     return c(this, function() {
-                        return null != this.mPromiseLoadJson ? [ 2 ] : (g.default.initTA(), [ 2, this.mPromiseLoadJson = new Promise(function(e) {
+                        return null != this.mPromiseLoadJson ? [ 2 ] : (v.default.initTA(), [ 2, this.mPromiseLoadJson = new Promise(function(e) {
                             var o = t;
                             p.default.initData(function() {
                                 console.log("JSON加载完成"), e(), o.loadScene();
@@ -9558,27 +9694,29 @@ window.__require = function t(e, o, n) {
                         Number(t) - e < 36e5 && (console.warn("失效 ###### "), p.default.clearToken());
                     } else console.warn("本地无数据，清除 ###### "), p.default.clearToken();
                     if (0 == p.default.isLogin()) return console.log("需要登录 ###### "), void this.showDescBegin(!0);
-                    this.sceneLoadEd = !0, console.log("PUSH=>loadScene加载成功"), g.default.reportTACommon("app_start", {
+                    this.sceneLoadEd = !0, console.log("PUSH=>loadScene加载成功"), v.default.reportTACommon("app_start", {
                         step: "启动"
                     }), cc.director.loadScene("game", function() {
                         console.log("PUSH=>进入主场景");
                     });
                 }
-            }, a([ N(cc.Node) ], e.prototype, "bgLayer", void 0), a([ N(cc.ProgressBar) ], e.prototype, "loadProgressBar", void 0), 
-            a([ N(cc.Node) ], e.prototype, "descNode", void 0), a([ N(cc.Node) ], e.prototype, "userNode", void 0), 
-            a([ N(cc.Node) ], e.prototype, "privacyNode", void 0), a([ N(cc.Node) ], e.prototype, "chooseNode", void 0), 
-            a([ N(cc.Node) ], e.prototype, "chooseBg", void 0), a([ N(cc.Node) ], e.prototype, "beginNode", void 0), 
-            a([ N(cc.Node) ], e.prototype, "tipsNode", void 0), a([ N(cc.Node) ], e.prototype, "arrowBgBase", void 0), 
-            a([ N(cc.Node) ], e.prototype, "userNodeBase", void 0), a([ N(cc.Node) ], e.prototype, "privacyUserPop", void 0), 
-            a([ _ ], e);
+            }, a([ P(cc.Node) ], e.prototype, "bgLayer", void 0), a([ P(cc.ProgressBar) ], e.prototype, "loadProgressBar", void 0), 
+            a([ P(cc.Node) ], e.prototype, "descNode", void 0), a([ P(cc.Node) ], e.prototype, "userNode", void 0), 
+            a([ P(cc.Node) ], e.prototype, "privacyNode", void 0), a([ P(cc.Node) ], e.prototype, "chooseNode", void 0), 
+            a([ P(cc.Node) ], e.prototype, "chooseBg", void 0), a([ P(cc.Node) ], e.prototype, "beginNode", void 0), 
+            a([ P(cc.Node) ], e.prototype, "tipsNode", void 0), a([ P(cc.Node) ], e.prototype, "arrowBgBase", void 0), 
+            a([ P(cc.Node) ], e.prototype, "userNodeBase", void 0), a([ P(cc.Node) ], e.prototype, "ageNode", void 0), 
+            a([ P(cc.Node) ], e.prototype, "privacyUserPop", void 0), a([ w ], e);
         }(cc.Component);
-        o.default = w, cc._RF.pop();
+        o.default = C, cc._RF.pop();
     }, {
         "../../i18n/i18n": "i18n",
         "../api/login-api": "login-api",
         "../common/CcJsFunc": "CcJsFunc",
         "../common/dataTs": "dataTs",
+        "../common/native/native-event": "native-event",
         "../common/native/share": "share",
+        "../common/platform-utils": "platform-utils",
         "../common/spine": "spine",
         "../effect/player-head-atlas": "player-head-atlas",
         "../manager/GameManager": "GameManager",
@@ -9699,21 +9837,21 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         }), o.LoginApi = void 0;
-        var a = t("../common/dataTs"), r = t("../common/platform-utils"), c = t("./api-sheep"), s = function() {
+        var a = t("../common/dataTs"), r = t("../common/native/native-bridge"), c = t("../common/native/native-def"), s = t("../common/platform-utils"), l = t("../common/sdk"), u = t("./api-sheep"), p = function() {
             function t() {}
             return t.beginLogin = function(t) {
                 return void 0 === t && (t = !0), n(this, void 0, Promise, function() {
-                    var e, o, n, s;
+                    var e, o, n, p, d;
                     return i(this, function(i) {
                         switch (i.label) {
                           case 0:
-                            return a.default.isLogin() ? [ 2, !0 ] : r.default.isPlatform(r.Platform.tt) ? [ 4, c.default.ttLogin() ] : [ 3, 7 ];
+                            return a.default.isLogin() ? [ 2, !0 ] : s.default.isPlatform(s.Platform.tt) ? [ 4, u.default.ttLogin() ] : [ 3, 7 ];
 
                           case 1:
                             i.sent(), i.label = 2;
 
                           case 2:
-                            return i.trys.push([ 2, 5, , 6 ]), t ? [ 4, c.default.getUserInfo() ] : [ 3, 4 ];
+                            return i.trys.push([ 2, 5, , 6 ]), t ? [ 4, u.default.getUserInfo() ] : [ 3, 4 ];
 
                           case 3:
                             i.sent(), i.label = 4;
@@ -9725,16 +9863,16 @@ window.__require = function t(e, o, n) {
                             return e = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", e), [ 3, 6 ];
 
                           case 6:
-                            return [ 3, 33 ];
+                            return [ 3, 38 ];
 
                           case 7:
-                            return r.default.isPlatform(r.Platform.wx) ? [ 4, c.default.wxLogin() ] : [ 3, 14 ];
+                            return s.default.isPlatform(s.Platform.wx) ? [ 4, u.default.wxLogin() ] : [ 3, 14 ];
 
                           case 8:
                             i.sent(), i.label = 9;
 
                           case 9:
-                            return i.trys.push([ 9, 12, , 13 ]), t ? [ 4, c.default.getWxUserInfo() ] : [ 3, 11 ];
+                            return i.trys.push([ 9, 12, , 13 ]), t ? [ 4, u.default.getWxUserInfo() ] : [ 3, 11 ];
 
                           case 10:
                             i.sent(), i.label = 11;
@@ -9746,28 +9884,28 @@ window.__require = function t(e, o, n) {
                             return o = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", o), [ 3, 13 ];
 
                           case 13:
-                            return [ 3, 33 ];
+                            return [ 3, 38 ];
 
                           case 14:
-                            return r.default.isPlatform(r.Platform.oppo) ? [ 4, c.default.oppoLogin() ] : [ 3, 16 ];
+                            return s.default.isPlatform(s.Platform.oppo) ? [ 4, u.default.oppoLogin() ] : [ 3, 16 ];
 
                           case 15:
-                            return i.sent(), [ 3, 33 ];
+                            return i.sent(), [ 3, 38 ];
 
                           case 16:
-                            return r.default.isPlatform(r.Platform.vivo) ? [ 4, c.default.vivoLogin() ] : [ 3, 18 ];
+                            return s.default.isPlatform(s.Platform.vivo) ? [ 4, u.default.vivoLogin() ] : [ 3, 18 ];
 
                           case 17:
-                            return i.sent(), [ 3, 33 ];
+                            return i.sent(), [ 3, 38 ];
 
                           case 18:
-                            return r.default.isPlatform(r.Platform.qq) ? [ 4, c.default.qqLogin() ] : [ 3, 25 ];
+                            return s.default.isPlatform(s.Platform.qq) ? [ 4, u.default.qqLogin() ] : [ 3, 25 ];
 
                           case 19:
                             i.sent(), i.label = 20;
 
                           case 20:
-                            return i.trys.push([ 20, 23, , 24 ]), t ? [ 4, c.default.getQqUserInfo() ] : [ 3, 22 ];
+                            return i.trys.push([ 20, 23, , 24 ]), t ? [ 4, u.default.getQqUserInfo() ] : [ 3, 22 ];
 
                           case 21:
                             i.sent(), i.label = 22;
@@ -9779,43 +9917,62 @@ window.__require = function t(e, o, n) {
                             return n = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", n), [ 3, 24 ];
 
                           case 24:
-                            return [ 3, 33 ];
+                            return [ 3, 38 ];
 
                           case 25:
-                            return r.default.isPlatform(r.Platform.ks) ? [ 4, c.default.ksLogin() ] : [ 3, 32 ];
+                            return s.default.isPlatform(s.Platform.ks) ? [ 4, u.default.ksLogin() ] : [ 3, 33 ];
 
                           case 26:
                             i.sent(), i.label = 27;
 
                           case 27:
-                            return i.trys.push([ 27, 30, , 31 ]), t ? [ 4, c.default.getKsUserInfo() ] : [ 3, 29 ];
+                            return i.trys.push([ 27, 31, , 32 ]), t ? [ 4, l.default.checkAuthorize() ] : [ 3, 30 ];
 
                           case 28:
-                            i.sent(), i.label = 29;
+                            return i.sent(), [ 4, u.default.getKsUserInfo() ];
 
                           case 29:
-                            return [ 3, 31 ];
+                            i.sent(), i.label = 30;
 
                           case 30:
-                            return s = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", s), [ 3, 31 ];
+                            return [ 3, 32 ];
 
                           case 31:
-                            return [ 3, 33 ];
+                            return p = i.sent(), cc.warn("获取用户信息失败，可能用户拒绝授权", p), [ 3, 32 ];
 
                           case 32:
-                            return [ 2, !1 ];
+                            return [ 3, 38 ];
 
                           case 33:
+                            return s.default.isPlatform(s.Platform.android) ? r.default.loginInfo && r.default.loginInfo.userId.length > 0 ? (console.log("已有雷霆信息，请求登录"), 
+                            [ 4, u.default.leitingLogin(r.default.loginInfo) ]) : [ 3, 35 ] : [ 3, 37 ];
+
+                          case 34:
+                            return d = i.sent(), console.log("登录完成0", d), 0 != d ? [ 2, !1 ] : [ 2, !0 ];
+
+                          case 35:
+                            return console.log("拉起雷霆登录"), r.default.callNative(c.NativeFun.leitingLogin), [ 2, !1 ];
+
+                          case 36:
+                            return [ 3, 38 ];
+
+                          case 37:
+                            return [ 2, !1 ];
+
+                          case 38:
                             return [ 2, !0 ];
                         }
                     });
                 });
             }, t;
         }();
-        o.LoginApi = s, cc._RF.pop();
+        o.LoginApi = p, cc._RF.pop();
     }, {
         "../common/dataTs": "dataTs",
+        "../common/native/native-bridge": "native-bridge",
+        "../common/native/native-def": "native-def",
         "../common/platform-utils": "platform-utils",
+        "../common/sdk": "sdk",
         "./api-sheep": "api-sheep"
     } ],
     long: [ function(t, e) {
@@ -11351,7 +11508,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/util"), p = t("../common/enumConfig"), d = t("../manager/report-common"), h = t("../manager/GameManager"), f = t("../manager/DateManager"), m = t("../common/sdk"), g = t("../api/api-sheep"), y = t("../common/native/tt-sdk"), v = t("../manager/data-manager"), b = t("../common/native/audio"), _ = t("../common/native/wx-sdk"), N = t("../common/native/qq-sdk"), w = t("../common/platform-utils"), P = t("../api/login-api"), C = cc._decorator, k = C.ccclass, S = C.property, O = function(t) {
+        var s = t("../common/CcJsFunc"), l = t("../common/dataTs"), u = t("../common/util"), p = t("../common/enumConfig"), d = t("../manager/report-common"), h = t("../manager/GameManager"), f = t("../manager/DateManager"), m = t("../common/sdk"), g = t("../api/api-sheep"), y = t("../common/native/tt-sdk"), v = t("../manager/data-manager"), b = t("../common/native/audio"), _ = t("../common/native/wx-sdk"), N = t("../common/native/qq-sdk"), w = t("../common/platform-utils"), P = t("../api/login-api"), C = t("../config/res-config"), k = t("../manager/pop-manager-new"), S = cc._decorator, O = S.ccclass, T = S.property, A = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.beginBtn = null, e.setupBtn = null, e.rankBtn = null, e.meBtn = null, e.focusBtn = null, 
@@ -11388,9 +11545,9 @@ window.__require = function t(e, o, n) {
                 s.default.addTargetTouchUpInside(this.openChannelBtn, this.openPageBtnFunc.bind(this)), 
                 s.default.addTargetTouchUpInside(this.wxAccountBtn, this.wxAccountBtnFunc.bind(this)), 
                 l.default.isLogin() ? this.meBtn.active = !0 : (this.bulletBtn.active = !1, this.meBtn.active = !1), 
-                this.bulletBtn.active = !1, this.deskBtn.active = !1, this.focusBtn.active = !1, 
-                y.default.isSupportFocusDouYin() && (this.focusBtn.active = !0), this.setMainLayerData(), 
-                this.updateTimeFunc(), this.popCallbackCollect = {
+                this.bulletBtn.active = !1, this.deskBtn.active = !1, y.default.isSupportShortcut() && (this.deskBtn.active = !0), 
+                this.focusBtn.active = !1, y.default.isSupportFocusDouYin() && (this.focusBtn.active = !0), 
+                this.setMainLayerData(), this.updateTimeFunc(), this.popCallbackCollect = {
                     freeCallBack: this.freeCallBackFunc.bind(this),
                     exitCallBack: this.exitCallBackFunc.bind(this)
                 }, this.bottomRankNode.active = !1, this.requestData(), this.wxAccountBtn.active = !1, 
@@ -11413,7 +11570,7 @@ window.__require = function t(e, o, n) {
                 cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "wxPublicAccount",
                     showPopData: {}
-                });
+                }), k.default.instance.open(C.ResConfig.wxPublicAccount);
             }, e.prototype.meBtnFunc = function() {
                 console.log("个人资料"), cc.game.emit(p.EMITKEY.SHOWPOP, {
                     popName: "personalPop",
@@ -11653,54 +11810,54 @@ window.__require = function t(e, o, n) {
             }, e.prototype.beginTouchCallbackFunc = function() {
                 this.beginButtonDuration >= 1 ? (this.beginButtonDuration = 0, h.default.setGameType(p.GAMETYPE.GAMEDAILY), 
                 b.default.playBGM(), cc.game.emit(p.EMITKEY.BEGINGAME)) : console.log("不能连续点击");
-            }, a([ S({
+            }, a([ T({
                 type: cc.Node,
                 tooltip: "开始游戏"
-            }) ], e.prototype, "beginBtn", void 0), a([ S(cc.Node) ], e.prototype, "setupBtn", void 0), 
-            a([ S({
+            }) ], e.prototype, "beginBtn", void 0), a([ T(cc.Node) ], e.prototype, "setupBtn", void 0), 
+            a([ T({
                 type: cc.Node,
                 tooltip: "wx排行榜"
-            }) ], e.prototype, "rankBtn", void 0), a([ S({
+            }) ], e.prototype, "rankBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "个人资料"
-            }) ], e.prototype, "meBtn", void 0), a([ S({
+            }) ], e.prototype, "meBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "关注抖音号"
-            }) ], e.prototype, "focusBtn", void 0), a([ S({
+            }) ], e.prototype, "focusBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "添加到桌面"
-            }) ], e.prototype, "deskBtn", void 0), a([ S(cc.Node) ], e.prototype, "timeNode", void 0), 
-            a([ S(cc.Label) ], e.prototype, "timeLabel", void 0), a([ S(cc.Node) ], e.prototype, "bottomRankNode", void 0), 
-            a([ S(cc.Label) ], e.prototype, "levelNumLabel", void 0), a([ S({
+            }) ], e.prototype, "deskBtn", void 0), a([ T(cc.Node) ], e.prototype, "timeNode", void 0), 
+            a([ T(cc.Label) ], e.prototype, "timeLabel", void 0), a([ T(cc.Node) ], e.prototype, "bottomRankNode", void 0), 
+            a([ T(cc.Label) ], e.prototype, "levelNumLabel", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "弹幕页面"
-            }) ], e.prototype, "bulletNode", void 0), a([ S({
+            }) ], e.prototype, "bulletNode", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "弹幕"
-            }) ], e.prototype, "bulletBtn", void 0), a([ S({
+            }) ], e.prototype, "bulletBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "换装"
-            }) ], e.prototype, "collectBtn", void 0), a([ S({
+            }) ], e.prototype, "collectBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "今日话题页面"
-            }) ], e.prototype, "topicBtn", void 0), a([ S({
+            }) ], e.prototype, "topicBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "好友排行榜"
-            }) ], e.prototype, "friendBtn", void 0), a([ S({
+            }) ], e.prototype, "friendBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "tt排行榜"
-            }) ], e.prototype, "ttRankBtn", void 0), a([ S({
+            }) ], e.prototype, "ttRankBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "打开微信游戏圈"
-            }) ], e.prototype, "openPageBtn", void 0), a([ S({
+            }) ], e.prototype, "openPageBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "打开QQ频道"
-            }) ], e.prototype, "openChannelBtn", void 0), a([ S({
+            }) ], e.prototype, "openChannelBtn", void 0), a([ T({
                 type: cc.Node,
                 tooltip: "打开公众号"
-            }) ], e.prototype, "wxAccountBtn", void 0), a([ k ], e);
+            }) ], e.prototype, "wxAccountBtn", void 0), a([ O ], e);
         }(cc.Component);
-        o.default = O, cc._RF.pop();
+        o.default = A, cc._RF.pop();
     }, {
         "../api/api-sheep": "api-sheep",
         "../api/login-api": "login-api",
@@ -11714,9 +11871,11 @@ window.__require = function t(e, o, n) {
         "../common/platform-utils": "platform-utils",
         "../common/sdk": "sdk",
         "../common/util": "util",
+        "../config/res-config": "res-config",
         "../manager/DateManager": "DateManager",
         "../manager/GameManager": "GameManager",
         "../manager/data-manager": "data-manager",
+        "../manager/pop-manager-new": "pop-manager-new",
         "../manager/report-common": "report-common"
     } ],
     mapArea: [ function(t, e, o) {
@@ -12056,7 +12215,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/enumConfig"), c = t("./crushArea"), s = cc._decorator, l = s.ccclass, u = s.property, p = function(t) {
+        var r = t("../common/enumConfig"), c = t("../manager/GameManager"), s = t("./crushArea"), l = cc._decorator, u = l.ccclass, p = l.property, d = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.crushAreaNode = null, e.crushAreaArgs = null, e.blockMaxWidth = 120, e.parentComp = null, 
@@ -12102,7 +12261,7 @@ window.__require = function t(e, o, n) {
                     }, n).start()) : (i.isChoosed = !1, cc.game.emit(r.EMITKEY.HIDEMASKLAYER, 9));
                 }, n = this, i = 0; i < this.moveOutObj[t].length; i++) o(i);
             }, e.prototype.removeCardNode = function(t) {
-                if (!(this.crushAreaNode.getComponent(c.default).getCrushBlockNum() >= 7)) {
+                if (!(this.crushAreaNode.getComponent(s.default).getCrushBlockNum() >= 7)) {
                     this.crushAreaNode.setSiblingIndex(10), this.crushAreaArgs.setSiblingIndex(10);
                     var e = 1;
                     for (var o in this.moveOutObj) for (var n = 0; n < this.moveOutObj[o].length; n++) {
@@ -12112,14 +12271,16 @@ window.__require = function t(e, o, n) {
                             break;
                         }
                     }
-                    this.parentComp.crushBlockNode(t), t.comeParent = "moveOutArea", t.moveOutKey = e;
+                    this.parentComp.crushBlockNode(t), t.comeParent = "moveOutArea", t.moveOutKey = e, 
+                    c.default.getInstance().addOp(t.cardDataObj.cardId, t.cardDataObj.type);
                 }
-            }, a([ u(cc.Node) ], e.prototype, "crushAreaNode", void 0), a([ u(cc.Node) ], e.prototype, "crushAreaArgs", void 0), 
-            a([ l ], e);
+            }, a([ p(cc.Node) ], e.prototype, "crushAreaNode", void 0), a([ p(cc.Node) ], e.prototype, "crushAreaArgs", void 0), 
+            a([ u ], e);
         }(cc.Component);
-        o.default = p, cc._RF.pop();
+        o.default = d, cc._RF.pop();
     }, {
         "../common/enumConfig": "enumConfig",
+        "../manager/GameManager": "GameManager",
         "./crushArea": "crushArea"
     } ],
     "native-bridge": [ function(t, e, o) {
@@ -12135,6 +12296,9 @@ window.__require = function t(e, o, n) {
                     params: JSON.stringify(e.param)
                 });
             }, t.leitingLogin = function(e) {
+                e.thirdImageUrl && e.thirdImageUrl.length > 0 && (e.thirdImageUrl = e.thirdImageUrl.replace(/width=\d+/, "width=100"), 
+                e.thirdImageUrl.indexOf("width=100") < 0 && (e.thirdImageUrl = e.thirdImageUrl + "&width=100"), 
+                e.thirdImageUrl = e.thirdImageUrl.replace(/height=\d+/, "height=100"), e.thirdImageUrl.indexOf("height=100") < 0 && (e.thirdImageUrl = e.thirdImageUrl + "&height=100")), 
                 t.loginInfo = e, cc.director.getScene().name, cc.game.emit(a.NativeEvent.LeitingLoginInfo, e);
             }, t.leitingShare = function(e) {
                 t.shareInfo && ("1" == e.status ? t.shareInfo.success && t.shareInfo.success(!0) : t.shareInfo.fail && t.shareInfo.fail(!0), 
@@ -12850,6 +13014,8 @@ window.__require = function t(e, o, n) {
                 return !1;
             }, t.getPlatform = function() {
                 return cc.sys.isNative && cc.sys.os == cc.sys.OS_ANDROID ? n.android : cc.sys.isNative && cc.sys.os == cc.sys.OS_IOS ? n.ios : cc.sys.platform == cc.sys.WECHAT_GAME ? window.qq ? n.qq : n.wx : n.web;
+            }, t.isPrivacyUser = function() {
+                return !!(t.isPlatform(n.oppo) || t.isPlatform(n.vivo) || t.isPlatform(n.qq) || t.isPlatform(n.web));
             }, t;
         }();
         o.default = i, cc._RF.pop();
@@ -13031,7 +13197,7 @@ window.__require = function t(e, o, n) {
                 r.default.addbtnTouchStartScale(this.closeBtn), r.default.addbtnTouchEndScale(this.closeBtn, this.closeBtnFunc.bind(this)), 
                 r.default.addbtnTouchCancelScale(this.closeBtn);
             }, e.prototype.closeBtnFunc = function() {
-                this.node.active = !1, this.node.destroy();
+                this.close();
             }, e.prototype.init = function() {
                 this.node.active = !0, this.requestData();
             }, e.prototype.renderList = function() {
@@ -13281,7 +13447,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/enumConfig"), c = t("../common/platform-utils"), s = t("../pop/bullet-screen-pop"), l = t("../pop/challengeSucPop"), u = t("../pop/ChooseAddressPop"), p = t("../pop/failPop"), d = t("../pop/FriendRankPop"), h = t("../pop/getPropPop"), f = t("../pop/loseLovePop"), m = t("../pop/nextLevelPop"), g = t("../pop/noLimitPop"), y = t("../pop/nothingPop"), v = t("../pop/PersonalPop"), b = t("../pop/PrivacyUserPop"), _ = t("../pop/setupPop"), N = t("../pop/shareNodePop"), w = t("../pop/sheep-rank-pop"), P = t("../pop/show-daily-pop"), C = t("../pop/stagePop"), k = t("../pop/TodayRankPop"), S = t("../pop/topicChoosePop"), O = t("../pop/topicCollectPop"), T = t("../pop/topicJoinedPop"), A = t("../pop/topicLastWinPop"), D = t("../pop/topicNewPop"), I = t("../pop/winPop"), E = t("../pop/wxPublicAccount"), L = cc._decorator, M = L.ccclass, B = L.property, R = function(t) {
+        var r = t("../common/enumConfig"), c = t("../common/platform-utils"), s = t("../pop/bullet-screen-pop"), l = t("../pop/challengeSucPop"), u = t("../pop/ChooseAddressPop"), p = t("../pop/failPop"), d = t("../pop/FriendRankPop"), h = t("../pop/getPropPop"), f = t("../pop/loseLovePop"), m = t("../pop/nextLevelPop"), g = t("../pop/noLimitPop"), y = t("../pop/nothingPop"), v = t("../pop/PersonalPop"), b = t("../pop/PrivacyUserPop"), _ = t("../pop/setupPop"), N = t("../pop/shareNodePop"), w = t("../pop/sheep-rank-pop"), P = t("../pop/show-daily-pop"), C = t("../pop/stagePop"), k = t("../pop/TodayRankPop"), S = t("../pop/topicChoosePop"), O = t("../pop/topicCollectPop"), T = t("../pop/topicJoinedPop"), A = t("../pop/topicLastWinPop"), I = t("../pop/topicNewPop"), D = t("../pop/winPop"), E = cc._decorator, L = E.ccclass, M = E.property, B = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.showDailyPrefab = null, e.showDailyPop = null, e.setupPopPrefab = null, 
@@ -13296,9 +13462,8 @@ window.__require = function t(e, o, n) {
                 e.topicNewPop = null, e.todayRankPopPrefab = null, e.todayRankPop = null, e.firendRankPopPrefab = null, 
                 e.firendRankPop = null, e.personalPopPrefab = null, e.personalPop = null, e.topicJoinedPopPrefab = null, 
                 e.topicJoinedPop = null, e.challengeSucPopPrefab = null, e.challengeSucPop = null, 
-                e.privacyUserPopPrefab = null, e.privacyUserPop = null, e.wxPublicAccountPrefab = null, 
-                e.wxPublicAccount = null, e.chooseAddressPopPrefab = null, e.chooseAddressPop = null, 
-                e.showPopArray = [], e;
+                e.privacyUserPopPrefab = null, e.privacyUserPop = null, e.chooseAddressPopPrefab = null, 
+                e.chooseAddressPop = null, e.showPopArray = [], e;
             }
             return i(e, t), e.prototype.start = function() {
                 c.default.isPlatform(c.Platform.wx) && this.initPop(), this.closeAllPop();
@@ -13313,7 +13478,7 @@ window.__require = function t(e, o, n) {
             }, e.prototype.showPop = function(t) {
                 var e = t.popName, o = t.showPopData;
                 "winPop" == e ? (this.winPop = this.ifHaveNode(this.winPop, this.winPopPrefab), 
-                this.winPop.getComponent(I.default).showWinPop(o)) : "failPop" == e ? (this.failPop = this.ifHaveNode(this.failPop, this.failPopPrefab), 
+                this.winPop.getComponent(D.default).showWinPop(o)) : "failPop" == e ? (this.failPop = this.ifHaveNode(this.failPop, this.failPopPrefab), 
                 this.failPop.getComponent(p.default).showFailPop(o)) : "loseLovePop" == e ? (this.loseLovePop = this.ifHaveNode(this.loseLovePop, this.loseLovePopPrefab), 
                 this.loseLovePop.getComponent(f.default).showLoseLovePop(o)) : "setupPop" == e ? (this.setupPop = this.ifHaveNode(this.setupPop, this.setupPopPrefab), 
                 this.setupPop.getComponent(_.default).showSetupPop(o)) : "getPropPop" == e ? (this.getPropPop = this.ifHaveNode(this.getPropPop, this.getPropPopPrefab), 
@@ -13329,14 +13494,13 @@ window.__require = function t(e, o, n) {
                 this.topicChoosePop.getComponent(S.default).showPop(o)) : "topicCollectPop" == e ? (this.topicCollectPop = this.ifHaveNode(this.topicCollectPop, this.topicCollectPopPrefab), 
                 this.topicCollectPop.getComponent(O.default).showPop(o)) : "topicLastWinPop" == e ? (this.topicLastWinPop = this.ifHaveNode(this.topicLastWinPop, this.topicLastWinPopPrefab), 
                 this.topicLastWinPop.getComponent(A.default).showPop(o)) : "topicNewPop" == e ? (this.topicNewPop = this.ifHaveNode(this.topicNewPop, this.topicNewPopPrefab), 
-                this.topicNewPop.getComponent(D.default).showPop(o)) : "friendRankPop" == e ? (this.firendRankPop = this.ifHaveNode(this.firendRankPop, this.firendRankPopPrefab), 
+                this.topicNewPop.getComponent(I.default).showPop(o)) : "friendRankPop" == e ? (this.firendRankPop = this.ifHaveNode(this.firendRankPop, this.firendRankPopPrefab), 
                 this.firendRankPop.getComponent(d.default).showPop(o)) : "todayRankPop" == e ? (this.todayRankPop = this.ifHaveNode(this.todayRankPop, this.todayRankPopPrefab), 
                 this.todayRankPop.getComponent(k.default).showPop(o)) : "personalPop" == e ? (this.personalPop = this.ifHaveNode(this.personalPop, this.personalPopPrefab), 
                 this.personalPop.getComponent(v.default).showPop(o)) : "topicJoinedPop" == e ? (this.topicJoinedPop = this.ifHaveNode(this.topicJoinedPop, this.topicJoinedPopPrefab), 
                 this.topicJoinedPop.getComponent(T.default).showPop(o)) : "challengeSucPop" == e ? (this.challengeSucPop = this.ifHaveNode(this.challengeSucPop, this.challengeSucPopPrefab), 
                 this.challengeSucPop.getComponent(l.default).showPop(o)) : "privacyUserPop" == e ? (this.privacyUserPop = this.ifHaveNode(this.privacyUserPop, this.privacyUserPopPrefab), 
-                this.privacyUserPop.getComponent(b.default).showPop(o)) : "wxPublicAccount" == e ? (this.wxPublicAccount = this.ifHaveNode(this.wxPublicAccount, this.wxPublicAccountPrefab), 
-                this.wxPublicAccount.getComponent(E.default).showPop(o)) : "chooseAddressPop" == e && (this.chooseAddressPop = this.ifHaveNode(this.chooseAddressPop, this.chooseAddressPopPrefab), 
+                this.privacyUserPop.getComponent(b.default).showPop(o)) : "chooseAddressPop" == e && (this.chooseAddressPop = this.ifHaveNode(this.chooseAddressPop, this.chooseAddressPopPrefab), 
                 this.chooseAddressPop.getComponent(u.default).showPop(o));
             }, e.prototype.ifHaveNode = function(t, e) {
                 return t || (t = cc.instantiate(e), this.node.addChild(t)), t.setSiblingIndex(-1), 
@@ -13349,84 +13513,81 @@ window.__require = function t(e, o, n) {
                 }
             }, e.prototype.showDialog = function(t) {
                 this.node.addChild(t);
-            }, a([ B({
+            }, a([ M({
                 type: cc.Prefab,
                 tooltip: "每日挑战获取礼包"
-            }) ], e.prototype, "showDailyPrefab", void 0), a([ B({
+            }) ], e.prototype, "showDailyPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "设置页面"
-            }) ], e.prototype, "setupPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "setupPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "获取道具页面"
-            }) ], e.prototype, "getPropPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "getPropPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "一些通用页面"
-            }) ], e.prototype, "nothingPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "nothingPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "失败页面"
-            }) ], e.prototype, "failPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "failPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "放弃挑战界面"
-            }) ], e.prototype, "loseLovePopPrefab", void 0), a([ B({
+            }) ], e.prototype, "loseLovePopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "胜利界面"
-            }) ], e.prototype, "winPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "winPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "无限生命页面"
-            }) ], e.prototype, "noLimitPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "noLimitPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "排行弹框页面"
-            }) ], e.prototype, "sheepRankPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "sheepRankPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "舞台弹框页面"
-            }) ], e.prototype, "stagePopPrefab", void 0), a([ B({
+            }) ], e.prototype, "stagePopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "弹幕弹框页面"
-            }) ], e.prototype, "bulletScreenPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "bulletScreenPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "下一等级提示"
-            }) ], e.prototype, "nextLevelPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "nextLevelPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "分享弹框"
-            }) ], e.prototype, "shareNodePopPrefab", void 0), a([ B({
+            }) ], e.prototype, "shareNodePopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "选择羊队"
-            }) ], e.prototype, "topicChoosePopPrefab", void 0), a([ B({
+            }) ], e.prototype, "topicChoosePopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "收藏页面"
-            }) ], e.prototype, "topicCollectPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "topicCollectPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "昨日获胜页面"
-            }) ], e.prototype, "topicLastWinPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "topicLastWinPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "昨日获胜页面奖励弹框"
-            }) ], e.prototype, "topicNewPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "topicNewPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "今日朋友圈"
-            }) ], e.prototype, "todayRankPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "todayRankPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "好友排行榜"
-            }) ], e.prototype, "firendRankPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "firendRankPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "个人资料"
-            }) ], e.prototype, "personalPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "personalPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "队伍分配弹窗"
-            }) ], e.prototype, "topicJoinedPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "topicJoinedPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "wx获胜弹框"
-            }) ], e.prototype, "challengeSucPopPrefab", void 0), a([ B({
+            }) ], e.prototype, "challengeSucPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "用户协议隐私政策"
-            }) ], e.prototype, "privacyUserPopPrefab", void 0), a([ B({
-                type: cc.Prefab,
-                tooltip: "微信公众号"
-            }) ], e.prototype, "wxPublicAccountPrefab", void 0), a([ B({
+            }) ], e.prototype, "privacyUserPopPrefab", void 0), a([ M({
                 type: cc.Prefab,
                 tooltip: "选择地址"
-            }) ], e.prototype, "chooseAddressPopPrefab", void 0), a([ M ], e);
+            }) ], e.prototype, "chooseAddressPopPrefab", void 0), a([ L ], e);
         }(cc.Component);
-        o.default = R, cc._RF.pop();
+        o.default = B, cc._RF.pop();
     }, {
         "../common/enumConfig": "enumConfig",
         "../common/platform-utils": "platform-utils",
@@ -13453,8 +13614,7 @@ window.__require = function t(e, o, n) {
         "../pop/topicJoinedPop": "topicJoinedPop",
         "../pop/topicLastWinPop": "topicLastWinPop",
         "../pop/topicNewPop": "topicNewPop",
-        "../pop/winPop": "winPop",
-        "../pop/wxPublicAccount": "wxPublicAccount"
+        "../pop/winPop": "winPop"
     } ],
     "prop-prefab": [ function(t, e, o) {
         "use strict";
@@ -14688,7 +14848,7 @@ window.__require = function t(e, o, n) {
                 return n(this, void 0, Promise, function() {
                     return i(this, function() {
                         return qq.authorize({
-                            scope: "scope.userLocation",
+                            scope: "scope.userInfo",
                             success: function(t) {
                                 cc.log("authorize success:", t);
                             },
@@ -14947,6 +15107,10 @@ window.__require = function t(e, o, n) {
         }, o.ResConfig = {
             playPlayPop: {
                 path: "pop-dialog/dialog-play-play/prefab/playPlayPop",
+                bundle: o.Bundle.resources
+            },
+            wxPublicAccount: {
+                path: "pop-dialog/dialog-wxPublicAccount/prefab/wxPublicAccount",
                 bundle: o.Bundle.resources
             }
         }, cc._RF.pop();
@@ -15231,20 +15395,126 @@ window.__require = function t(e, o, n) {
                 for (var e, o = 1, n = arguments.length; o < n; o++) for (var i in e = arguments[o]) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
                 return t;
             }).apply(this, arguments);
+        }, i = this && this.__awaiter || function(t, e, o, n) {
+            return new (o || (o = Promise))(function(i, a) {
+                function r(t) {
+                    try {
+                        s(n.next(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function c(t) {
+                    try {
+                        s(n.throw(t));
+                    } catch (e) {
+                        e = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(e);
+                        a(e);
+                    }
+                }
+                function s(t) {
+                    var e;
+                    t.done ? i(t.value) : (e = t.value, e instanceof o ? e : new o(function(t) {
+                        t(e);
+                    })).then(r, c);
+                }
+                s((n = n.apply(t, e || [])).next());
+            });
+        }, a = this && this.__generator || function(t, e) {
+            var o, n, i, a, r = {
+                label: 0,
+                sent: function() {
+                    if (1 & i[0]) throw i[1];
+                    return i[1];
+                },
+                trys: [],
+                ops: []
+            };
+            return a = {
+                next: c(0),
+                throw: c(1),
+                return: c(2)
+            }, "function" == typeof Symbol && (a[Symbol.iterator] = function() {
+                return this;
+            }), a;
+            function c(t) {
+                return function(e) {
+                    return s([ t, e ]);
+                };
+            }
+            function s(a) {
+                if (o) throw new TypeError("Generator is already executing.");
+                for (;r; ) try {
+                    if (o = 1, n && (i = 2 & a[0] ? n.return : a[0] ? n.throw || ((i = n.return) && i.call(n), 
+                    0) : n.next) && !(i = i.call(n, a[1])).done) return i;
+                    switch (n = 0, i && (a = [ 2 & a[0], i.value ]), a[0]) {
+                      case 0:
+                      case 1:
+                        i = a;
+                        break;
+
+                      case 4:
+                        return r.label++, {
+                            value: a[1],
+                            done: !1
+                        };
+
+                      case 5:
+                        r.label++, n = a[1], a = [ 0 ];
+                        continue;
+
+                      case 7:
+                        a = r.ops.pop(), r.trys.pop();
+                        continue;
+
+                      default:
+                        if (!(i = (i = r.trys).length > 0 && i[i.length - 1]) && (6 === a[0] || 2 === a[0])) {
+                            r = 0;
+                            continue;
+                        }
+                        if (3 === a[0] && (!i || a[1] > i[0] && a[1] < i[3])) {
+                            r.label = a[1];
+                            break;
+                        }
+                        if (6 === a[0] && r.label < i[1]) {
+                            r.label = i[1], i = a;
+                            break;
+                        }
+                        if (i && r.label < i[2]) {
+                            r.label = i[2], r.ops.push(a);
+                            break;
+                        }
+                        i[2] && r.ops.pop(), r.trys.pop();
+                        continue;
+                    }
+                    a = e.call(t, r);
+                } catch (c) {
+                    c = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(c);
+                    a = [ 6, c ], n = 0;
+                } finally {
+                    o = i = 0;
+                }
+                if (5 & a[0]) throw a[1];
+                return {
+                    value: a[0] ? a[1] : void 0,
+                    done: !0
+                };
+            }
         };
         Object.defineProperty(o, "__esModule", {
             value: !0
         }), o.VibrateType = o.SHARE_CALLBACK_RATE = o.SHARE_CALLBACK_TIME = void 0;
-        var i, a = t("./native/wx-sdk"), r = t("./native/tt-sdk"), c = t("./http"), s = t("./native/android-sdk"), l = t("../public/data-env"), u = t("./native/audio"), p = t("./enumConfig"), d = t("./native/share"), h = t("./native/qq-sdk"), f = t("../manager/GameManager"), m = t("./platform-utils"), g = t("./native/ks-sdk"), y = l.getEnvConfig();
+        var r, c = t("./native/wx-sdk"), s = t("./native/tt-sdk"), l = t("./http"), u = t("./native/android-sdk"), p = t("../public/data-env"), d = t("./native/audio"), h = t("./enumConfig"), f = t("./native/share"), m = t("./native/qq-sdk"), g = t("../manager/GameManager"), y = t("./platform-utils"), v = t("./native/ks-sdk"), b = p.getEnvConfig();
         o.SHARE_CALLBACK_TIME = 3, o.SHARE_CALLBACK_RATE = 0, function(t) {
             t[t.Light = 15] = "Light", t[t.Medium = 20] = "Medium", t[t.Heavy = 30] = "Heavy", 
             t[t.Long = 400] = "Long";
-        }(i = o.VibrateType || (o.VibrateType = {}));
-        var v = function() {
+        }(r = o.VibrateType || (o.VibrateType = {}));
+        var _ = function() {
             function t() {}
             return Object.defineProperty(t, "baseParams", {
                 get: function() {
-                    var t = cc.sys.localStorage.getItem(p.STORAGEKEY.GAMEUSERLOCALDATA);
+                    var t = cc.sys.localStorage.getItem(h.STORAGEKEY.GAMEUSERLOCALDATA);
                     return {
                         t: JSON.parse(t).userData.token
                     };
@@ -15252,12 +15522,12 @@ window.__require = function t(e, o, n) {
                 enumerable: !1,
                 configurable: !0
             }), t.get = function(t) {
-                return c.default.get(n({
+                return l.default.get(n({
                     host: this.host,
                     baseParams: this.baseParams
                 }, t));
             }, t.post = function(t) {
-                return c.default.post(n({
+                return l.default.post(n({
                     host: this.host,
                     baseParams: this.baseParams
                 }, t));
@@ -15266,58 +15536,58 @@ window.__require = function t(e, o, n) {
             }, t.load = function(t) {
                 return cc.sys.localStorage.getItem(t);
             }, t.vibrateShort = function(t) {
-                void 0 === t && (t = i.Light);
-                var e = cc.sys.localStorage.getItem(p.STORAGEKEY.GAMEUSERLOCALDATA);
+                void 0 === t && (t = r.Light);
+                var e = cc.sys.localStorage.getItem(h.STORAGEKEY.GAMEUSERLOCALDATA);
                 if (e) {
                     var o = JSON.parse(e);
                     if (o && o.setUpData && o.setUpData.shockStatus < 1) return void console.log("shockStatus = " + o.setUpData.shockStatus);
                 }
-                m.default.isPlatform(m.Platform.wx) && wx.vibrateShort ? t == i.Light ? a.default.vibrateShort("light") : t == i.Medium ? a.default.vibrateShort("medium") : a.default.vibrateShort("heavy") : m.default.isPlatform(m.Platform.qq) && qq.vibrateShort ? t == i.Light ? h.default.vibrateShort("light") : t == i.Medium ? h.default.vibrateShort("medium") : h.default.vibrateShort("heavy") : m.default.isPlatform(m.Platform.qq) && ks.vibrateShort ? t == i.Light ? g.default.vibrateShort("light") : t == i.Medium ? g.default.vibrateShort("medium") : g.default.vibrateShort("heavy") : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateShort ? r.default.vibrateShort() : m.default.isPlatform(m.Platform.android) && s.default.vibrateShort(t);
+                y.default.isPlatform(y.Platform.wx) && wx.vibrateShort ? t == r.Light ? c.default.vibrateShort("light") : t == r.Medium ? c.default.vibrateShort("medium") : c.default.vibrateShort("heavy") : y.default.isPlatform(y.Platform.qq) && qq.vibrateShort ? t == r.Light ? m.default.vibrateShort("light") : t == r.Medium ? m.default.vibrateShort("medium") : m.default.vibrateShort("heavy") : y.default.isPlatform(y.Platform.ks) && ks.vibrateShort ? t == r.Light ? v.default.vibrateShort("light") : t == r.Medium ? v.default.vibrateShort("medium") : v.default.vibrateShort("heavy") : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateShort ? s.default.vibrateShort() : y.default.isPlatform(y.Platform.android) && u.default.vibrateShort(t);
             }, t.vibrateLong = function(t) {
-                void 0 === t && (t = i.Long), m.default.isPlatform(m.Platform.wx) && wx.vibrateLong ? a.default.vibrateLong() : m.default.isPlatform(m.Platform.qq) && qq.vibrateLong ? h.default.vibrateLong() : m.default.isPlatform(m.Platform.ks) && qq.vibrateLong ? g.default.vibrateLong() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateLong ? r.default.vibrateLong() : m.default.isPlatform(m.Platform.android) && s.default.vibrateShort(t);
+                void 0 === t && (t = r.Long), y.default.isPlatform(y.Platform.wx) && wx.vibrateLong ? c.default.vibrateLong() : y.default.isPlatform(y.Platform.qq) && qq.vibrateLong ? m.default.vibrateLong() : y.default.isPlatform(y.Platform.ks) && qq.vibrateLong ? v.default.vibrateLong() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt && tt.vibrateLong ? s.default.vibrateLong() : y.default.isPlatform(y.Platform.android) && u.default.vibrateShort(t);
             }, t.checkUpdateManager = function() {
-                m.default.isPlatform(m.Platform.wx) ? a.default.checkUpdateManager() : m.default.isPlatform(m.Platform.qq) ? h.default.checkUpdateManager() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android);
+                y.default.isPlatform(y.Platform.wx) ? c.default.checkUpdateManager() : y.default.isPlatform(y.Platform.qq) ? m.default.checkUpdateManager() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || y.default.isPlatform(y.Platform.android);
             }, t.onShareAppMessageQuery = function() {
-                return m.default.isPlatform(m.Platform.wx) ? a.default.onShareAppMessageQuery() : m.default.isPlatform(m.Platform.qq) ? h.default.onShareAppMessageQuery() : m.default.isPlatform(m.Platform.ks) ? g.default.onShareAppMessageQuery() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
+                return y.default.isPlatform(y.Platform.wx) ? c.default.onShareAppMessageQuery() : y.default.isPlatform(y.Platform.qq) ? m.default.onShareAppMessageQuery() : y.default.isPlatform(y.Platform.ks) ? v.default.onShareAppMessageQuery() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || y.default.isPlatform(y.Platform.android));
             }, t.setOnShow = function(t) {
-                m.default.isPlatform(m.Platform.wx) ? cc.game.on(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.qq) ? cc.game.on(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.ks) ? cc.game.on(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.tt) ? cc.game.on(cc.game.EVENT_SHOW, t) : (m.default.isPlatform(m.Platform.android), 
+                y.default.isPlatform(y.Platform.wx) ? cc.game.on(cc.game.EVENT_SHOW, t) : y.default.isPlatform(y.Platform.qq) ? cc.game.on(cc.game.EVENT_SHOW, t) : y.default.isPlatform(y.Platform.ks) ? cc.game.on(cc.game.EVENT_SHOW, t) : y.default.isPlatform(y.Platform.tt) ? cc.game.on(cc.game.EVENT_SHOW, t) : (y.default.isPlatform(y.Platform.android), 
                 cc.game.on(cc.game.EVENT_SHOW, t));
             }, t.setOffShow = function(t) {
-                m.default.isPlatform(m.Platform.wx) ? cc.game.off(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.qq) ? cc.game.off(cc.game.EVENT_SHOW, t) : m.default.isPlatform(m.Platform.ks) ? cc.game.off(cc.game.EVENT_SHOW, t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt ? cc.game.off(cc.game.EVENT_SHOW, t) : (m.default.isPlatform(m.Platform.android), 
+                y.default.isPlatform(y.Platform.wx) ? cc.game.off(cc.game.EVENT_SHOW, t) : y.default.isPlatform(y.Platform.qq) ? cc.game.off(cc.game.EVENT_SHOW, t) : y.default.isPlatform(y.Platform.ks) ? cc.game.off(cc.game.EVENT_SHOW, t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt ? cc.game.off(cc.game.EVENT_SHOW, t) : (y.default.isPlatform(y.Platform.android), 
                 cc.game.off(cc.game.EVENT_SHOW, t));
             }, t.setOnShowOnce = function(t) {
-                return m.default.isPlatform(m.Platform.wx) ? a.default.setOnShowOnce(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOnShowOnce(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOnShowOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
+                return y.default.isPlatform(y.Platform.wx) ? c.default.setOnShowOnce(t) : y.default.isPlatform(y.Platform.qq) ? m.default.setOnShowOnce(t) : y.default.isPlatform(y.Platform.ks) ? v.default.setOnShowOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || y.default.isPlatform(y.Platform.android));
             }, t.setOnHide = function(t) {
-                return m.default.isPlatform(m.Platform.wx) ? a.default.setOnHide(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOnHide(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOnHide(t) : void (m.default.isPlatform(m.Platform.tt) ? cc.game.on(cc.game.EVENT_HIDE, t) : (m.default.isPlatform(m.Platform.android), 
+                return y.default.isPlatform(y.Platform.wx) ? c.default.setOnHide(t) : y.default.isPlatform(y.Platform.qq) ? m.default.setOnHide(t) : y.default.isPlatform(y.Platform.ks) ? v.default.setOnHide(t) : void (y.default.isPlatform(y.Platform.tt) ? cc.game.on(cc.game.EVENT_HIDE, t) : (y.default.isPlatform(y.Platform.android), 
                 cc.game.on(cc.game.EVENT_HIDE, t)));
             }, t.setOffHide = function(t) {
-                m.default.isPlatform(m.Platform.wx) ? a.default.setOffHide(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOffHide(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOffHide(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || (m.default.isPlatform(m.Platform.android), 
+                y.default.isPlatform(y.Platform.wx) ? c.default.setOffHide(t) : y.default.isPlatform(y.Platform.qq) ? m.default.setOffHide(t) : y.default.isPlatform(y.Platform.ks) ? v.default.setOffHide(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || (y.default.isPlatform(y.Platform.android), 
                 cc.game.off(cc.game.EVENT_HIDE, t));
             }, t.setOnHideOnce = function(t) {
-                return m.default.isPlatform(m.Platform.wx) ? a.default.setOnHideOnce(t) : m.default.isPlatform(m.Platform.qq) ? h.default.setOnHideOnce(t) : m.default.isPlatform(m.Platform.ks) ? g.default.setOnHideOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
+                return y.default.isPlatform(y.Platform.wx) ? c.default.setOnHideOnce(t) : y.default.isPlatform(y.Platform.qq) ? m.default.setOnHideOnce(t) : y.default.isPlatform(y.Platform.ks) ? v.default.setOnHideOnce(t) : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || y.default.isPlatform(y.Platform.android));
             }, t.setOnShareAppMessage = function(t) {
-                console.log("pjhsvjdj", cc.sys.platform, cc.sys.QQ_PLAY), m.default.isPlatform(m.Platform.wx) ? a.default.onShareAppMessage(t) : m.default.isPlatform(m.Platform.qq) ? h.default.onShareAppMessage(t) : m.default.isPlatform(m.Platform.ks) ? g.default.onShareAppMessage(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android);
+                console.log("pjhsvjdj", cc.sys.platform, cc.sys.QQ_PLAY), y.default.isPlatform(y.Platform.wx) ? c.default.onShareAppMessage(t) : y.default.isPlatform(y.Platform.qq) ? m.default.onShareAppMessage(t) : y.default.isPlatform(y.Platform.ks) ? v.default.onShareAppMessage(t) : cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || y.default.isPlatform(y.Platform.android);
             }, t.weiBoJump = function() {
-                return m.default.isPlatform(m.Platform.wx) ? a.default.weiBoJump() : m.default.isPlatform(m.Platform.qq) ? h.default.weiBoJump() : m.default.isPlatform(m.Platform.ks) ? g.default.weiBoJump() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || m.default.isPlatform(m.Platform.android));
+                return y.default.isPlatform(y.Platform.wx) ? c.default.weiBoJump() : y.default.isPlatform(y.Platform.qq) ? m.default.weiBoJump() : y.default.isPlatform(y.Platform.ks) ? v.default.weiBoJump() : void (cc.sys.platform == cc.sys.BYTEDANCE_GAME && window.tt || y.default.isPlatform(y.Platform.android));
             }, t.copyToClipboard = function(t) {
-                if (m.default.isPlatform(m.Platform.wx)) a.default.setClipboardData(t); else if (m.default.isPlatform(m.Platform.qq)) h.default.setClipboardData(t); else if (m.default.isPlatform(m.Platform.ks)) g.default.setClipboardData(t); else if (cc.sys.platform == cc.sys.BYTEDANCE_GAME) r.default.setClipboardData(t); else if (cc.sys.isBrowser) {
+                if (y.default.isPlatform(y.Platform.wx)) c.default.setClipboardData(t); else if (y.default.isPlatform(y.Platform.qq)) m.default.setClipboardData(t); else if (y.default.isPlatform(y.Platform.ks)) v.default.setClipboardData(t); else if (cc.sys.platform == cc.sys.BYTEDANCE_GAME) s.default.setClipboardData(t); else if (cc.sys.isBrowser) {
                     var e = t + "", o = document.createElement("textarea");
                     o.value = e, o.setAttribute("readonly", ""), o.style.position = "absolute", o.style.left = "-9999px", 
                     o.style.fontSize = "12pt";
                     var n = getSelection(), i = null;
                     n.rangeCount > 0 && (i = n.getRangeAt(0)), document.body.appendChild(o), o.select(), 
                     o.selectionStart = 0, o.selectionEnd = e.length;
-                    var c = !1;
+                    var a = !1;
                     try {
-                        c = document.execCommand("copy");
-                    } catch (s) {
-                        s = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(s);
-                        cc.warn("[sdk] copy to clipboard err", s);
+                        a = document.execCommand("copy");
+                    } catch (r) {
+                        r = VM2_INTERNAL_STATE_DO_NOT_USE_OR_PROGRAM_WILL_FAIL.handleException(r);
+                        cc.warn("[sdk] copy to clipboard err", r);
                     }
-                    document.body.removeChild(o), i && (n.removeAllRanges(), n.addRange(i)), c ? cc.log("h5 copy to clipboard success") : cc.log("h5 copy to clipboard failed");
+                    document.body.removeChild(o), i && (n.removeAllRanges(), n.addRange(i)), a ? cc.log("h5 copy to clipboard success") : cc.log("h5 copy to clipboard failed");
                 }
             }, t.chooseImage = function() {
-                m.default.isPlatform(m.Platform.wx) ? cc.log("---wxChooseImage---") : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? cc.log("---ttChooseImage---") : cc.sys.isBrowser && cc.log("---h5ChooseImage---");
+                y.default.isPlatform(y.Platform.wx) ? cc.log("---wxChooseImage---") : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? cc.log("---ttChooseImage---") : cc.sys.isBrowser && cc.log("---h5ChooseImage---");
             }, t.preloadVideoAd = function(t, e, o, n, i) {
                 var a = this;
                 void 0 === i && (i = !0), cc.log("[sdk] video ad", t);
@@ -15327,41 +15597,41 @@ window.__require = function t(e, o, n) {
                     var c = this, s = null;
                     if (this.videoAdMap[r]) {
                         if (!i) return console.log("[video ad] 使用已有回调方法"), this.videoAdMap[r];
-                        var l = this.videoAdMap[r], p = l.video, d = l.close, h = l.error;
-                        p.offClose(d), p.offError(h), s = p, console.log("[video ad] 清空回调方法");
-                    } else console.log("创建实力"), m.default.isPlatform(m.Platform.wx) ? s = wx.createRewardedVideoAd({
+                        var l = this.videoAdMap[r], u = l.video, p = l.close, h = l.error;
+                        u.offClose(p), u.offError(h), s = u, console.log("[video ad] 清空回调方法");
+                    } else console.log("创建实力"), y.default.isPlatform(y.Platform.wx) ? s = wx.createRewardedVideoAd({
                         adUnitId: r,
                         multiton: !0
-                    }) : m.default.isPlatform(m.Platform.tt) ? s = tt.createRewardedVideoAd({
+                    }) : y.default.isPlatform(y.Platform.tt) ? s = tt.createRewardedVideoAd({
                         adUnitId: r,
                         multiton: !0
-                    }) : m.default.isPlatform(m.Platform.oppo) ? s = qg.createRewardedVideoAd({
+                    }) : y.default.isPlatform(y.Platform.oppo) ? s = qg.createRewardedVideoAd({
                         adUnitId: r
-                    }) : m.default.isPlatform(m.Platform.vivo) ? s = qg.createRewardedVideoAd({
+                    }) : y.default.isPlatform(y.Platform.vivo) ? s = qg.createRewardedVideoAd({
                         posId: r
-                    }) : m.default.isPlatform(m.Platform.qq) ? s = qq.createRewardedVideoAd({
+                    }) : y.default.isPlatform(y.Platform.qq) ? s = qq.createRewardedVideoAd({
                         adUnitId: r,
                         multiton: !0
-                    }) : m.default.isPlatform(m.Platform.ks) && (s = ks.createRewardedVideoAd({
+                    }) : y.default.isPlatform(y.Platform.ks) && (s = ks.createRewardedVideoAd({
                         adUnitId: r
                     }));
                     var f = function(t) {
                         t && t.isEnded || void 0 === t ? (console.log("正常播放结束，可以下发游戏奖励 ++++"), e && e(), 
-                        m.default.isPlatform(m.Platform.wx) && c.reportRewardBehavior(4, r, s)) : (cc.game.emit("showMainTips", "中途退出，不下发游戏奖励"), 
-                        console.log("播放中途退出，不下发游戏奖励 ----"), o && o("quit", "中途退出"), m.default.isPlatform(m.Platform.wx) && c.reportRewardBehavior(3, r, s)), 
-                        u.default.playBGM(), a._canShowRewardedVideoAd = !0;
-                    }, g = function(t) {
+                        y.default.isPlatform(y.Platform.wx) && c.reportRewardBehavior(4, r, s)) : (cc.game.emit("showMainTips", "中途退出，不下发游戏奖励"), 
+                        console.log("播放中途退出，不下发游戏奖励 ----"), o && o("quit", "中途退出"), y.default.isPlatform(y.Platform.wx) && c.reportRewardBehavior(3, r, s)), 
+                        d.default.playBGM(), a._canShowRewardedVideoAd = !0;
+                    }, m = function(t) {
                         1004 == t.errCode || 1005 == t.errCode || 1006 == t.errCode ? n && n("no-fit", "没有合适的广告") : o && o(t.errCode, t.errMsg), 
                         c.reportRewardBehavior(5, r, s), console.log("没有合适的广告 = ", t.errCode, t.errMsg), 
-                        u.default.playBGM(), a._canShowRewardedVideoAd = !0;
+                        d.default.playBGM(), a._canShowRewardedVideoAd = !0;
                     };
-                    if (null != s && null != s) return s.onClose(f), s.onError(g), (m.default.isPlatform(m.Platform.wx) || m.default.isPlatform(m.Platform.qq) || m.default.isPlatform(m.Platform.ks)) && s.onLoad(function(t) {
+                    if (null != s && null != s) return s.onClose(f), s.onError(m), (y.default.isPlatform(y.Platform.wx) || y.default.isPlatform(y.Platform.qq) || y.default.isPlatform(y.Platform.ks)) && s.onLoad(function(t) {
                         t && (1 == t.shareValue ? a.wxValue = "shareValue" : 1 == t.rewardValue ? a.wxValue = "rewardValue" : a.wxValue = ""), 
                         console.log("激励视频 广告加载成功 = ", t, "wxValue = ", a.wxValue);
                     }), cc.log("[video ad] 注册新的回调方法"), this.videoAdMap[r] = {
                         video: s,
                         close: f,
-                        error: g
+                        error: m
                     }, this.videoAdMap[r];
                 }
             }, t.wxIsPolicy = function() {
@@ -15372,7 +15642,7 @@ window.__require = function t(e, o, n) {
                 return "rewardValue" == this.wxValue;
             }, t.share = function(t, e, o, n) {
                 var i = this;
-                m.default.isPlatform(m.Platform.wx) ? d.default.shareMethod({
+                y.default.isPlatform(y.Platform.wx) ? f.default.shareMethod({
                     success: function() {
                         o && o();
                     },
@@ -15385,7 +15655,7 @@ window.__require = function t(e, o, n) {
                             i.reportShareBehavior(t, e, o);
                         }
                     }
-                }) : m.default.isPlatform(m.Platform.qq) ? d.default.shareMethod({
+                }) : y.default.isPlatform(y.Platform.qq) ? f.default.shareMethod({
                     success: function() {
                         o && o();
                     },
@@ -15393,7 +15663,7 @@ window.__require = function t(e, o, n) {
                         n && n();
                     },
                     complete: function() {}
-                }) : m.default.isPlatform(m.Platform.ks) ? d.default.shareMethod({
+                }) : y.default.isPlatform(y.Platform.ks) ? f.default.shareMethod({
                     success: function() {
                         o && o();
                     },
@@ -15403,7 +15673,7 @@ window.__require = function t(e, o, n) {
                     complete: function() {}
                 }) : o && o();
             }, t.createCanvas = function() {
-                if (m.default.isPlatform(m.Platform.wx)) {
+                if (y.default.isPlatform(y.Platform.wx)) {
                     var t = canvas.toTempFilePathSync({
                         x: 0,
                         y: 0,
@@ -15415,7 +15685,7 @@ window.__require = function t(e, o, n) {
                         quality: "1.0"
                     });
                     this.wxSave(t);
-                } else if (m.default.isPlatform(m.Platform.tt)) {
+                } else if (y.default.isPlatform(y.Platform.tt)) {
                     var e = canvas.toTempFilePathSync({
                         x: 0,
                         y: 0,
@@ -15502,10 +15772,10 @@ window.__require = function t(e, o, n) {
             }, t.watchAdVideo = function(t) {
                 var e = t.id, o = t.tag, n = t.success, i = t.fail, a = t.nofit;
                 if (0 != this._canShowRewardedVideoAd) if (cc.sys.isBrowser) n && n(); else if ("" != e) {
-                    if (!f.default.getInstance().isNoneShareVideoMapOption()) {
+                    if (!g.default.getInstance().isNoneShareVideoMapOption()) {
                         cc.log("[sdk] watch ad video", o);
                         var r = this;
-                        if (m.default.isPlatform(m.Platform.android)) s.default.showRewardVideoAd(e, n, i); else if (m.default.isPlatform(m.Platform.wx)) {
+                        if (y.default.isPlatform(y.Platform.android)) u.default.showRewardVideoAd(e, n, i); else if (y.default.isPlatform(y.Platform.wx)) {
                             var c = this.preloadVideoAd(e, n, i, a, !0).video;
                             c.show().then(function() {
                                 return c.show(), r.reportRewardBehavior(1, e, c), !0;
@@ -15516,8 +15786,20 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (m.default.isPlatform(m.Platform.tt)) {
+                        } else if (y.default.isPlatform(y.Platform.tt)) {
                             console.log("[字节sdk]");
+                            var s = this.preloadVideoAd(e, n, i, a, !0).video;
+                            s.show().then(function() {
+                                return console.log("[sdk] 激励视频广告显示成功"), !0;
+                            }).catch(function(t) {
+                                if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), s.load().then(function() {
+                                    console.log("手动加载成功"), s.show();
+                                }), "can't invoke load() while video-ad is showed" != t.errMsg) return i && i(t), 
+                                !1;
+                                console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
+                            });
+                        } else if (y.default.isPlatform(y.Platform.oppo)) {
+                            console.log("[oppo sdk]");
                             var l = this.preloadVideoAd(e, n, i, a, !0).video;
                             l.show().then(function() {
                                 return console.log("[sdk] 激励视频广告显示成功"), !0;
@@ -15528,19 +15810,7 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (m.default.isPlatform(m.Platform.oppo)) {
-                            console.log("[oppo sdk]");
-                            var u = this.preloadVideoAd(e, n, i, a, !0).video;
-                            u.show().then(function() {
-                                return console.log("[sdk] 激励视频广告显示成功"), !0;
-                            }).catch(function(t) {
-                                if (console.log("[sdk] 激励视频广告显示失败", t), console.log("广告组件出现问题", t), u.load().then(function() {
-                                    console.log("手动加载成功"), u.show();
-                                }), "can't invoke load() while video-ad is showed" != t.errMsg) return i && i(t), 
-                                !1;
-                                console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
-                            });
-                        } else if (m.default.isPlatform(m.Platform.vivo)) {
+                        } else if (y.default.isPlatform(y.Platform.vivo)) {
                             console.log("[vivo sdk]");
                             var p = this.preloadVideoAd(e, n, i, a, !0).video;
                             p.show().then(function() {
@@ -15552,7 +15822,7 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (m.default.isPlatform(m.Platform.qq)) {
+                        } else if (y.default.isPlatform(y.Platform.qq)) {
                             var d = this.preloadVideoAd(e, n, i, a, !0).video;
                             d.show().then(function() {
                                 return d.show(), !0;
@@ -15563,7 +15833,7 @@ window.__require = function t(e, o, n) {
                                 !1;
                                 console.warn("[sdk] can't invoke load() while video-ad is showed, ignore operation.");
                             });
-                        } else if (m.default.isPlatform(m.Platform.ks)) {
+                        } else if (y.default.isPlatform(y.Platform.ks)) {
                             var h = this.preloadVideoAd(e, n, i, a, !0).video;
                             h.show().then(function() {
                                 return !0;
@@ -15580,19 +15850,19 @@ window.__require = function t(e, o, n) {
                     n && n();
                 } else n && n();
             }, t.showInterstitialAd = function(t) {
-                m.default.isPlatform(m.Platform.wx) ? a.default.showInterstitialAd() : m.default.isPlatform(m.Platform.qq) ? h.default.showInterstitialAd() : m.default.isPlatform(m.Platform.ks) ? g.default.showInterstitialAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? r.default.showInterstitialAd() : m.default.isPlatform(m.Platform.android) && s.default.showInterstitialAd(t.tag);
+                y.default.isPlatform(y.Platform.wx) ? c.default.showInterstitialAd() : y.default.isPlatform(y.Platform.qq) ? m.default.showInterstitialAd() : y.default.isPlatform(y.Platform.ks) ? v.default.showInterstitialAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME ? s.default.showInterstitialAd() : y.default.isPlatform(y.Platform.android) && u.default.showInterstitialAd(t.tag);
             }, t.showFullScreenAd = function(t) {
-                m.default.isPlatform(m.Platform.android) && s.default.showFullScreenAd(t);
+                y.default.isPlatform(y.Platform.android) && u.default.showFullScreenAd(t);
             }, t.showBigImageAd = function(t) {
-                m.default.isPlatform(m.Platform.android) && s.default.showBigImageAd(t);
+                y.default.isPlatform(y.Platform.android) && u.default.showBigImageAd(t);
             }, t.hideBigImageAd = function(t) {
-                m.default.isPlatform(m.Platform.android) && s.default.hideBigImageAd(t);
+                y.default.isPlatform(y.Platform.android) && u.default.hideBigImageAd(t);
             }, t.showBannerAd = function() {
-                m.default.isPlatform(m.Platform.wx) ? a.default.showBannerAd() : m.default.isPlatform(m.Platform.qq) ? h.default.showBannerAd() : m.default.isPlatform(m.Platform.ks) ? g.default.showBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && r.default.showBannerAd();
+                y.default.isPlatform(y.Platform.wx) ? c.default.showBannerAd() : y.default.isPlatform(y.Platform.qq) ? m.default.showBannerAd() : y.default.isPlatform(y.Platform.ks) ? v.default.showBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && s.default.showBannerAd();
             }, t.hideBannerAd = function() {
-                m.default.isPlatform(m.Platform.wx) ? a.default.hideBannerAd() : m.default.isPlatform(m.Platform.qq) ? h.default.hideBannerAd() : m.default.isPlatform(m.Platform.ks) ? g.default.hideBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && r.default.hideBannerAd();
+                y.default.isPlatform(y.Platform.wx) ? c.default.hideBannerAd() : y.default.isPlatform(y.Platform.qq) ? m.default.hideBannerAd() : y.default.isPlatform(y.Platform.ks) ? v.default.hideBannerAd() : cc.sys.platform == cc.sys.BYTEDANCE_GAME && s.default.hideBannerAd();
             }, t.showToast = function(t) {
-                m.default.isPlatform(m.Platform.wx) ? a.default.showToast(t) : m.default.isPlatform(m.Platform.qq) ? h.default.showToast(t) : m.default.isPlatform(m.Platform.ks) ? g.default.showToast(t) : (cc.sys.platform, 
+                y.default.isPlatform(y.Platform.wx) ? c.default.showToast(t) : y.default.isPlatform(y.Platform.qq) ? m.default.showToast(t) : y.default.isPlatform(y.Platform.ks) ? v.default.showToast(t) : (cc.sys.platform, 
                 cc.sys.BYTEDANCE_GAME);
             }, t.getDeviceId = function() {
                 return "";
@@ -15636,23 +15906,35 @@ window.__require = function t(e, o, n) {
                     t.iv || t.signature ? e(!0) : e(!1);
                 }), l;
             }, t.rankScoreUpdate = function(t, e, o) {
-                m.default.isPlatform(m.Platform.wx) ? a.default.wxRankScoreUpdate(t, e, o) : m.default.isPlatform(m.Platform.qq) && h.default.qqRankScoreUpdate(t, e, o);
+                y.default.isPlatform(y.Platform.wx) ? c.default.wxRankScoreUpdate(t, e, o) : y.default.isPlatform(y.Platform.qq) && m.default.qqRankScoreUpdate(t, e, o);
             }, t.rankScoreRemove = function(t) {
-                m.default.isPlatform(m.Platform.wx) ? a.default.wxRankScoreRemove(t) : m.default.isPlatform(m.Platform.qq) && h.default.qqRankScoreRemove(t);
+                y.default.isPlatform(y.Platform.wx) ? c.default.wxRankScoreRemove(t) : y.default.isPlatform(y.Platform.qq) && m.default.qqRankScoreRemove(t);
             }, t.showSubContext = function(t, e, o, n) {
-                m.default.isPlatform(m.Platform.wx) ? a.default.wxShowSubContext(t, e, o, n) : m.default.isPlatform(m.Platform.qq) && h.default.qqShowSubContext(t, e, o, n);
+                y.default.isPlatform(y.Platform.wx) ? c.default.wxShowSubContext(t, e, o, n) : y.default.isPlatform(y.Platform.qq) && m.default.qqShowSubContext(t, e, o, n);
             }, t.getAppVersion = function() {
                 return "";
-            }, t.isPrivacyUser = function() {
-                return m.default.isPlatform(m.Platform.android) || m.default.isPlatform(m.Platform.oppo) || m.default.isPlatform(m.Platform.vivo) || m.default.isPlatform(m.Platform.ios) || m.default.isPlatform(m.Platform.qq) || m.default.isPlatform(m.Platform.ks), 
-                !0;
+            }, t.checkAuthorize = function(t) {
+                return i(this, void 0, Promise, function() {
+                    return a(this, function(e) {
+                        switch (e.label) {
+                          case 0:
+                            return y.default.isPlatform(y.Platform.ks) ? [ 4, v.default.checkAuthorize(t) ] : [ 3, 2 ];
+
+                          case 1:
+                            e.sent(), e.label = 2;
+
+                          case 2:
+                            return [ 2 ];
+                        }
+                    });
+                });
             }, t.createUserInfoButton = function(t) {
                 return qq.createUserInfoButton ? qq.createUserInfoButton(t) : (cc.log("[sdk] createUserInfoButton"), 
                 null);
-            }, t._shareNum = 0, t._shareCount = 0, t._canShowRewardedVideoAd = !0, t.host = y.host, 
+            }, t._shareNum = 0, t._shareCount = 0, t._canShowRewardedVideoAd = !0, t.host = b.host, 
             t.wxValue = "", t.videoAdMap = {}, t;
         }();
-        o.default = v, v.checkUpdateManager(), cc._RF.pop();
+        o.default = _, _.checkUpdateManager(), cc._RF.pop();
     }, {
         "../manager/GameManager": "GameManager",
         "../public/data-env": "data-env",
@@ -15899,7 +16181,8 @@ window.__require = function t(e, o, n) {
                 s.default.addbtnTouchCancelScale(this.returnMainBtn), s.default.addbtnTouchStartScale(this.shareBtn), 
                 s.default.addbtnTouchEndScale(this.shareBtn, this.shareBtnFunc.bind(this)), s.default.addbtnTouchCancelScale(this.shareBtn), 
                 s.default.addTargetTouchUpInside(this.userNode, this.userNodeFunc.bind(this)), s.default.addTargetTouchUpInside(this.privacyNode, this.privacyNodeFunc.bind(this)), 
-                this.setupFonts(), this.userNode.active = !0, this.privacyNode.active = !0;
+                this.setupFonts(), this.userNode.active = !1, this.privacyNode.active = !1, m.default.isPrivacyUser() && (this.userNode.active = !0, 
+                this.privacyNode.active = !0);
             }, e.prototype.userNodeFunc = function() {
                 console.log("用户协议"), cc.game.emit("showPop", {
                     popName: "privacyUserPop",
@@ -15924,11 +16207,12 @@ window.__require = function t(e, o, n) {
                     opacity: 255
                 }).start());
             }, e.prototype.showSetupPop = function(t) {
-                this.node.active = !0, this.showPopData = t, this.returnMainBtn.active = !1, this.shareBtn.active = !1, 
-                l.default.getUserData().userID.length ? (this.userIdLabel.string = "", this.userIdLabel.node.active = !0) : this.userIdLabel.node.active = !1, 
+                this.node.active = !0, this.showPopData = t, this.returnMainBtn.active = !1, this.shareBtn.active = !1;
+                var e = l.default.getUserData();
+                e.userID.length ? (this.userIdLabel.string = "ID:" + e.userID, this.userIdLabel.node.active = !0) : this.userIdLabel.node.active = !1, 
                 2 == t.setupType ? this.returnMainBtn.active = !0 : 1 == t.setupType && (this.shareBtn.active = !0, 
                 m.default.isPlatform(m.Platform.wx) ? (this.shareLabel.getComponent(cc.Label).string = "官方微博", 
-                s.default.changeSpriteFrame(this.shareVideo, "rewardIcon/reward_weibo_icon.png")) : m.default.isPlatform(m.Platform.oppo) || m.default.isPlatform(m.Platform.oppo) ? this.shareBtn.active = !1 : m.default.isPlatform(m.Platform.ios) ? this.shareBtn.active = !1 : m.default.isPlatform(m.Platform.ks) && (this.shareLabel.getComponent(cc.Label).string = "分享")), 
+                s.default.changeSpriteFrame(this.shareVideo, "rewardIcon/reward_weibo_icon.png")) : m.default.isPlatform(m.Platform.oppo) || m.default.isPlatform(m.Platform.vivo) ? this.shareBtn.active = !1 : m.default.isPlatform(m.Platform.ios) ? this.shareBtn.active = !1 : m.default.isPlatform(m.Platform.ks) && (this.shareLabel.getComponent(cc.Label).string = "分享")), 
                 cc.tween(this.popNode).set({
                     scale: 0,
                     opacity: 0
@@ -16535,7 +16819,7 @@ window.__require = function t(e, o, n) {
                     }
                     var m = e.item.allScore;
                     m > 36 && (m = 36), m <= 0 && (m = 0), this.loadList = [], this.spineAminList = [];
-                    for (var g = 0; g < m; g++) this.loadList.push({
+                    for (var g = 0; g < m; g++) this.setSheep(c, g, a), this.loadList.push({
                         cityUserArr: c,
                         index: g,
                         sheepNum: a
@@ -17139,8 +17423,8 @@ window.__require = function t(e, o, n) {
                     var O = f.length - 1;
                     O > h && (console.warn("Spline(" + t.name + ")的四边形数量(" + O + ")超过了允许的最大值(" + h + "), 自动截断, Spline 曲线会显示不完整"), 
                     f.length = h), this.verticesCount = 4 * O, this.indicesCount = 6 * O;
-                    var T = t.node.width, A = t.node.getWorldMatrix(new s()), D = .5 * T, I = this._renderData._flexBuffer;
-                    I.reserve(this.verticesCount, this.indicesCount) && this._updateIndices(), I.used(this.verticesCount, this.indicesCount);
+                    var T = t.node.width, A = t.node.getWorldMatrix(new s()), I = .5 * T, D = this._renderData._flexBuffer;
+                    D.reserve(this.verticesCount, this.indicesCount) && this._updateIndices(), D.used(this.verticesCount, this.indicesCount);
                     var E = this._renderData.vDatas[0], L = this._renderData.uintVDatas[0], M = 0, B = null === (e = t.spriteFrame) || void 0 === e ? void 0 : e.uvSliced, R = m[m.length - 1], F = R > n.height ? 1 : n.height / R, x = R * F, j = x - u;
                     j < i && (j = i);
                     for (var U = 0, G = 256 * t.node.color.toRGBValue() + t.node.color.getA(), H = function(t, e) {
@@ -17156,9 +17440,9 @@ window.__require = function t(e, o, n) {
                         return t > .9999 ? 0 : t;
                     }, Y = 0, W = f.length - 1; Y < W; Y++) {
                         P = f[Y + 1], r.cross(d, cc.v3(0, 0, 1), P.tangent);
-                        var K = D * P.scale.x;
+                        var K = I * P.scale.x;
                         for (r.multiplyScalar(d, d, K), r.subtract(l[0], P.location, d), r.add(l[1], P.location, d), 
-                        P = f[Y], r.cross(d, cc.v3(0, 0, 1), P.tangent), K = D * P.scale.x, r.multiplyScalar(d, d, K), 
+                        P = f[Y], r.cross(d, cc.v3(0, 0, 1), P.tangent), K = I * P.scale.x, r.multiplyScalar(d, d, K), 
                         r.subtract(l[2], P.location, d), r.add(l[3], P.location, d), p[0].v = H(Y + 1, q), 
                         p[0].u = B[1].u, p[1].v = p[0].v, p[1].u = B[2].u, p[2].v = H(Y, V), p[2].u = B[13].u, 
                         p[3].v = p[2].v, p[3].u = B[14].u, _ = 0; _ < 4; _++) {
@@ -19418,7 +19702,7 @@ window.__require = function t(e, o, n) {
                     });
                 }
             } ]), t;
-        }(), D = new (function() {
+        }(), I = new (function() {
             function t() {
                 n(this, t), this.items = [], this.isRunning = !1, this.showDebug = !1;
             }
@@ -19455,7 +19739,7 @@ window.__require = function t(e, o, n) {
                     }
                 }
             } ]), t;
-        }())(), I = {
+        }())(), D = {
             name: "thinkingdata",
             is_plugin: !1,
             maxRetries: 3,
@@ -19597,7 +19881,7 @@ window.__require = function t(e, o, n) {
         }(), M = function() {
             function t(e) {
                 n(this, t), e.appId = e.appId ? r.checkAppId(e.appId) : r.checkAppId(e.appid), e.serverUrl = e.serverUrl ? r.checkUrl(e.serverUrl) : r.checkUrl(e.server_url);
-                var o = r.extend({}, I, k.getConfig());
+                var o = r.extend({}, D, k.getConfig());
                 r.isObject(e) ? this.config = r.extend(o, e) : this.config = o, this._init(this.config);
             }
             return a(t, [ {
@@ -19734,7 +20018,7 @@ window.__require = function t(e, o, n) {
                     a.append("deviceId", this.getDeviceId()), a.append("data", JSON.stringify(n.data[0]))) : (o = r.base64Encode(JSON.stringify(n)), 
                     a.append("data", o)), navigator.sendBeacon(i, a), r.isFunction(t.onComplete) && t.onComplete({
                         statusCode: 200
-                    })) : D.enqueue(n, i, {
+                    })) : I.enqueue(n, i, {
                         maxRetries: this.config.maxRetries,
                         sendTimeout: this.config.sendTimeout,
                         callback: t.onComplete,
@@ -22655,7 +22939,9 @@ window.__require = function t(e, o, n) {
             function e() {
                 return null !== t && t.apply(this, arguments) || this;
             }
-            return i(e, t), e.prototype.init = function() {}, a([ c, s ], e);
+            return i(e, t), e.prototype.init = function() {}, e.prototype.close = function() {
+                this.node.active = !1, this.node.destroy();
+            }, a([ c, s ], e);
         }(cc.Component);
         o.default = l, cc._RF.pop();
     }, {} ],
@@ -25520,7 +25806,7 @@ window.__require = function t(e, o, n) {
         Object.defineProperty(o, "__esModule", {
             value: !0
         });
-        var r = t("../common/CcJsFunc"), c = cc._decorator, s = c.ccclass, l = c.property, u = function(t) {
+        var r = t("../common/CcJsFunc"), c = t("../common/dialog-bese/ui-dialog"), s = cc._decorator, l = s.ccclass, u = s.property, p = function(t) {
             function e() {
                 var e = null !== t && t.apply(this, arguments) || this;
                 return e.popNode = null, e.contentArray = [], e.pointArray = [], e.nextBtn = null, 
@@ -25529,7 +25815,7 @@ window.__require = function t(e, o, n) {
             return i(e, t), e.prototype.start = function() {
                 r.default.addTargetTouchUpInside(this.closeBtn, this.closeBtnFunc.bind(this)), r.default.addTargetTouchUpInside(this.nextBtn, this.nextBtnFunc.bind(this));
             }, e.prototype.closeBtnFunc = function() {
-                this.node.active = !1;
+                this.close();
             }, e.prototype.nextBtnFunc = function() {
                 this.curIdx++, this.curIdx >= this.contentArray.length && (this.curIdx = 0), this.showContent();
             }, e.prototype.showContent = function() {
@@ -25540,6 +25826,8 @@ window.__require = function t(e, o, n) {
                     }
                     for (t = 0; t < this.pointArray.length; t++) e = this.pointArray[t], t == this.curIdx ? e.active = !0 : e.active = !1;
                 }
+            }, e.prototype.init = function(t) {
+                this.node.active = !0, this.showPop(t);
             }, e.prototype.showPop = function() {
                 this.node.active = !0, cc.tween(this.popNode).set({
                     scale: 0,
@@ -25552,13 +25840,14 @@ window.__require = function t(e, o, n) {
                 }).to(.2, {
                     scale: 1
                 }).start(), this.curIdx = 0, this.showContent();
-            }, a([ l(cc.Node) ], e.prototype, "popNode", void 0), a([ l([ cc.Node ]) ], e.prototype, "contentArray", void 0), 
-            a([ l([ cc.Node ]) ], e.prototype, "pointArray", void 0), a([ l(cc.Node) ], e.prototype, "nextBtn", void 0), 
-            a([ l(cc.Node) ], e.prototype, "closeBtn", void 0), a([ s ], e);
-        }(cc.Component);
-        o.default = u, cc._RF.pop();
+            }, a([ u(cc.Node) ], e.prototype, "popNode", void 0), a([ u([ cc.Node ]) ], e.prototype, "contentArray", void 0), 
+            a([ u([ cc.Node ]) ], e.prototype, "pointArray", void 0), a([ u(cc.Node) ], e.prototype, "nextBtn", void 0), 
+            a([ u(cc.Node) ], e.prototype, "closeBtn", void 0), a([ l ], e);
+        }(c.default);
+        o.default = p, cc._RF.pop();
     }, {
-        "../common/CcJsFunc": "CcJsFunc"
+        "../common/CcJsFunc": "CcJsFunc",
+        "../common/dialog-bese/ui-dialog": "ui-dialog"
     } ],
     xorshift: [ function(t, e, o) {
         "use strict";
